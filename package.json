@@ -1,10 +1,10 @@
 {
-  "name": "agents-company",
+  "name": "codee-skills",
   "version": "1.0.0",
   "description": "CLI for managing agent skills",
   "type": "module",
   "bin": {
-    "ags": "./bin/agents-company.js"
+    "ags": "./bin/codee-skills.js"
   },
   "scripts": {},
   "dependencies": {}

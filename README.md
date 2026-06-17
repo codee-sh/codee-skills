@@ -1,11 +1,11 @@
-# agents-skills-company
+# codee-skills
 
 Central repository of skills for AI agents. The skills work with Claude Code (`.claude/skills/`) and Codex (`.agents/skills/`).
 
 ## Repository Structure
 
 ```
-agents-skills-company/
+codee-skills/
   general/                        # general skills
     code-style/
     project-organization/
@@ -20,7 +20,7 @@ agents-skills-company/
       payload/
       payload-build-collections/
       payload-build-modules/
-  bin/agents-company.js           # CLI entry point
+  bin/codee-skills.js             # CLI entry point
   commands/                       # command implementations
   package.json
 ```
@@ -34,18 +34,18 @@ agents-skills-company/
 ### 1. Clone the repo
 
 ```bash
-git clone git@github.com:codee-sh/agents-skills-company.git
-cd agents-skills-company
+git clone git@github.com:codee-sh/codee-skills.git
+cd codee-skills
 ```
 
 ### 2. Add the CLI alias to `~/.zshrc`
 
 ```bash
-echo 'alias ags="node /path/to/agents-skills-company/bin/agents-company.js"' >> ~/.zshrc
+echo 'alias ags="node /path/to/codee-skills/bin/codee-skills.js"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-Replace `/path/to/agents-skills-company` with the actual path to the cloned repo.
+Replace `/path/to/codee-skills` with the actual path to the cloned repo.
 
 ### 3. Configure SSH for GitHub
 
@@ -61,7 +61,7 @@ ssh-keygen -t ed25519 -C "your@email.com"
 # Add the public key to GitHub: Settings → SSH and GPG keys
 
 # Make sure the remote uses SSH, not HTTPS
-git remote set-url origin git@github.com:codee-sh/agents-skills-company.git
+git remote set-url origin git@github.com:codee-sh/codee-skills.git
 ```
 
 ---
@@ -72,7 +72,7 @@ Local tool for managing skills in projects.
 
 The `skills` command is a thin wrapper around external `npx skills`. It adds source-path detection, installs to both `.claude/skills/` and `.agents/skills/`, and keeps the local copies in sync.
 
-The source of truth for skills is always this repo (`agents-skills-company`). The source path is detected automatically based on the location of `bin/agents-company.js`.
+The source of truth for skills is always this repo (`codee-skills`). The source path is detected automatically based on the location of `bin/codee-skills.js`.
 
 ```bash
 ags push-skill                          # list changed skills (interactive)
@@ -108,7 +108,7 @@ After installation, `skills-lock.json` is created in the project. It stores the 
 
 ### `skills update`
 
-Compares `.claude/skills/` and `.agents/skills/` against the local copy of the `agents-skills-company` repo on disk. Reinstalls if any location is out of date.
+Compares `.claude/skills/` and `.agents/skills/` against the local copy of the `codee-skills` repo on disk. Reinstalls if any location is out of date.
 
 Before comparing, it automatically runs `git pull` in the source repo, so it always compares against the latest GitHub version.
 
