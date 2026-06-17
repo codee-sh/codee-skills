@@ -1,0 +1,11 @@
+{
+  "name": "agents-company",
+  "version": "1.0.0",
+  "description": "CLI for managing agent skills",
+  "type": "module",
+  "bin": {
+    "ags": "./bin/agents-company.js"
+  },
+  "scripts": {},
+  "dependencies": {}
+}
