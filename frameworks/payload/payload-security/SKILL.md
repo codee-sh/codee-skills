@@ -76,7 +76,7 @@ auth: {
 exposes the plaintext on `data.password` during create and password changes (absent on
 ordinary updates), so the hook is a no-op otherwise.
 
-**Pick one option** when applying this skill - confirm with the project owner which they want:
+**Pick one option** when applying this skill -- confirm with the project owner which they want:
 
 **Option A — length 15+ AND Have I Been Pwned breach check (stronger).** Rejects long but already-leaked passwords. Uses the **free, keyless** Pwned Passwords *range* API
 (`api.pwnedpasswords.com/range/...`) — not the paid breach-by-email API. Only the first 5
