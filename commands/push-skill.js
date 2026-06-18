@@ -48,11 +48,20 @@ function findSkillInSource(sourcePath, skillName) {
   const direct = findSkillFile(join(sourcePath, skillName));
   if (direct) return direct;
 
-  for (const entry of readdirSync(sourcePath)) {
-    const candidate = join(sourcePath, entry, skillName);
-    if (existsSync(candidate)) {
-      const found = findSkillFile(candidate);
-      if (found) return found;
+  // Walk the tree: find any directory named skillName that holds a SKILL.md.
+  // Skills can be nested at any depth (e.g. frameworks/payload/<skill>), so a
+  // single-level scan misses them.
+  const stack = [sourcePath];
+  while (stack.length) {
+    const dir = stack.pop();
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      const full = join(dir, entry.name);
+      if (entry.name === skillName) {
+        const found = findSkillFile(full);
+        if (found) return found;
+      }
+      stack.push(full);
     }
   }
 
