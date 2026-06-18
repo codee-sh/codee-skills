@@ -20,6 +20,8 @@ codee-skills/
       payload/
       payload-build-collections/
       payload-build-modules/
+      payload-frontend-build-components/
+      payload-security/
   bin/codee-skills.js             # CLI entry point
   commands/                       # command implementations
   package.json
@@ -139,13 +141,13 @@ ags push-skill code-style --dry-run     # preview without writing
 ```
 
 **Flow:**
-1. Scans `.claude/skills/` and `.agents/skills/` for changes compared to the source
+1. Scans `.agents/skills/` — the local source of truth — for changes compared to the source repo. `.claude/skills/` is a derived copy and is not scanned (used only as a fallback when `.agents/` is missing)
 2. Shows a list of changed skills (interactive list)
 3. Checks whether the remote repo has newer commits (`git fetch`)
 4. Shows a content diff
 5. Asks for confirmation
 6. Copies the file -> `git commit` -> `git push` to this repo
-7. Auto-syncs the second location: edit `.claude/` -> updates `.agents/` and vice versa
+7. Auto-syncs the derived copy: after the push, `.agents/skills/` is copied to `.claude/skills/`
 
 ---
 
@@ -155,8 +157,8 @@ ags push-skill code-style --dry-run     # preview without writing
 # 1. New project - install skills
 ags skills add
 
-# 2. Edit a skill locally in .claude/skills/code-style/SKILL.md
-#    (or in .agents/skills/code-style/SKILL.md)
+# 2. Edit a skill locally in .agents/skills/code-style/SKILL.md
+#    (.agents/ is the source of truth; do not hand-edit .claude/ — it is synced for you)
 
 # 3. Push the changes to the repo
 ags push-skill
