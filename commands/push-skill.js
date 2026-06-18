@@ -68,20 +68,13 @@ function findSkillInSource(sourcePath, skillName) {
   return null;
 }
 
+// `.agents/skills` is the single local source of truth. `.claude/skills` is a
+// derived copy kept in sync after a push, never read as the canonical version.
 function localSkillFile(cwd, skillName) {
   return (
     findSkillFile(join(cwd, '.agents', 'skills', skillName)) ||
     findSkillFile(join(cwd, '.claude', 'skills', skillName))
   );
-}
-
-function allLocalSkillFiles(cwd, skillName) {
-  const files = [];
-  const agents = findSkillFile(join(cwd, '.agents', 'skills', skillName));
-  const claude = findSkillFile(join(cwd, '.claude', 'skills', skillName));
-  if (agents) files.push({ file: agents, location: '.agents' });
-  if (claude) files.push({ file: claude, location: '.claude' });
-  return files;
 }
 
 async function syncOtherLocation(cwd, skillName, pushedFile) {
@@ -112,15 +105,16 @@ async function detectModified(cwd, lock) {
     const sourceFile = findSkillInSource(sourcePath, skillName);
     if (!sourceFile) continue;
 
-    const sourceContent = await readFile(sourceFile, 'utf-8');
-    const locals = allLocalSkillFiles(cwd, skillName);
+    const localFile = localSkillFile(cwd, skillName);
+    if (!localFile) continue;
 
-    for (const { file, location } of locals) {
-      const localContent = await readFile(file, 'utf-8');
-      if (localContent !== sourceContent) {
-        modified.push({ skillName, displayName: `${skillName} (${location})`, localSkillFile: file, sourceSkillFile: sourceFile, sourcePath, localContent, sourceContent });
-        break;
-      }
+    const [sourceContent, localContent] = await Promise.all([
+      readFile(sourceFile, 'utf-8'),
+      readFile(localFile, 'utf-8'),
+    ]);
+
+    if (localContent !== sourceContent) {
+      modified.push({ skillName, localSkillFile: localFile, sourceSkillFile: sourceFile, sourcePath, localContent, sourceContent });
     }
   }
 
@@ -143,8 +137,7 @@ function selectFromList(items) {
         ...items.map((item, i) => {
           const isCursor = i === cursor;
           const prefix = isCursor ? '\x1b[36m>\x1b[0m' : ' ';
-          const label = item.displayName || item.skillName;
-          const name = isCursor ? `\x1b[1m${label}\x1b[0m` : label;
+          const name = isCursor ? `\x1b[1m${item.skillName}\x1b[0m` : item.skillName;
           return `  ${prefix} ${name}`;
         }),
         '',
@@ -193,6 +186,14 @@ function selectFromList(items) {
 
 async function doPush(item, dryRun, cwd) {
   const { skillName, localSkillFile, sourceSkillFile, sourcePath, localContent, sourceContent } = item;
+
+  // Nothing to push when local already matches the source. Without this guard the
+  // named form would still prompt and then `git commit` an empty change, which
+  // exits non-zero and surfaces as a misleading "commit failed".
+  if (localContent === sourceContent) {
+    console.log(`✓ "${skillName}" is already in sync with the source — nothing to push.`);
+    return;
+  }
 
   // Check remote
   console.log(`\nChecking remote for changes...`);
