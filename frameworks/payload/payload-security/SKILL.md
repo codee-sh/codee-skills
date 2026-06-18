@@ -14,6 +14,55 @@ no project-specific helpers or paths are assumed; adapt names to the codebase at
 
 ---
 
+## Audit file — always keep it current
+
+Every run of this skill is tracked in a single living document at
+**`.ai/audits/security-audit.md`**.
+
+**On starting** (review or any auth/access/upload/CORS/headers/logging change):
+1. If the file does **not** exist, create it from the template below.
+2. If it exists, read it first — it is the current status; build on it, don't restart.
+
+**While working**, update the file **as you go**, not just at the end: when an item moves
+from `[missing]`/`[partial]` to `[done]`, change its line immediately and note the
+commit/migration/file that delivered it. The file must always reflect the real state of the
+codebase — verify against the actual code before marking anything `[done]`, never trust a
+stale status.
+
+This file lists unpatched gaps, so it stays out of version control (it is `.gitignore`d
+alongside `.ai/things`). Do not commit it to a public repo.
+
+Status markers: `[done]`, `[partial]`, `[missing]`, `[out-of-repo]` (infra/process).
+
+Template:
+```markdown
+# Payload security audit — status & plan
+
+**Date:** <YYYY-MM-DD>
+**Status:** in progress
+
+Status markers: [done] · [partial] · [missing] · [out-of-repo] (infra/process)
+
+## Implemented
+- [done] <item> — <what + file/commit/migration reference>
+
+## To do
+### High priority
+- [missing] <item> — <note, blocker, decision needed>
+### Medium priority
+- [partial] <item> — <note>
+
+## Out of repo (infra/process)
+- [out-of-repo] <item>
+
+## Strengths (already good)
+- [done] <item>
+```
+
+The checks below feed the rows of this file; map each one to a status marker.
+
+---
+
 ## Access control
 
 **Check:** every collection declares explicit `access` for `create / read / update /
