@@ -72,15 +72,66 @@ auth: {
 
 **Check:** is there any minimum password strength? Payload has no native `minLength`.
 
-**Fix:** enforce NIST-style length (15+) via a custom validate / auth strategy, and add a
-Have I Been Pwned breach check on create/update.
+**Fix:** enforce strength in a `beforeValidate` hook on every auth collection. Payload
+exposes the plaintext on `data.password` during create and password changes (absent on
+ordinary updates), so the hook is a no-op otherwise.
+
+**Pick one option** when applying this skill -- confirm with the project owner which they want:
+
+**Option A — length 15+ AND Have I Been Pwned breach check (stronger).** Rejects long but already-leaked passwords. Uses the **free, keyless** Pwned Passwords *range* API
+(`api.pwnedpasswords.com/range/...`) — not the paid breach-by-email API. Only the first 5
+chars of the SHA-1 hash leave the server (k-anonymity); the password never does. Fails
+**open** on network/API errors so a HIBP outage can't block password changes. This adds a
+runtime dependency on an external service — if that's unacceptable (privacy/policy), use Option B or a downloaded offline hash list.
+```ts
+import crypto from 'crypto'
+import type { CollectionBeforeValidateHook } from 'payload'
+import { APIError } from 'payload'
+
+const MIN_PASSWORD_LENGTH = 15 // NIST SP 800-63B: favour length over composition rules
+
+async function isBreachedPassword(password: string): Promise<boolean> {
+  const sha1 = crypto.createHash('sha1').update(password).digest('hex').toUpperCase()
+  const prefix = sha1.slice(0, 5)
+  const suffix = sha1.slice(5)
+  try {
+    const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
+      headers: { 'Add-Padding': 'true' }, // hide how many hashes match the prefix
+    })
+    if (!res.ok) return false // fail open
+    const body = await res.text()
+    return body.split('\n').some((line) => line.split(':')[0]?.trim().toUpperCase() === suffix)
+  } catch {
+    return false // network failure: never block on an external outage
+  }
+}
+
+export const validatePassword: CollectionBeforeValidateHook = async ({ data }) => {
+  const password = (data as { password?: unknown } | undefined)?.password
+  if (typeof password !== 'string' || password.length === 0) return data
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    throw new APIError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`, 400)
+  }
+  if (await isBreachedPassword(password)) {
+    throw new APIError('This password has appeared in a known data breach. Choose a different one.', 400)
+  }
+  return data
+}
+```
+
+**Option B — length 15+ only (no external dependency).** Same hook, drop `isBreachedPassword`
+and its call. Zero network calls, simpler, but won't catch long-yet-leaked passwords.
+
+Wire whichever you pick into each auth collection:
+```ts
+hooks: { beforeValidate: [validatePassword] }
+```
 
 ## MFA
 
 **Check:** admins have no second factor.
 
-**Fix:** add TOTP via a plugin or move auth to an external IdP (Auth.js / Keycloak /
-Zitadel).
+**Fix:** add TOTP via a plugin or move auth to an external IdP (Auth.js / Keycloak / Zitadel).
 
 ## CORS / CSRF / server URL
 
