@@ -12,8 +12,19 @@ the operational and architectural mistakes that cause data loss, slow queries, f
 deploys, and 3am incidents. Use this skill to review a project for those gaps and fix them
 consistently.
 
-Each item is: **what to check → how to fix**. Patterns are inline and self-contained —
-adapt names and paths to the codebase at hand.
+Each item is: **what to check → how to fix**. The fix patterns are inline and
+self-contained — adapt names and paths to the codebase at hand. They are deliberately
+concise: this skill tells you *what to fix and why*, and hands off to the build skills for
+*how to build it well*. When a fix needs deeper build guidance, reach for the right one:
+
+- **payload** — how to structure a collection, field, hook, endpoint, query, or
+  access-control function (detailed how-to references).
+- **payload-build-collections** — step-by-step when the fix means adding a new collection
+  or extending the schema.
+- **payload-build-modules** — step-by-step when the fix means a custom admin view or field
+  component.
+- **code-style** — conventions for any code you write while applying a fix (comments,
+  naming, file organisation).
 
 ---
 
@@ -65,6 +76,17 @@ The checks below feed the rows of this file; map each one to a status marker.
 
 ---
 
+## Run the security review too
+
+This skill deliberately leaves security out of scope — but a project is not "reviewed"
+until both halves are covered. As part of any review, also run the **payload-security**
+skill (access control, auth, CORS/CSRF, uploads, headers, logging). The two are
+complementary: security closes attack surface, this skill keeps the app correct and
+operable. They write separate audit files (`security-audit.md` vs
+`best-practices-audit.md`), so neither overwrites the other.
+
+---
+
 ## Schema & migrations — never auto-push
 
 **Check:** the DB adapter must have `push: false`. With `push: true` (the default in dev),
@@ -77,7 +99,7 @@ migration:
 ```ts
 db: postgresAdapter({
   push: false, // schema changes go through migrate:create + migrate only
-  pool: { connectionString: process.env.DATABASE_URL || '' },
+  // ...pool / connection config
 })
 ```
 Workflow for any new collection / field / index / versioning change:
@@ -109,7 +131,7 @@ match the code.
 ## Indexes for filtered & relationship fields
 
 **Check:** any field used in a `where` clause, an access-control filter, a sort, or as a
-relationship target needs an index. Without it Postgres does sequential scans that get
+relationship target needs an index. Without it the database does full scans that get
 slower as the table grows — the classic "fast in dev, dead in prod" trap.
 
 **Fix:** mark them `index: true` (this is a schema change → migration):
@@ -117,7 +139,8 @@ slower as the table grows — the classic "fast in dev, dead in prod" trap.
 { name: 'owner', type: 'relationship', relationTo: 'users', index: true }
 { name: 'status', type: 'select', options: [...], index: true } // filtered/sorted often
 ```
-For multi-field query patterns, add a compound index in a migration's `up` with raw SQL.
+For multi-field query patterns, add a compound index — in SQL adapters via raw SQL in a
+migration's `up`; in Mongo via a compound index definition.
 
 ## Control `depth` — don't over-fetch relationships
 
@@ -185,20 +208,24 @@ const connectionString = required('DATABASE_URL')
 ```
 Keep `.env` gitignored and a `.env.example` committed listing every required key.
 
-## Custom endpoints reuse access control & validate input
+## Custom endpoints validate input & return real status codes
 
-**Check:** a custom `endpoints` handler bypasses collection access control unless you
-re-apply it. Handlers that trust `req.data`/query params without validation are a
-correctness (and security) hazard.
+**Check:** a custom `endpoints` handler that trusts `req.data` / query params without
+validating them, or that returns `200` regardless of outcome, is a correctness hazard —
+bad input flows straight into queries and callers can't tell success from failure.
+(Access control on custom endpoints is a security concern — covered by **payload-security**.)
 
-**Fix:** check `req.user` / reuse the same access functions the collections use, validate
-input, and return proper status codes:
+**Fix:** validate and coerce input before using it, and return status codes that match the
+outcome:
 ```ts
 endpoints: [{
   path: '/summary', method: 'get',
   handler: async (req) => {
-    if (!req.user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    // validate query params, then query with depth/where scoped to req.user
+    const limit = Number(req.query?.limit ?? 20)
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+      return Response.json({ error: 'limit must be 1–100' }, { status: 400 })
+    }
+    // ...run the query with validated params
     return Response.json(data)
   },
 }]
@@ -218,6 +245,7 @@ data old→new in the `up` step rather than a bare rename that loses it. Set `re
 
 ## Review checklist
 
+- [ ] Security review run via the **payload-security** skill (separate audit file)
 - [ ] DB adapter has `push: false`; no path auto-syncs schema
 - [ ] Every schema change has a committed migration (`migrate:create` + `migrate`)
 - [ ] Migrations applied via an explicit deploy command, never on app boot
@@ -227,5 +255,5 @@ data old→new in the `up` step rather than a bare rename that loses it. Set `re
 - [ ] Multi-step writes forward `req` to share one transaction
 - [ ] Request-path hooks are cheap and idempotent; invalid state throws `APIError`
 - [ ] Required env vars asserted at startup; `.env.example` committed
-- [ ] Custom endpoints check auth, validate input, return real status codes
+- [ ] Custom endpoints validate input and return real status codes
 - [ ] Slugs/field names stable; renames handled as data-preserving migrations
