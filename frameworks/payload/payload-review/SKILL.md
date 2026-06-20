@@ -128,16 +128,21 @@ payload generate:importmap    # after adding/moving a custom admin component
 In CI, run both and fail if `git diff` is non-empty — that proves the committed artifacts
 match the code.
 
-## Indexes for filtered & relationship fields
+## Indexes for filtered & sorted fields
 
-**Check:** any field used in a `where` clause, an access-control filter, a sort, or as a
-relationship target needs an index. Without it the database does full scans that get
-slower as the table grows — the classic "fast in dev, dead in prod" trap.
+**Check:** any field used in a `where` clause, a sort, or an access-control filter needs an
+index — without it the database does full scans that get slower as the table grows (the
+classic "fast in dev, dead in prod" trap). **Relationship and upload fields are auto-indexed
+by Payload** — don't flag those as missing. The real gaps are *scalar* fields you filter or
+sort on (`text`, `select`, `number`, dates — e.g. `status`, `slug`, `email`) and multi-field
+query patterns. Verify against the migration / DB (look for `_idx`), not the presence of an
+`index: true` flag in the config — the flag is redundant for relationships, so its absence
+does **not** mean "unindexed".
 
-**Fix:** mark them `index: true` (this is a schema change → migration):
+**Fix:** mark filtered scalar fields `index: true` (this is a schema change → migration):
 ```ts
-{ name: 'owner', type: 'relationship', relationTo: 'users', index: true }
 { name: 'status', type: 'select', options: [...], index: true } // filtered/sorted often
+{ name: 'slug', type: 'text', index: true, unique: true }
 ```
 For multi-field query patterns, add a compound index — in SQL adapters via raw SQL in a
 migration's `up`; in Mongo via a compound index definition.
@@ -250,7 +255,7 @@ data old→new in the `up` step rather than a bare rename that loses it. Set `re
 - [ ] Every schema change has a committed migration (`migrate:create` + `migrate`)
 - [ ] Migrations applied via an explicit deploy command, never on app boot
 - [ ] `generate:types` and `generate:importmap` run + committed; CI fails on drift
-- [ ] Filtered / sorted / relationship fields are indexed
+- [ ] Filtered/sorted scalar fields indexed (relationships are auto-indexed); verified in DB
 - [ ] Hot read paths pass an explicit `depth`; no N+1 loops in hooks
 - [ ] Multi-step writes forward `req` to share one transaction
 - [ ] Request-path hooks are cheap and idempotent; invalid state throws `APIError`
