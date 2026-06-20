@@ -110,9 +110,10 @@ payload migrate                              # applies pending migrations
 - Migrations are **code** — review the generated up/down before committing; commit the
   `.ts` and its `.json` snapshot together.
 - Never hand-edit an already-applied migration; create a new one.
-- Apply migrations in deploy via an explicit command step (e.g. `payload migrate` in
-  the release/predeploy stage), **not** on app boot. The app starting should never be the
-  thing that changes the schema.
+- Run `payload migrate` to apply pending migrations. With `push: false` this is always a
+  deliberate, explicit step — never on app boot — so the schema can't change as a side
+  effect of the app or dev server starting. Whether a human or the deploy pipeline runs it
+  is a process detail.
 
 ## Generated types & import map stay in sync
 
@@ -253,7 +254,7 @@ data old→new in the `up` step rather than a bare rename that loses it. Set `re
 - [ ] Security review run via the **payload-security** skill (separate audit file)
 - [ ] DB adapter has `push: false`; no path auto-syncs schema
 - [ ] Every schema change has a committed migration (`migrate:create` + `migrate`)
-- [ ] Migrations applied via an explicit deploy command, never on app boot
+- [ ] Migrations applied with an explicit `payload migrate`, never on app boot
 - [ ] `generate:types` and `generate:importmap` run + committed; CI fails on drift
 - [ ] Filtered/sorted scalar fields indexed (relationships are auto-indexed); verified in DB
 - [ ] Hot read paths pass an explicit `depth`; no N+1 loops in hooks
