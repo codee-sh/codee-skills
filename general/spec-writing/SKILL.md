@@ -21,9 +21,10 @@ Design and review specifications against this project's Medusa architecture, nam
 5. **Research** — Validate requirements against Medusa's built-in capabilities and official patterns. Check if a built-in workflow already exists before designing a custom one.
 6. **Design** — Architecture, data flow, module structure, workflow steps, API contracts.
 7. **Implementation Breakdown** — Break into **Phases** (stories) and **Steps** (testable tasks). Each step must result in a runnable application.
-8. **Review** — Apply the [Spec Checklist](references/spec-checklist.md).
-9. **Compliance Gate** — Apply the [Compliance Review](references/compliance-review.md).
-10. **Output** — Finalize the spec file.
+8. **Track Execution** — Maintain a live implementation tracker inside the spec. Mark items as `done`, `in_progress`, `pending`, or `blocked` as work progresses. Add newly discovered scope items immediately instead of hiding them in chat or only in the changelog.
+9. **Review** — Apply the [Spec Checklist](references/spec-checklist.md).
+10. **Compliance Gate** — Apply the [Compliance Review](references/compliance-review.md).
+11. **Output** — Finalize the spec file.
 
 ---
 
@@ -33,14 +34,58 @@ Design and review specifications against this project's Medusa architecture, nam
 
 Use [Specification Template](references/spec-template.md). Adapt structure as needed, but always cover:
 
+- **Client Definition of Done (original)** — preserved client brief when the project started from a client-written scope or acceptance criteria
 - **TLDR & Overview** — what and why
 - **Problem Statement** — what are we solving
 - **Proposed Solution** — high-level approach
 - **Architecture** — module → workflow → route layers
 - **Data Mapping** — external source → Medusa fields
 - **Phasing** — delivery breakdown
+- **Current Status** — short summary of where the implementation stands right now
+- **Implementation Tracker** — live status list of concrete work items
 - **Implementation Plan** — concrete steps
 - **Open Questions** — unresolved decisions
+
+### Phasing vs Execution Tracking
+
+Keep these sections separate.
+
+- **Phasing** describes the planned delivery slices such as `Phase 1`, `Phase 2`, and `Phase 3`. This is the stable scope structure.
+- **Current Status** states the present state of the work in a few lines, for example `Phase 1 in progress`, `SQL source live`, or `Batch migrate pending`.
+- **Implementation Tracker** is the operational checklist that changes during delivery. It must be updated whenever implementation status changes or new scope is discovered.
+
+Recommended status values:
+
+- `done` - implemented and reflected in the current codebase
+- `in_progress` - actively being worked on
+- `pending` - planned but not started
+- `blocked` - cannot proceed until an external dependency or decision is resolved
+
+Minimum tracker rules:
+
+- Use one flat list of concrete items.
+- Update the status of existing items instead of duplicating them.
+- Add newly discovered work items as soon as they are identified.
+- If an item changes scope, update the item text so the tracker remains accurate.
+- Keep the tracker aligned with `Open Questions` and `Changelog`.
+- Do not rely on the changelog alone to communicate current status.
+
+### Preserving the Original Client Brief
+
+When a feature starts from client-written scope, acceptance criteria, or phase text, preserve that material in a dedicated section:
+
+- `## Client Definition of Done (original)`
+
+Use it as a historical source block, not as the live implementation plan.
+
+Rules:
+
+- Keep the original client wording intact as much as possible.
+- Add a short note that the content is preserved from the original client brief and should not be rewritten casually.
+- Do not use this section as the operational tracker.
+- If the client brief contains its own phase labels such as `Phase 1` or `Phase 2`, keep them there, but treat them as client language rather than the active implementation status model.
+- Reflect current understanding separately in `TLDR`, `Phasing`, `Current Status`, `Implementation Tracker`, and `Open Questions`.
+- When the original brief becomes inconsistent with the implemented solution, keep the original text and clarify the current implementation in the live sections instead of silently rewriting the source brief.
 
 ### 2. Architectural Review
 
@@ -79,6 +124,8 @@ See references/spec-checklist.md
 3. **Transform vs. Step** — Is data mapping done in a `transform()` block (correct) or in a workflow step (wrong)?
 4. **Built-in First** — Does the spec use `createProductsWorkflow` / `updateProductsWorkflow` instead of reinventing them?
 5. **Open Questions Gate** — Are all architectural unknowns resolved before design proceeds?
+6. **Status Accuracy** — Do `Current Status` and `Implementation Tracker` match the actual implementation state?
+7. **Tracker Freshness** — Were newly discovered work items added to the tracker instead of being left only in chat or changelog notes?
 
 ---
 
