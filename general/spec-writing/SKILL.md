@@ -1,153 +1,383 @@
 ---
 name: spec-writing
-description: Guide for creating high-quality, architecturally compliant specifications for this Medusa.js project. Use when starting a new spec or reviewing one against staff-engineer standards.
+description: Write short module specs with one main spec plus linked sub-specs. Use for new spec work when the team wants concise, reference-driven documentation instead of long monolithic specs.
 ---
 
-# Spec Writing & Review
+# Spec Writing
 
-Design and review specifications against this project's Medusa architecture, naming, and quality rules.
+Write specifications as a small document system, not as one growing epic file.
+
+This skill replaces the older "one big spec" style when the topic is large enough to split into a module-level main spec and smaller execution sub-specs.
+
+---
+
+## When to Apply
+
+Use this skill when:
+
+- a spec is getting too long or mixing history with active work
+- a module needs one stable source-of-truth plus several focused follow-ups
+- the team wants specs to stay short and scannable
+- you are creating a new module spec structure from scratch
+
+Do not use this skill when:
+
+- the change is small enough that a maintained spec would add more overhead than value
+- the user wants a temporary working note, not a long-lived source-of-truth document
+
+---
+
+## Core Model
+
+There are only two living spec types:
+
+1. **Main spec**
+   - one per module / initiative
+   - stable source of truth
+   - short overview + architecture + references
+   - usually stays active for a long time
+
+2. **Sub-spec**
+   - one per flow / refactor / implementation slice
+   - execution-focused
+   - short and narrow
+   - can move to `ended/` when done
+
+The main spec should link to sub-specs instead of repeating their details.
+
+There is also one optional support file:
+
+3. **`notes.md`**
+   - one per module folder when needed
+   - short working notes
+   - hypotheses, observations, test results, and unresolved thoughts
+   - not a source of truth
+   - can be cleaned up aggressively
+
+---
+
+## Folder Structure
+
+Specs are grouped by module folder, not stored as one flat list.
+
+Use this structure:
+
+```text
+.ai/specs/
+  {module-name}/
+    YYYY-MM-DD-main-spec.md
+    YYYY-MM-DD-sub-{topic-a}.md
+    YYYY-MM-DD-sub-{topic-b}.md
+    notes.md
+    ended/
+      YYYY-MM-DD-sub-{closed-topic}.md
+```
+
+Rules:
+
+- folder name is stable and module-oriented, for example `terminal-tap-to-pay`
+- the main spec filename should be `YYYY-MM-DD-main-spec.md`
+- sub-spec filenames should be `YYYY-MM-DD-sub-{focused-topic}.md`
+- keep sub-spec topic names short; the folder already carries the module context
+- `notes.md` is optional and stays local to the module folder
+- closed sub-specs move into `ended/` inside the same module folder
+- only truly global or cross-module specs should live directly under `.ai/specs/`
+
+---
+
+## Hard Rules
+
+### 1. Keep every spec short
+
+Default target:
+
+- **Main spec**: roughly 1-2 screens
+- **Sub-spec**: roughly 0.5-1.5 screens
+
+If the spec is growing into a long narrative, split it.
+
+### 2. Do not mix history with active work
+
+- Historical decisions belong in a short changelog or in ended specs.
+- Active work belongs in sub-specs and trackers.
+- Do not turn the main spec into a running diary.
+
+### 3. Link instead of repeating
+
+If a detail already lives in another spec:
+
+- add a reference
+- add one sentence of summary if needed
+- do not duplicate the whole section
+
+### 4. One tracker per active spec
+
+- Main spec: no large operational checklist
+- Sub-spec: use a **Short Tracker**
+
+### 5. Working notes do not belong in specs
+
+If you are still exploring and do not want to declare direction yet:
+
+- use `notes.md`
+- do not pollute `Short Tracker`
+- do not turn speculative thoughts into fake requirements
+
+### 6. Main spec is not the place for deep execution detail
+
+Main spec should answer:
+
+- what this module is
+- why it exists
+- what sub-specs are active
+- what order they depend on
+
+Sub-specs should answer:
+
+- what exact change is needed
+- what behavior should result
+- what code areas must change
 
 ---
 
 ## Workflow
 
-1. **Load Context** — Read `AGENTS.md` Task Router. Load the relevant spec from `.ai/specs/` if one exists for this topic. **Check `.ai/specs/references/` for any additional data files (field mappings, data exports, design docs) — read all files found there before proceeding.**
-2. **Initialize** — Create an empty file: `.ai/specs/YYYY-MM-DD-kebab-case-title.md`
-3. **Start Minimal** — Write a **Skeleton Spec** first: TLDR + 2–3 key sections. Do NOT write the full spec in one pass.
-   - Before the skeleton, scan the brief for **critical unknowns** — decisions that block architecture, data model, or scope.
-   - If unknowns exist, add a numbered **Open Questions** block (`Q1`, `Q2`, …) right after the TLDR.
-   - **STOP after presenting the skeleton.** Do not proceed to Research or beyond until the user answers all questions. This is a hard gate.
-4. **Iterate** — Apply answers to fill in the skeleton. Remove resolved questions. Repeat the gate for any new unknowns.
-5. **Research** — Validate requirements against Medusa's built-in capabilities and official patterns. Check if a built-in workflow already exists before designing a custom one.
-6. **Design** — Architecture, data flow, module structure, workflow steps, API contracts.
-7. **Implementation Breakdown** — Break into **Phases** (stories) and **Steps** (testable tasks). Each step must result in a runnable application.
-8. **Track Execution** — Maintain a live implementation tracker inside the spec. Mark items as `done`, `in_progress`, `pending`, or `blocked` as work progresses. Add newly discovered scope items immediately instead of hiding them in chat or only in the changelog.
-9. **Review** — Apply the [Spec Checklist](references/spec-checklist.md).
-10. **Compliance Gate** — Apply the [Compliance Review](references/compliance-review.md).
-11. **Output** — Finalize the spec file.
+1. **Load context**
+   - Read `AGENTS.md` Task Router.
+   - Read the existing main spec if one exists.
+   - Read only the relevant active sub-specs.
+   - Read `notes.md` only if the module folder already uses it and it looks relevant.
+
+2. **Choose spec type**
+   - If this is module-level architecture or coordination: update/create the **main spec**
+   - If this is one focused implementation slice: create/update a **sub-spec**
+
+3. **Choose or create the module folder**
+   - Put the main spec and all of its sub-specs in one module folder.
+   - Do not create a new top-level spec file if the topic clearly belongs to an existing module folder.
+
+4. **Start minimal**
+   - Before writing, identify critical unknowns.
+   - If unknowns block architecture or scope, add `Open Questions` and stop after the skeleton.
+
+5. **Write the shortest useful version**
+   - Main spec: overview + references + ordering
+   - Sub-spec: problem + target behavior + required changes + acceptance
+
+6. **Use notes when direction is still forming**
+   - Put short working notes in `notes.md` when you are still exploring.
+   - Promote a note into a spec only when it becomes a decision, requirement, or active implementation slice.
+
+7. **Track only what is still live**
+   - Use a short tracker in sub-specs
+   - Do not mirror the entire changelog in the tracker
+
+8. **Close specs intentionally**
+   - Move only finished sub-specs to the module's `ended/`
+   - Keep main specs active unless the whole module/initiative is closed
+
+9. **Run compliance review before finalizing**
+   - First run [references/spec-checklist.md](references/spec-checklist.md)
+   - Then run [references/compliance-review.md](references/compliance-review.md)
+   - Load the stack-specific compliance file named there
+   - Treat compliance review as the final gate before calling the spec ready
 
 ---
 
-## Output Formats
+## Main Spec Format
 
-### 1. New Specification
+Use the template in [references/main-spec-template.md](references/main-spec-template.md).
 
-Use [Specification Template](references/spec-template.md). Adapt structure as needed, but always cover:
+Minimum sections:
 
-- **Client Definition of Done (original)** — preserved client brief when the project started from a client-written scope or acceptance criteria
-- **TLDR & Overview** — what and why
-- **Problem Statement** — what are we solving
-- **Proposed Solution** — high-level approach
-- **Architecture** — module → workflow → route layers
-- **Data Mapping** — external source → Medusa fields
-- **Phasing** — delivery breakdown
-- **Current Status** — short summary of where the implementation stands right now
-- **Implementation Tracker** — live status list of concrete work items
-- **Implementation Plan** — concrete steps
-- **Open Questions** — unresolved decisions
+- `# Title`
+- `TLDR`
+- `Scope`
+- `Architecture`
+- `Folder References`
+- `Active Sub-specs`
+- `Ended Sub-specs`
+- `Implementation Order`
+- `Current Status`
+- `Short Changelog` (optional, but recommended for major decision changes)
 
-### Phasing vs Execution Tracking
+### What belongs here
 
-Keep these sections separate.
+- module boundaries
+- high-level architecture
+- stable decisions
+- folder-local references to active and ended follow-ups
+- dependency order between sub-specs
+- short references to active work
 
-- **Phasing** describes the planned delivery slices such as `Phase 1`, `Phase 2`, and `Phase 3`. This is the stable scope structure.
-- **Current Status** states the present state of the work in a few lines, for example `Phase 1 in progress`, `SQL source live`, or `Batch migrate pending`.
-- **Implementation Tracker** is the operational checklist that changes during delivery. It must be updated whenever implementation status changes or new scope is discovered.
+### What does not belong here
 
-Recommended status values:
+- long trackers
+- detailed code-step plans
+- repeated copies of sub-spec content
+- lengthy historical narrative
 
-- `done` - implemented and reflected in the current codebase
-- `in_progress` - actively being worked on
-- `pending` - planned but not started
-- `blocked` - cannot proceed until an external dependency or decision is resolved
+---
 
-Minimum tracker rules:
+## Sub-spec Format
 
-- Use one flat list of concrete items.
-- Update the status of existing items instead of duplicating them.
-- Add newly discovered work items as soon as they are identified.
-- If an item changes scope, update the item text so the tracker remains accurate.
-- Keep the tracker aligned with `Open Questions` and `Changelog`.
-- Do not rely on the changelog alone to communicate current status.
+Use the template in [references/sub-spec-template.md](references/sub-spec-template.md).
 
-### Preserving the Original Client Brief
+Minimum sections:
 
-When a feature starts from client-written scope, acceptance criteria, or phase text, preserve that material in a dedicated section:
+- `# Title`
+- `TLDR`
+- `Problem`
+- `Target Behavior`
+- `Required Changes`
+- `Dependencies`
+- `Acceptance Criteria`
+- `Short Tracker`
 
-- `## Client Definition of Done (original)`
+Optional:
 
-Use it as a historical source block, not as the live implementation plan.
+- `Out of Scope`
+- `Current Status`
+
+### Short Tracker
+
+The **Short Tracker** is a small operational checklist for active work.
 
 Rules:
 
-- Keep the original client wording intact as much as possible.
-- Add a short note that the content is preserved from the original client brief and should not be rewritten casually.
-- Do not use this section as the operational tracker.
-- If the client brief contains its own phase labels such as `Phase 1` or `Phase 2`, keep them there, but treat them as client language rather than the active implementation status model.
-- Reflect current understanding separately in `TLDR`, `Phasing`, `Current Status`, `Implementation Tracker`, and `Open Questions`.
-- When the original brief becomes inconsistent with the implemented solution, keep the original text and clarify the current implementation in the live sections instead of silently rewriting the source brief.
+- include only `pending`, `in_progress`, or `blocked` items by default
+- include `done` items only if they materially affect the remaining scope
+- update existing lines instead of duplicating them
 
-### 2. Architectural Review
+Good:
 
-When reviewing an existing spec:
+```md
+## Short Tracker
 
+- `pending` - refactor cleanup step into a reuse-aware decision step
+- `pending` - update arm workflow to reuse the current collection
+- `pending` - verify diagnostics after the lifecycle refactor
 ```
-# Architectural Review: {Spec Title}
 
-## Summary
-{1–3 sentences: what the spec proposes and overall health}
+Bad:
 
-## Findings
+- 20+ item tracker
+- repeating full changelog entries
+- mixing future ideas with active scope
 
-### Critical
-{Medusa layer violations, workflow bypasses, wrong HTTP methods, module name with dashes}
+---
 
-### High
-{Missing idempotency, no error handling strategy, missing data mapping gaps}
+## Final Review
 
-### Medium
-{Missing failure scenarios, ambiguous field names, missing pagination strategy}
+Before finalizing any spec:
 
-### Low
-{Stylistic nits, minor inconsistencies}
+1. Run [references/spec-checklist.md](references/spec-checklist.md)
+2. Run [references/compliance-review.md](references/compliance-review.md)
+3. Load and fill the stack-specific compliance matrix
+4. Fix violations before marking the spec ready
 
-## Checklist
-See references/spec-checklist.md
-```
+Use this split consistently:
+
+- `spec-checklist.md` validates structure, brevity, and tracker hygiene
+- `compliance-review.md` validates hard technical rules for the project stack
+
+---
+
+## Changelog
+
+Changelog is allowed, but keep it short.
+
+Use it mainly in the **main spec** for:
+
+- major architecture decisions
+- scope reversals
+- superseded approaches
+
+Do not maintain a large dated diary inside every sub-spec.
+
+If a sub-spec needs too much history, it is probably trying to be a main spec.
+
+---
+
+## notes.md
+
+Use `notes.md` for short-lived working notes inside a module folder.
+
+Good use cases:
+
+- "I am trying to reason through this but I have not chosen direction yet"
+- test observations
+- quick option lists
+- open hypotheses
+- rough follow-up ideas that are not yet active scope
+
+Rules:
+
+- keep it short
+- do not treat it as a source of truth
+- move confirmed decisions into the main spec or a sub-spec
+- move active work items into a `Short Tracker`
+- delete or compress stale notes freely
+
+`notes.md` exists to prevent premature spec bloat.
+
+---
+
+## Implementation Order
+
+Keep `Implementation Order`, but treat it as a dependency map, not a giant plan.
+
+Good:
+
+- `Sub-spec A before Sub-spec B because B depends on the new model`
+- `Webhook route before tap-open because the webhook is the trigger`
+
+Bad:
+
+- a long phase narrative that duplicates the tracker and plan
+
+In main specs, `Implementation Order` should be short and cross-reference sub-specs.
+
+In sub-specs, use `Dependencies` plus a tiny `Implementation Plan` only when needed.
+
+---
+
+## Status Rules
+
+Recommended statuses:
+
+- `done` - implemented and reflected in the codebase
+- `in_progress` - actively being worked on
+- `pending` - planned but not started
+- `blocked` - cannot proceed because of an external dependency or unresolved decision
+- `dropped` - intentionally abandoned
+
+Do not mark a scope item `in_progress` if only its surrounding initiative is active.
+
+Example:
+
+- `done` - `pos_terminal` model + migration
+- `in_progress` - `pos_terminal -> reader_id` integration in webhook and display flows
 
 ---
 
 ## Review Heuristics
 
-1. **Layer Order** — Does the spec follow Module → Workflow → Route? No layer may be bypassed.
-2. **Idempotency** — Is there an `external_id` or equivalent key to prevent duplicate imports on re-run?
-3. **Transform vs. Step** — Is data mapping done in a `transform()` block (correct) or in a workflow step (wrong)?
-4. **Built-in First** — Does the spec use `createProductsWorkflow` / `updateProductsWorkflow` instead of reinventing them?
-5. **Open Questions Gate** — Are all architectural unknowns resolved before design proceeds?
-6. **Status Accuracy** — Do `Current Status` and `Implementation Tracker` match the actual implementation state?
-7. **Tracker Freshness** — Were newly discovered work items added to the tracker instead of being left only in chat or changelog notes?
-
----
-
-## Quick Rule Reference (Medusa)
-
-- `camelCase` module names — never dashes (`structPim` ✓, `struct-pim` ✗)
-- `GET`, `POST`, `DELETE` only — never `PUT` or `PATCH`
-- All mutations through a workflow — never call module service from a route
-- Prices stored as-is — never multiply or divide by 100
-- Static imports only — no `await import()` inside route handlers
-- `transform()` for data manipulation inside workflows — not plain steps
-- Use `external_id` for idempotency on all migration/sync operations
-- Zod validation for all API route inputs
+1. **Spec type fit** - is this really a main spec or should it be a sub-spec?
+2. **Folder fit** - is this spec in the correct module folder?
+3. **Brevity** - can a whole section be replaced by a reference?
+4. **No duplication** - does the main spec repeat sub-spec details?
+5. **Tracker size** - is the tracker still short and operational?
+6. **Notes hygiene** - are working thoughts kept in `notes.md` instead of bloating specs or trackers?
+7. **Ordering clarity** - does the main spec explain dependencies between sub-specs?
+8. **Ended hygiene** - are closed sub-specs moved into the module-local `ended/` folder?
+9. **Status accuracy** - do statuses reflect code reality, not just planning intent?
 
 ---
 
 ## Reference Materials
 
+- [Main Spec Template](references/main-spec-template.md)
+- [Sub-spec Template](references/sub-spec-template.md)
 - [Spec Checklist](references/spec-checklist.md)
-- [Compliance Review — dispatcher](references/compliance-review.md) — load first, then load the stack-specific file below
-- [Compliance Review — Medusa.js](references/compliance-review-medusa.md) — for Medusa.js projects
-- [Compliance Review — Payload CMS](references/compliance-review-payload.md) — for Payload CMS / Next.js projects
-- [Specification Template](references/spec-template.md)
 - [Root AGENTS.md](../../../AGENTS.md)
-- [Medusa Magento Example](https://docs.medusajs.com/resources/integrations/guides/magento)
