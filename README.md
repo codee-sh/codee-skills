@@ -141,13 +141,13 @@ ags push-skill code-style --dry-run     # preview without writing
 ```
 
 **Flow:**
-1. Scans `.agents/skills/` — the local source of truth — for changes compared to the source repo. `.claude/skills/` is a derived copy and is not scanned (used only as a fallback when `.agents/` is missing)
+1. Scans `.agents/skills/` — the local source of truth — for changes compared to the source repo. Each skill is compared as a whole directory: every file under it is checked recursively, so supporting files and nested folders next to `SKILL.md` count too. `.claude/skills/` is a derived copy and is not scanned (used only as a fallback when `.agents/` is missing)
 2. Shows a list of changed skills (interactive list)
 3. Checks whether the remote repo has newer commits (`git fetch`)
-4. Shows a content diff
+4. Shows the file-level changes to be pushed (`~` changed, `+` added, `-` removed)
 5. Asks for confirmation
-6. Copies the file -> `git commit` -> `git push` to this repo
-7. Auto-syncs the derived copy: after the push, `.agents/skills/` is copied to `.claude/skills/`
+6. Mirrors the whole skill directory into the source repo (copies new/changed files, deletes removed ones) -> `git add -A <dir>` -> `git commit` -> `git push` to this repo
+7. Auto-syncs the derived copy: after the push, `.agents/skills/` is mirrored into `.claude/skills/`
 
 ---
 
