@@ -1,4 +1,4 @@
-import { readFile, copyFile } from 'fs/promises';
+import { readFile, cp, rm } from 'fs/promises';
 import { existsSync, readdirSync } from 'fs';
 import { join, resolve } from 'path';
 import { spawnSync } from 'child_process';
@@ -44,9 +44,11 @@ function findSkillFile(dir) {
   return null;
 }
 
-function findSkillInSource(sourcePath, skillName) {
-  const direct = findSkillFile(join(sourcePath, skillName));
-  if (direct) return direct;
+// A skill is a *directory* (the one holding SKILL.md), not just that file.
+// Supporting files and folders live alongside SKILL.md and must travel with it.
+function findSkillDirInSource(sourcePath, skillName) {
+  const directDir = join(sourcePath, skillName);
+  if (findSkillFile(directDir)) return directDir;
 
   // Walk the tree: find any directory named skillName that holds a SKILL.md.
   // Skills can be nested at any depth (e.g. frameworks/payload/<skill>), so a
@@ -57,10 +59,7 @@ function findSkillInSource(sourcePath, skillName) {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       if (!entry.isDirectory()) continue;
       const full = join(dir, entry.name);
-      if (entry.name === skillName) {
-        const found = findSkillFile(full);
-        if (found) return found;
-      }
+      if (entry.name === skillName && findSkillFile(full)) return full;
       stack.push(full);
     }
   }
@@ -70,28 +69,81 @@ function findSkillInSource(sourcePath, skillName) {
 
 // `.agents/skills` is the single local source of truth. `.claude/skills` is a
 // derived copy kept in sync after a push, never read as the canonical version.
-function localSkillFile(cwd, skillName) {
-  return (
-    findSkillFile(join(cwd, '.agents', 'skills', skillName)) ||
-    findSkillFile(join(cwd, '.claude', 'skills', skillName))
-  );
+function localSkillDir(cwd, skillName) {
+  const agents = join(cwd, '.agents', 'skills', skillName);
+  const claude = join(cwd, '.claude', 'skills', skillName);
+  if (findSkillFile(agents)) return agents;
+  if (findSkillFile(claude)) return claude;
+  return null;
 }
 
-async function syncOtherLocation(cwd, skillName, pushedFile) {
-  const agentsFile = findSkillFile(join(cwd, '.agents', 'skills', skillName));
-  const claudeFile = findSkillFile(join(cwd, '.claude', 'skills', skillName));
+// All files under `dir`, as paths relative to `dir`, sorted. Missing dir → [].
+function listFilesRelative(dir) {
+  if (!existsSync(dir)) return [];
+  const out = [];
+  const stack = [''];
+  while (stack.length) {
+    const rel = stack.pop();
+    const abs = rel ? join(dir, rel) : dir;
+    for (const entry of readdirSync(abs, { withFileTypes: true })) {
+      const childRel = rel ? join(rel, entry.name) : entry.name;
+      if (entry.isDirectory()) stack.push(childRel);
+      else out.push(childRel);
+    }
+  }
+  return out.sort();
+}
 
-  const isAgents = pushedFile === agentsFile;
-  const target = isAgents ? claudeFile : agentsFile;
+// Compare two skill directories file-by-file (binary-safe, so assets count too).
+// Returns files that, applying local → source, would be added / removed / changed.
+async function diffSkillDirs(sourceDir, localDir) {
+  const sourceFiles = listFilesRelative(sourceDir);
+  const localFiles = listFilesRelative(localDir);
+  const sourceSet = new Set(sourceFiles);
+  const localSet = new Set(localFiles);
+
+  const added = localFiles.filter((f) => !sourceSet.has(f));
+  const removed = sourceFiles.filter((f) => !localSet.has(f));
+
+  const changed = [];
+  for (const f of localFiles) {
+    if (!sourceSet.has(f)) continue;
+    const [sourceContent, localContent] = await Promise.all([
+      readFile(join(sourceDir, f)),
+      readFile(join(localDir, f)),
+    ]);
+    if (!sourceContent.equals(localContent)) changed.push(f);
+  }
+
+  return { added, removed, changed };
+}
+
+const hasDiff = ({ added, removed, changed }) =>
+  added.length > 0 || removed.length > 0 || changed.length > 0;
+
+// Make `destDir` an exact mirror of `srcDir`: copy new/changed files and drop
+// files that no longer exist in the source. Git then sees adds, edits, deletes.
+async function mirrorDir(srcDir, destDir) {
+  const srcSet = new Set(listFilesRelative(srcDir));
+  for (const f of listFilesRelative(destDir)) {
+    if (!srcSet.has(f)) await rm(join(destDir, f));
+  }
+  await cp(srcDir, destDir, { recursive: true, force: true });
+}
+
+async function syncOtherLocation(cwd, skillName, pushedDir) {
+  const agentsDir = join(cwd, '.agents', 'skills', skillName);
+  const claudeDir = join(cwd, '.claude', 'skills', skillName);
+
+  const isAgents = resolve(pushedDir) === resolve(agentsDir);
+  const target = isAgents ? claudeDir : agentsDir;
   const targetLabel = isAgents ? '.claude' : '.agents';
 
-  if (!target) return;
+  // Only sync a location that already exists; never conjure a second copy.
+  if (!findSkillFile(target)) return;
 
-  const pushedContent = await readFile(pushedFile, 'utf-8');
-  const targetContent = await readFile(target, 'utf-8');
-
-  if (pushedContent !== targetContent) {
-    await copyFile(pushedFile, target);
+  if (hasDiff(await diffSkillDirs(target, pushedDir))) {
+    await mirrorDir(pushedDir, target);
     console.log(`✓ Synced ${targetLabel}/skills/${skillName}`);
   }
 }
@@ -102,19 +154,15 @@ async function detectModified(cwd, lock) {
   for (const [skillName, entry] of Object.entries(lock.skills)) {
     if (!isLocalSource(entry)) continue;
     const sourcePath = resolve(entry.source);
-    const sourceFile = findSkillInSource(sourcePath, skillName);
-    if (!sourceFile) continue;
+    const sourceDir = findSkillDirInSource(sourcePath, skillName);
+    if (!sourceDir) continue;
 
-    const localFile = localSkillFile(cwd, skillName);
-    if (!localFile) continue;
+    const localDir = localSkillDir(cwd, skillName);
+    if (!localDir) continue;
 
-    const [sourceContent, localContent] = await Promise.all([
-      readFile(sourceFile, 'utf-8'),
-      readFile(localFile, 'utf-8'),
-    ]);
-
-    if (localContent !== sourceContent) {
-      modified.push({ skillName, localSkillFile: localFile, sourceSkillFile: sourceFile, sourcePath, localContent, sourceContent });
+    const diff = await diffSkillDirs(sourceDir, localDir);
+    if (hasDiff(diff)) {
+      modified.push({ skillName, localDir, sourceDir, sourcePath, diff });
     }
   }
 
@@ -185,12 +233,13 @@ function selectFromList(items) {
 }
 
 async function doPush(item, dryRun, cwd) {
-  const { skillName, localSkillFile, sourceSkillFile, sourcePath, localContent, sourceContent } = item;
+  const { skillName, localDir, sourceDir, sourcePath, diff } = item;
+  const { added, removed, changed } = diff;
 
-  // Nothing to push when local already matches the source. Without this guard the
-  // named form would still prompt and then `git commit` an empty change, which
-  // exits non-zero and surfaces as a misleading "commit failed".
-  if (localContent === sourceContent) {
+  // Nothing to push when the local dir already matches the source. Without this
+  // guard the named form would still prompt and then `git commit` an empty
+  // change, which exits non-zero and surfaces as a misleading "commit failed".
+  if (!hasDiff(diff)) {
     console.log(`✓ "${skillName}" is already in sync with the source — nothing to push.`);
     return;
   }
@@ -207,19 +256,14 @@ async function doPush(item, dryRun, cwd) {
     }
   }
 
-  // Show diff
-  const localLines = localContent.split('\n').length;
-  const sourceLines = sourceContent.split('\n').length;
+  // Show the file-level changes that will be pushed.
   console.log(`\nChanges in "${skillName}":`);
-  console.log(`  source: ${sourceLines} lines`);
-  console.log(`  local:  ${localLines} lines`);
-  console.log(`\n--- source (first 20 lines)`);
-  console.log(sourceContent.split('\n').slice(0, 20).join('\n'));
-  console.log(`\n+++ local (first 20 lines)`);
-  console.log(localContent.split('\n').slice(0, 20).join('\n'));
+  for (const f of changed) console.log(`  \x1b[33m~\x1b[0m ${f}`);
+  for (const f of added) console.log(`  \x1b[32m+\x1b[0m ${f}`);
+  for (const f of removed) console.log(`  \x1b[31m-\x1b[0m ${f}`);
 
   if (dryRun) {
-    console.log(`\n[dry-run] Would copy:\n  ${localSkillFile}\n  → ${sourceSkillFile}`);
+    console.log(`\n[dry-run] Would mirror:\n  ${localDir}\n  → ${sourceDir}`);
     console.log(`[dry-run] Would commit and push in ${sourcePath}`);
     return;
   }
@@ -230,11 +274,12 @@ async function doPush(item, dryRun, cwd) {
     return;
   }
 
-  // Push to source repo
-  await copyFile(localSkillFile, sourceSkillFile);
-  console.log(`\n✓ Copied → ${sourceSkillFile}`);
+  // Push to source repo — mirror the whole skill directory, not just SKILL.md.
+  await mirrorDir(localDir, sourceDir);
+  console.log(`\n✓ Mirrored → ${sourceDir}`);
 
-  run(`git add "${sourceSkillFile}"`, sourcePath);
+  // `git add -A <dir>` stages adds, edits and deletes, scoped to this skill.
+  run(`git add -A "${sourceDir}"`, sourcePath);
   const commitResult = run(`git commit -m "Update skill: ${skillName}"`, sourcePath);
   if (commitResult.status !== 0) {
     throw new Error(`git commit failed:\n${commitResult.stderr}`);
@@ -248,7 +293,7 @@ async function doPush(item, dryRun, cwd) {
   console.log(`✓ Pushed to remote.`);
 
   // Sync do drugiej lokalizacji
-  await syncOtherLocation(cwd, skillName, localSkillFile);
+  await syncOtherLocation(cwd, skillName, localDir);
 
   console.log(`\nTo pull this update in other projects: ags skills update`);
 }
@@ -268,17 +313,13 @@ export async function pushSkill(args) {
     if (!isLocalSource(entry)) {
       throw new Error(`Skill "${skillName}" comes from an external source (${entry.source}) and has no local checkout — push-skill only works with local source repos.`);
     }
-    const { source } = entry;
-    const sourcePath = resolve(source);
-    const local = localSkillFile(cwd, skillName);
-    if (!local) throw new Error(`Local skill not found: ${skillName}`);
-    const sourceFile = findSkillInSource(sourcePath, skillName);
-    if (!sourceFile) throw new Error(`Source skill not found in ${sourcePath}`);
-    const [localContent, sourceContent] = await Promise.all([
-      readFile(local, 'utf-8'),
-      readFile(sourceFile, 'utf-8'),
-    ]);
-    await doPush({ skillName, localSkillFile: local, sourceSkillFile: sourceFile, sourcePath, localContent, sourceContent }, dryRun, cwd);
+    const sourcePath = resolve(entry.source);
+    const localDir = localSkillDir(cwd, skillName);
+    if (!localDir) throw new Error(`Local skill not found: ${skillName}`);
+    const sourceDir = findSkillDirInSource(sourcePath, skillName);
+    if (!sourceDir) throw new Error(`Source skill not found in ${sourcePath}`);
+    const diff = await diffSkillDirs(sourceDir, localDir);
+    await doPush({ skillName, localDir, sourceDir, sourcePath, diff }, dryRun, cwd);
     return;
   }
 
