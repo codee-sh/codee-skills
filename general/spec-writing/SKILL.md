@@ -54,6 +54,16 @@ There is also one optional support file:
    - not a source of truth
    - can be cleaned up aggressively
 
+There are also two closed-spec locations:
+
+4. **module-local `ended/`**
+   - lives inside a module folder
+   - stores closed sub-specs for that module
+
+5. **global `.ai/specs/ended/`**
+   - lives at the top of the specs tree
+   - stores closed module folders / fully closed module initiatives
+
 ---
 
 ## Folder Structure
@@ -64,6 +74,11 @@ Use this structure:
 
 ```text
 .ai/specs/
+  ended/
+    {module-name}/
+      YYYY-MM-DD-main-spec.md
+      ended/
+        YYYY-MM-DD-sub-{closed-topic}.md
   {module-name}/
     YYYY-MM-DD-main-spec.md
     YYYY-MM-DD-sub-{topic-a}.md
@@ -81,6 +96,7 @@ Rules:
 - keep sub-spec topic names short; the folder already carries the module context
 - `notes.md` is optional and stays local to the module folder
 - closed sub-specs move into `ended/` inside the same module folder
+- once a module is closed, move the whole module folder into global `.ai/specs/ended/`
 - only truly global or cross-module specs should live directly under `.ai/specs/`
 
 ---
@@ -173,8 +189,10 @@ Sub-specs should answer:
    - Do not mirror the entire changelog in the tracker
 
 8. **Close specs intentionally**
-   - Move only finished sub-specs to the module's `ended/`
-   - Keep main specs active unless the whole module/initiative is closed
+   - Move finished sub-specs to the module's `ended/`
+   - Keep the main spec active only while the module still has active work
+   - Treat the main spec as closed once the module is closed and there are no active sub-specs left
+   - Move the whole closed module folder into global `.ai/specs/ended/`
 
 9. **Run compliance review before finalizing**
    - First run [references/spec-checklist.md](references/spec-checklist.md)
@@ -216,6 +234,20 @@ Minimum sections:
 - detailed code-step plans
 - repeated copies of sub-spec content
 - lengthy historical narrative
+
+### When the main spec is closed
+
+Close the main spec only when both are true:
+
+- there are no active sub-specs left in the module folder
+- the module / initiative is no longer an active source of truth
+
+At that point:
+
+- move the whole module folder into global `.ai/specs/ended/`
+- keep the main spec at `{module-name}/YYYY-MM-DD-main-spec.md` inside that archived module folder
+- keep ended sub-specs in `{module-name}/ended/` for module history
+- update any references that still point to the old active location
 
 ---
 
