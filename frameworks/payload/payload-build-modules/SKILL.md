@@ -38,10 +38,18 @@ src/modules/{module}/admin/{feature-name}/
 
 ### 1. Create the entry point
 
-The entry point is a **server component**. It does two things only: guard (early return if no doc yet) and render. All data fetching goes to `loader.ts`.
+A custom view entry point is a **server component**. It does two things only: guard (early
+return if no doc yet) and render. All data fetching goes to `loader.ts`. Mark both the view
+entry and its loader with `import 'server-only'`.
+
+A custom field that uses Payload form hooks is a Client Component and starts with
+`'use client'`. Keep it in the same `src/modules/{module}/admin/{feature-name}/` convention,
+but do not import its client entry from a server-only barrel.
 
 ```tsx
 // src/modules/training/admin/workout-structure/workout-structure.tsx
+import 'server-only'
+
 import React from 'react'
 import { loadWorkoutStructure } from './loader'
 import { WorkoutStructureEditor } from './components/editor'
@@ -59,7 +67,7 @@ export async function WorkoutStructureView({
   if (!docId || docId === 'create' || !payload) {
     return (
       <div style={{ padding: '24px', color: 'var(--theme-elevation-500)', fontSize: 14 }}>
-        Najpierw zapisz rekord, aby zarządzać strukturą.
+        Save the workout first to manage its structure.
       </div>
     )
   }
@@ -104,6 +112,8 @@ A plain async function — not a hook. Takes `payload` and the document ID, retu
 
 ```ts
 // loader.ts
+import 'server-only'
+
 import type { ExerciseRow, Group, Section, WorkoutStructureData } from './types'
 
 export async function loadWorkoutStructure(
@@ -189,10 +199,12 @@ export function useWorkoutMutations(
     setDeletingGroup(groupId)
     try {
       await sdk.delete({ collection: 'workout-groups', id: groupId })
-      setGroups((prev) => prev.filter((g) => g.id !== groupId))
-      toast.success('Usunięto')
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Błąd')
+      setGroups((previousGroups) =>
+        previousGroups.filter((group) => group.id !== groupId),
+      )
+      toast.success('Deleted')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Update failed')
     } finally {
       setDeletingGroup(null)
     }
@@ -210,9 +222,15 @@ Hook placement: `components/{main-component}/hooks/use-{feature}-mutations.ts`. 
 
 ## Admin utilities
 
-Keep helpers used by one admin feature inside that feature's `utils/` directory. Promote a
-helper only when another business module genuinely needs it; cross-module technical
-functions belong in `src/lib/`, not in `src/app/`.
+Place a helper according to its narrowest real ownership:
+
+- One admin feature: `src/modules/{module}/admin/{feature}/utils/`.
+- Multiple admin features in one business module: `src/modules/{module}/admin/utils/`.
+- Multiple business modules, technical and domain-agnostic: `src/lib/{technology}/`.
+
+For example, a reusable function that builds Payload field configuration may live in
+`src/lib/payload/fields.ts`. A shared business rule must remain in its owning module even
+when another module consumes it. Do not use `src/lib/` as a generic dumping ground.
 
 ---
 
@@ -220,9 +238,10 @@ functions belong in `src/lib/`, not in `src/app/`.
 
 | Rule | Detail |
 |---|---|
-| No `index.ts` at module root | Payload uses path string — a barrel here is dead code |
-| Entry point = guard + render only | Never put `payload.find()` calls in the entry file |
-| `loader.ts` = plain async function | Not a hook — it runs on the server |
+| No `index.ts` at admin feature root | Payload uses an exact path string; a root barrel is dead code |
+| Server view entry = guard + render only | Never put `payload.find()` calls in the entry file |
+| `loader.ts` = server-only async function | Add `import 'server-only'`; it is not a hook |
+| Client field entry | Add `'use client'` when it uses Payload form hooks or browser APIs |
 | One folder per component | Mirror Medusa dashboard pattern — no flat `.tsx` in `components/` |
 | Hooks subfolder inside component | `components/{name}/hooks/` — not a module-level `hooks/` |
 | `utils/` at module level | For validators, formatters, label helpers |
@@ -235,7 +254,8 @@ functions belong in `src/lib/`, not in `src/app/`.
 
 | What | Convention | Example |
 |---|---|---|
-| Module folder | `kebab-case` | `workout-structure/` |
+| Business module folder | `kebab-case` | `training/` |
+| Admin feature folder | `kebab-case` | `workout-structure/` |
 | Entry file | `{module-name}.tsx` | `workout-structure.tsx` |
 | Exported function | `PascalCase` + `View` / `Field` suffix | `WorkoutStructureView` |
 | Component folders | `kebab-case` | `exercise-form/` |
