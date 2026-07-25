@@ -5,14 +5,16 @@ description: Step-by-step guide for adding a custom admin view or field componen
 
 # Payload — creating a custom admin module
 
-Custom admin components (views, tabs, field UIs) live under `src/app/(payload)/admin/modules/{feature-name}/`. Payload references them via path string + `exportName` — never via JS imports from outside the module.
+Custom admin components (views, tabs, field UIs) live under the owning business module at
+`src/modules/{module}/admin/{feature-name}/`. Payload references them via path string +
+`exportName`.
 
 ---
 
 ## Full module structure
 
 ```
-src/app/(payload)/admin/modules/{feature-name}/
+src/modules/{module}/admin/{feature-name}/
 ├── {feature-name}.tsx          # entry point — server component, guard + render only
 ├── loader.ts                   # all payload queries + data transforms (when > 1 query)
 ├── types.ts                    # local types (including the loader return type)
@@ -39,7 +41,7 @@ src/app/(payload)/admin/modules/{feature-name}/
 The entry point is a **server component**. It does two things only: guard (early return if no doc yet) and render. All data fetching goes to `loader.ts`.
 
 ```tsx
-// src/app/(payload)/admin/modules/workout-structure/workout-structure.tsx
+// src/modules/training/admin/workout-structure/workout-structure.tsx
 import React from 'react'
 import { loadWorkoutStructure } from './loader'
 import { WorkoutStructureEditor } from './components/editor'
@@ -79,7 +81,7 @@ admin: {
       edit: {
         structure: {
           Component: {
-            path: '@/app/(payload)/admin/modules/workout-structure/workout-structure',
+            path: '@/modules/training/admin/workout-structure/workout-structure',
             exportName: 'WorkoutStructureView',
           },
           path: '/structure',
@@ -93,7 +95,7 @@ admin: {
 
 After registering, run:
 ```bash
-pnpm payload generate:importmap
+yarn generate:importmap
 ```
 
 ### 3. Create `loader.ts` (when > 1 query or data transform needed)
@@ -206,25 +208,11 @@ Hook placement: `components/{main-component}/hooks/use-{feature}-mutations.ts`. 
 
 ---
 
-## Shared admin utilities
+## Admin utilities
 
-Field schema helpers shared across multiple modules go in:
-
-```
-src/app/(payload)/admin/utils/fields.ts
-```
-
-Import from there instead of defining locally:
-
-```ts
-import { textField } from '@/app/(payload)/admin/utils/fields'
-```
-
-Currently available:
-
-| Helper | Description |
-|---|---|
-| `textField(name, label, placeholder?)` | Creates a `TextFieldClient` config object for use with Payload `<TextField>` |
+Keep helpers used by one admin feature inside that feature's `utils/` directory. Promote a
+helper only when another business module genuinely needs it; cross-module technical
+functions belong in `src/lib/`, not in `src/app/`.
 
 ---
 
@@ -238,8 +226,8 @@ Currently available:
 | One folder per component | Mirror Medusa dashboard pattern — no flat `.tsx` in `components/` |
 | Hooks subfolder inside component | `components/{name}/hooks/` — not a module-level `hooks/` |
 | `utils/` at module level | For validators, formatters, label helpers |
-| `utils/fields.ts` at admin level | For Payload field schema helpers shared across modules |
-| `generate:importmap` after registration | Run `pnpm payload generate:importmap` whenever a new `path:` is added |
+| Feature-local utilities | Keep validators, formatters, and field helpers in the owning admin feature |
+| `generate:importmap` after registration | Run `yarn generate:importmap` whenever a component path changes |
 
 ---
 
