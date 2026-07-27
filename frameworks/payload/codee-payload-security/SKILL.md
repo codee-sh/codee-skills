@@ -1,5 +1,5 @@
 ---
-name: payload-security
+name: codee-payload-security
 description: Security review and hardening guide for Payload CMS apps. Use when reviewing a project for security, or when adding/modifying collections, auth, access control, uploads, CORS/CSRF, headers, or logging. Self-contained — lists what to check and how to fix it with copy-paste patterns.
 ---
 

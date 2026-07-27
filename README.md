@@ -1,196 +1,209 @@
 # codee-skills
 
-Central repository of skills for AI agents. The skills work with Claude Code (`.claude/skills/`) and Codex (`.agents/skills/`).
+Reusable skills for AI coding agents, maintained by Codee. They follow the shared
+`SKILL.md` format and work with agents supported by the
+[`skills` CLI](https://github.com/vercel-labs/skills), including Claude Code and
+Codex.
 
-## Repository Structure
+All skill names use the `codee-` prefix to avoid collisions with skills from other
+repositories.
 
-```
-codee-skills/
-  general/                        # general skills
-    code-style/
-    project-organization/
-    spec-writing/
-    ui-copy/
-    writing-questions/
-  frameworks/
-    medusa/
-      admin-forms-with-medusa/
-      code-style-medusa/
-    payload/
-      payload/
-      payload-build-collections/
-      payload-build-modules/
-      payload-frontend-build-components/
-      payload-security/
-  bin/codee-skills.js             # CLI entry point
-  commands/                       # command implementations
-  package.json
+## Use the skills
+
+You can install the skills directly from GitHub or clone the repository and use
+your local copy.
+
+### Install directly with `npx skills`
+
+Run the interactive installer to select skills and target agents:
+
+```bash
+npx skills add codee-sh/codee-skills
 ```
 
-> **Important:** Every skill folder must be a real directory - symlinks are ignored by `npx skills`.
+Install one specific skill:
 
----
+```bash
+npx skills add codee-sh/codee-skills --skill codee-code-style
+```
 
-## First Run
+Install all skills for Claude Code and Codex:
 
-### 1. Clone the repo
+```bash
+npx skills add codee-sh/codee-skills --skill '*' -a claude-code -a codex
+```
+
+Add `-g` to install globally instead of in the current project, or `-y` to skip
+confirmation prompts.
+
+### Clone and use the repository locally
 
 ```bash
 git clone git@github.com:codee-sh/codee-skills.git
-cd codee-skills
+npx skills add ./codee-skills
 ```
 
-### 2. Add the CLI alias to `~/.zshrc`
+You can also install a single skill from the cloned repository:
+
+```bash
+npx skills add ./codee-skills --skill codee-spec-writing
+```
+
+Using a local source is useful when developing or testing changes before pushing
+them to GitHub.
+
+## Available skills
+
+### General
+
+- `codee-code-style`
+- `codee-generate-pr-description`
+- `codee-project-organization`
+- `codee-skill-creator`
+- `codee-spec-notes`
+- `codee-spec-writing`
+- `codee-ui-copy`
+- `codee-writing-questions`
+
+### Medusa
+
+- `codee-admin-forms-with-medusa`
+- `codee-code-style-medusa`
+
+### Payload
+
+- `codee-payload`
+- `codee-payload-build-collections`
+- `codee-payload-build-modules`
+- `codee-payload-frontend-build-components`
+- `codee-payload-review`
+- `codee-payload-security`
+
+## Repository structure
+
+```text
+codee-skills/
+├── general/
+│   ├── codee-code-style/
+│   ├── codee-generate-pr-description/
+│   ├── codee-project-organization/
+│   ├── codee-skill-creator/
+│   ├── codee-spec-notes/
+│   ├── codee-spec-writing/
+│   ├── codee-ui-copy/
+│   └── codee-writing-questions/
+├── frameworks/
+│   ├── medusa/
+│   │   ├── codee-admin-forms-with-medusa/
+│   │   └── codee-code-style-medusa/
+│   └── payload/
+│       ├── codee-payload/
+│       ├── codee-payload-build-collections/
+│       ├── codee-payload-build-modules/
+│       ├── codee-payload-frontend-build-components/
+│       ├── codee-payload-review/
+│       └── codee-payload-security/
+├── bin/
+├── commands/
+└── package.json
+```
+
+Every skill folder must be a real directory. Symlinks in this repository are
+ignored during skill discovery.
+
+## Maintainer CLI: `ags`
+
+The repository includes `ags`, a wrapper around `npx skills` for maintaining local
+project copies and pushing edited skills back to this source repository.
+
+Regular users do not need `ags`; the commands in [Use the skills](#use-the-skills)
+are sufficient.
+
+### Configure the command
+
+Add an alias pointing to your local clone:
 
 ```bash
 echo 'alias ags="node /path/to/codee-skills/bin/codee-skills.js"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-Replace `/path/to/codee-skills` with the actual path to the cloned repo.
+Replace `/path/to/codee-skills` with the actual path to the repository.
 
-### 3. Configure SSH for GitHub
-
-`push-skill` requires SSH access to this repo so that `git push` works without asking for a password:
+### Install and manage project skills
 
 ```bash
-# Check whether you have an SSH key
-cat ~/.ssh/id_ed25519.pub
+ags skills add                              # interactive installer
+ags skills add codee-code-style             # install one skill
+ags skills add frameworks/medusa            # install a group
+ags skills list                             # list installed skills
+ags skills update                           # update all installed skills
+ags skills update codee-code-style          # update one skill
+ags skills remove codee-code-style          # remove one skill
+```
 
-# If you do not have one, generate it
-ssh-keygen -t ed25519 -C "your@email.com"
+`ags skills add` installs to both `.claude/skills/` and `.agents/skills/`.
+Installed sources are recorded in `skills-lock.json`.
 
-# Add the public key to GitHub: Settings → SSH and GPG keys
+For local sources, `ags skills update` pulls the latest version of this repository,
+compares the installed copies, and reinstalls skills that changed. External GitHub
+or URL sources are updated through `npx skills`.
 
-# Make sure the remote uses SSH, not HTTPS
+### Push an edited skill
+
+Configure GitHub SSH access and make sure the repository uses its SSH remote:
+
+```bash
 git remote set-url origin git@github.com:codee-sh/codee-skills.git
 ```
 
----
-
-## CLI: ags
-
-Local tool for managing skills in projects.
-
-The `skills` command is a thin wrapper around external `npx skills`. It adds source-path detection, installs to both `.claude/skills/` and `.agents/skills/`, and keeps the local copies in sync.
-
-The source of truth for skills is always this repo (`codee-skills`). The source path is detected automatically based on the location of `bin/codee-skills.js`.
+Then push a skill edited in `.agents/skills/`:
 
 ```bash
-ags push-skill                          # list changed skills (interactive)
-ags push-skill <name>                   # push a specific skill
-ags push-skill <name> --dry-run         # preview without writing
-
-ags skills add                          # interactive grouped TUI
-ags skills add <name>                   # a specific skill, e.g. code-style
-ags skills add frameworks/medusa        # an entire subfolder
-ags skills update                       # update all skills from source
-ags skills update <name>                # update a specific skill
-ags skills list                         # list installed skills
-ags skills remove <name>                # remove a skill
-```
-
----
-
-## Commands
-
-### `skills add`
-
-Installs skills from this repo into the current project. It always installs to both locations at the same time: `.claude/skills/` (Claude Code) and `.agents/skills/` (Codex).
-
-```bash
-ags skills add                     # interactive grouped TUI
-ags skills add code-style          # a specific skill
-ags skills add frameworks/medusa   # an entire subfolder
-```
-
-After installation, `skills-lock.json` is created in the project. It stores the source of each skill.
-
----
-
-### `skills update`
-
-Compares `.claude/skills/` and `.agents/skills/` against the local copy of the `codee-skills` repo on disk. Reinstalls if any location is out of date.
-
-Before comparing, it automatically runs `git pull` in the source repo, so it always compares against the latest GitHub version.
-
-```bash
-ags skills update              # checks all skills
-ags skills update code-style   # checks one skill
-```
-
----
-
-### `skills list` / `skills remove`
-
-```bash
-ags skills list
-ags skills remove code-style
-```
-
----
-
-### `push-skill`
-
-Pushes a locally edited skill back to this repo.
-
-```bash
-ags push-skill                          # list changed skills
-ags push-skill code-style               # a specific skill
-ags push-skill code-style --dry-run     # preview without writing
-```
-
-**Flow:**
-1. Scans `.agents/skills/` — the local source of truth — for changes compared to the source repo. Each skill is compared as a whole directory: every file under it is checked recursively, so supporting files and nested folders next to `SKILL.md` count too. `.claude/skills/` is a derived copy and is not scanned (used only as a fallback when `.agents/` is missing)
-2. Shows a list of changed skills (interactive list)
-3. Checks whether the remote repo has newer commits (`git fetch`)
-4. Shows the file-level changes to be pushed (`~` changed, `+` added, `-` removed)
-5. Asks for confirmation
-6. Mirrors the whole skill directory into the source repo (copies new/changed files, deletes removed ones) -> `git add -A <dir>` -> `git commit` -> `git push` to this repo
-7. Auto-syncs the derived copy: after the push, `.agents/skills/` is mirrored into `.claude/skills/`
-
----
-
-## Typical Workflow
-
-```bash
-# 1. New project - install skills
-ags skills add
-
-# 2. Edit a skill locally in .agents/skills/code-style/SKILL.md
-#    (.agents/ is the source of truth; do not hand-edit .claude/ — it is synced for you)
-
-# 3. Push the changes to the repo
 ags push-skill
-# -> choose a skill from the list, confirm
-# -> push to the repo + auto-sync to the other folder
-
-# 4. In another project - get the new version
-ags skills update
+ags push-skill codee-code-style
+ags push-skill codee-code-style --dry-run
 ```
 
----
+The command:
 
-## Adding a New Skill
+1. Compares the complete skill directory from `.agents/skills/` with this repository.
+2. Displays added, changed, and removed files.
+3. Checks for newer remote commits.
+4. Asks for confirmation.
+5. Mirrors the skill into this repository, commits it, and pushes it.
+6. Syncs the resulting skill to `.claude/skills/`.
 
-1. Create a folder in the appropriate place, for example `general/my-skill/`
-2. Add a `SKILL.md` file with the required frontmatter:
+`.agents/skills/` is the editable project copy. Do not edit `.claude/skills/`
+directly because it is treated as a derived copy.
+
+## Add a new skill
+
+1. Create a directory in the appropriate group. Its name must start with `codee-`.
+2. Add a `SKILL.md` file whose `name` exactly matches the directory name:
 
 ```markdown
 ---
-name: my-skill
-description: A short description of what the skill does.
+name: codee-my-skill
+description: Describe what the skill does and when the agent should use it.
 ---
 
-# Skill content...
+# Codee My Skill
+
+Add the skill instructions here.
 ```
 
-3. The skill is automatically detected by `ags skills add`.
+3. Verify discovery with:
 
----
+```bash
+npx skills add . --list
+```
+
+The new skill is then available through both the local repository and
+`codee-sh/codee-skills` after it is pushed.
 
 ## Requirements
 
 - Node.js
-- Git with SSH access to this repo (`git@github.com:...`)
-- `npx skills` (Vercel Labs) - installed automatically through `npx`
+- Git
+- SSH access to GitHub only when pushing changes with `ags push-skill`

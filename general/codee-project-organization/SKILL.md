@@ -1,9 +1,9 @@
 ---
-name: project-organization
+name: codee-project-organization
 description: Generates a PROJECT-ORGANIZATION.md file for a new software project — team structure, tools, workflow, sprints, and ClickUp setup.
 ---
 
-# Skill: project-organization
+# Skill: codee-project-organization
 
 Generates a `PROJECT-ORGANIZATION.md` file for a new software project.
 
@@ -35,8 +35,8 @@ Ask the user if any of this information is missing:
 
 ## Related skills
 
-### `spec-writing`
-Used in step 1 of the Module Specification Methodology. For each module listed in `.ai/specs/`, invoke the `spec-writing` skill to generate a full technical specification — data model, API endpoints, business logic, permissions, and inter-module integrations. The output is saved as `.ai/specs/<module-name>.md` and reviewed by the team before any implementation begins.
+### `codee-spec-writing`
+Used in step 1 of the Module Specification Methodology. For each module listed in `.ai/specs/`, invoke the `codee-spec-writing` skill to generate a full technical specification — data model, API endpoints, business logic, permissions, and inter-module integrations. The output is saved as `.ai/specs/<module-name>.md` and reviewed by the team before any implementation begins.
 
 ---
 
@@ -148,7 +148,7 @@ Space: [Project Name]
 
 ## MODULE SPECIFICATION METHODOLOGY
 
-Before implementing any module, we build a technical specification using the `spec-writing` skill. Once the spec is reviewed and approved, it is broken down into ClickUp tasks and assigned to a sprint.
+Before implementing any module, we build a technical specification using the `codee-spec-writing` skill. Once the spec is reviewed and approved, it is broken down into ClickUp tasks and assigned to a sprint.
 
 Specification files are stored in `.ai/specs/` in the repository.
 

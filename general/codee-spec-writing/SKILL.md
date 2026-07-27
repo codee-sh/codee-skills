@@ -1,5 +1,5 @@
 ---
-name: spec-writing
+name: codee-spec-writing
 description: Write short module specs with one main spec plus linked sub-specs. Use for new spec work when the team wants concise, reference-driven documentation instead of long monolithic specs.
 ---
 

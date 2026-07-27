@@ -1,5 +1,5 @@
 ---
-name: generate-pr-description
+name: codee-generate-pr-description
 description: Generate or update a pull request description from the current Git branch and save it to `.ai/pr-description.md`. Use when the user asks to generate, prepare, write, refresh, or update a PR description, including requests such as "Generate PR description" or "Prepare PR description". This skill only prepares the description artifact; it does not create or update the pull request.
 ---
 

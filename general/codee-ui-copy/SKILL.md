@@ -1,5 +1,5 @@
 ---
-name: ui-copy
+name: codee-ui-copy
 description: Guidelines for writing user-facing text in this project — labels, descriptions, headings, empty states, error messages, tooltips. Load when writing any UI string regardless of framework or surface.
 ---
 

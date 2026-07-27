@@ -1,5 +1,5 @@
 ---
-name: writing-questions
+name: codee-writing-questions
 description: Use when asked to write questions for a client or stakeholder. Applies formatting and tone rules for this project.
 ---
 

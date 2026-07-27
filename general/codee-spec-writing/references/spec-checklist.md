@@ -1,6 +1,6 @@
 # Spec Checklist
 
-Apply this before finalizing a spec written with `spec-writing`.
+Apply this before finalizing a spec written with `codee-spec-writing`.
 
 ## Structure
 

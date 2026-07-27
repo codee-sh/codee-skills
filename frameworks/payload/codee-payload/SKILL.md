@@ -1,6 +1,6 @@
 ---
-name: payload
-description: Use when working with Payload projects (payload.config.ts, fields, hooks, access control, Payload API). Use when debugging validation errors, security issues, relationship queries, transactions, or hook behavior. Do NOT use for creating new collections or admin modules — use payload-build-collections or payload-build-modules instead.
+name: codee-payload
+description: Use when working with Payload projects (payload.config.ts, fields, hooks, access control, Payload API). Use when debugging validation errors, security issues, relationship queries, transactions, or hook behavior. Do NOT use for creating new collections or admin modules — use codee-payload-build-collections or codee-payload-build-modules instead.
 ---
 
 # Payload Application Development
@@ -80,7 +80,7 @@ export default buildConfig({
 
 ## Essential Patterns
 
-> **Project-specific patterns** (file structure, access functions, hook placement, registration steps) are in `payload-build-collections`. The patterns below are general Payload API reference — use them when debugging or extending, not as a template for new collections in this project.
+> **Project-specific patterns** (file structure, access functions, hook placement, registration steps) are in `codee-payload-build-collections`. The patterns below are general Payload API reference — use them when debugging or extending, not as a template for new collections in this project.
 
 ### Basic Collection
 
@@ -149,7 +149,7 @@ For all hook patterns, see [HOOKS.md](reference/HOOKS.md). For access control, s
 
 ### Access Control with Type Safety
 
-> **In this project**, access functions live in `src/access/index.ts` and are always imported from there — never defined inline per-collection. See `payload-build-collections` for the available functions (`isAdmin`, `isAuthenticated`, `adminOrSelf`, `adminOrOwnByClient`). The patterns below are general Payload API reference for custom logic or plugins.
+> **In this project**, access functions live in `src/access/index.ts` and are always imported from there — never defined inline per-collection. See `codee-payload-build-collections` for the available functions (`isAdmin`, `isAuthenticated`, `adminOrSelf`, `adminOrOwnByClient`). The patterns below are general Payload API reference for custom logic or plugins.
 
 ```ts
 import type { Access } from 'payload'

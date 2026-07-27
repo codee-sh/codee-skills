@@ -32,7 +32,7 @@ async function discoverSkillGroups(repoRoot) {
     const topDir = join(repoRoot, topEntry.name);
     const topEntries = await readdir(topDir, { withFileTypes: true }).catch(() => []);
 
-    // Check if topDir contains skills directly (e.g. general/writing-questions/SKILL.md)
+    // Check if topDir contains skills directly (e.g. general/codee-writing-questions/SKILL.md)
     const directSkills = [];
     const subGroups = [];
 

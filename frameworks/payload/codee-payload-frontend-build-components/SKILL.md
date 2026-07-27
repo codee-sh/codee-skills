@@ -1,6 +1,6 @@
 ---
-name: payload-frontend-build-components
-description: Step-by-step guide for building front-end React components and pages in this Next.js + Tailwind app. Use when adding a UI primitive, a shared component, a module-owned component, or a frontend page. Do NOT use for Payload admin views - use payload-build-modules instead.
+name: codee-payload-frontend-build-components
+description: Step-by-step guide for building front-end React components and pages in this Next.js + Tailwind app. Use when adding a UI primitive, a shared component, a module-owned component, or a frontend page. Do NOT use for Payload admin views - use codee-payload-build-modules instead.
 ---
 
 # Front-end — building components and pages
@@ -96,7 +96,7 @@ components/
     └── index.ts
 ```
 
-**Rule:** every React component gets its own kebab-case folder with an `index.ts` barrel - in `ui/`, in `common/`, and inside a feature's `components/`. The only `.tsx` allowed directly at a feature root is the `{feature}.tsx` entry itself. No flat sub-component files. (Mirrors `payload-build-modules`: one folder per component.)
+**Rule:** every React component gets its own kebab-case folder with an `index.ts` barrel - in `ui/`, in `common/`, and inside a feature's `components/`. The only `.tsx` allowed directly at a feature root is the `{feature}.tsx` entry itself. No flat sub-component files. (Mirrors `codee-payload-build-modules`: one folder per component.)
 
 Sub-component-specific hooks go in `components/{sub-component}/hooks/`; hooks for the feature entry stay in `{feature}/hooks/`.
 
@@ -196,7 +196,7 @@ Trigger: extract a hook when there are >= 2 mutations sharing loading/error stat
 - Client component: `const t = useTranslations('namespace')`.
 - Server component: `const t = await getTranslations('namespace')`; dates via `const format = await getFormatter()` (never hardcode a locale like `'pl-PL'`).
 - Add keys to BOTH `messages/pl.json` and `messages/en.json`.
-- Plain ASCII in UI strings (see the `code-style` skill).
+- Plain ASCII in UI strings (see the `codee-code-style` skill).
 
 ---
 

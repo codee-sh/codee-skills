@@ -1,5 +1,5 @@
 ---
-name: skill-creator
+name: codee-skill-creator
 description: Create a new skill from a ready-made skeleton. Use when the user wants to make, scaffold, or write a new agent skill, asks for a SKILL.md, or says "turn this into a skill". Copies a template and fills it in.
 ---
 

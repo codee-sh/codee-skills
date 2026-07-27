@@ -1,13 +1,13 @@
 ---
-name: spec-notes
-description: Write short, global working notes in .ai/notes/ - one folder per topic, containing a same-named note file. Use for cross-cutting context/decisions that don't belong to a single spec module, unlike spec-writing's module-local notes.md.
+name: codee-spec-notes
+description: Write short, global working notes in .ai/notes/ - one folder per topic, containing a same-named note file. Use for cross-cutting context/decisions that don't belong to a single spec module, unlike codee-spec-writing's module-local notes.md.
 ---
 
 # Spec Notes
 
 Write global working notes as a small, topic-scoped folder - not as one growing file, and not inside a spec module.
 
-This skill is the global counterpart to `spec-writing`'s `notes.md`. `notes.md` lives inside one module folder and dies with that module's spec work. `.ai/notes/` is not tied to any single spec - it is short-term working memory for context, decisions, or debugging insights that matter regardless of which module or spec touches them next.
+This skill is the global counterpart to `codee-spec-writing`'s `notes.md`. `notes.md` lives inside one module folder and dies with that module's spec work. `.ai/notes/` is not tied to any single spec - it is short-term working memory for context, decisions, or debugging insights that matter regardless of which module or spec touches them next.
 
 ---
 
@@ -21,7 +21,7 @@ Use this skill when:
 
 Do not use this skill when:
 
-- the note is scoped to one module's active spec work - use that module's `notes.md` via `spec-writing` instead
+- the note is scoped to one module's active spec work - use that module's `notes.md` via `codee-spec-writing` instead
 - the content is a stable decision or requirement - it belongs in a main spec or sub-spec, not a note
 - the information is something Claude's own auto-memory should hold (user preferences, feedback about how to collaborate) - see the auto-memory system instead
 
@@ -49,7 +49,7 @@ Rules:
 
 ### 1. Keep it short
 
-A note is not a spec and not a runbook. Target: well under one screen. If it is growing into a narrative, it has become a spec - move it to `.ai/specs/` via `spec-writing` instead.
+A note is not a spec and not a runbook. Target: well under one screen. If it is growing into a narrative, it has become a spec - move it to `.ai/specs/` via `codee-spec-writing` instead.
 
 ### 2. Concrete information only
 
@@ -93,4 +93,4 @@ Multiple dated entries can live in one file if they're genuinely the same topic 
 2. If it exists, add a new dated entry or edit the existing content - don't create a second file for the same topic.
 3. If it's new, create the folder and the same-named file.
 4. Keep the entry concrete and short per the Hard Rules above.
-5. If the note later hardens into a real decision/requirement that should outlive "working memory", promote it into a proper spec via `spec-writing` and trim or remove the note.
+5. If the note later hardens into a real decision/requirement that should outlive "working memory", promote it into a proper spec via `codee-spec-writing` and trim or remove the note.

@@ -21,15 +21,15 @@ Commands:
     skills find [query]   Search available skills
 
 Examples:
-  ags push-skill writing-questions
-  ags push-skill writing-questions --dry-run
+  ags push-skill codee-writing-questions
+  ags push-skill codee-writing-questions --dry-run
 
-  ags skills add writing-questions
+  ags skills add codee-writing-questions
   ags skills add frameworks/medusa
   ags skills add
   ags skills list
-  ags skills update writing-questions
-  ags skills remove writing-questions
+  ags skills update codee-writing-questions
+  ags skills remove codee-writing-questions
 `);
   process.exit(0);
 }

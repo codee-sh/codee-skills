@@ -1,13 +1,13 @@
 ---
-name: payload-review
-description: Best-practices review & hardening for Payload CMS apps — deployment and architecture hygiene, NOT security (that's payload-security). Use when reviewing a project for good practices, or when changing the DB schema, migrations, collections, hooks, endpoints, indexes, transactions, env/config, or generated types/importmap. Self-contained — each item is what to check → how to fix, with copy-paste patterns.
+name: codee-payload-review
+description: Best-practices review & hardening for Payload CMS apps — deployment and architecture hygiene, NOT security (that's codee-payload-security). Use when reviewing a project for good practices, or when changing the DB schema, migrations, collections, hooks, endpoints, indexes, transactions, env/config, or generated types/importmap. Self-contained — each item is what to check → how to fix, with copy-paste patterns.
 ---
 
 # Payload — Best-practices review & hardening
 
 Payload gives you a lot of power with very few guardrails: it will happily auto-sync your
 schema, over-fetch relationships, run hooks outside transactions, and boot with a missing
-secret. None of those are *security* holes (use **payload-security** for those) — they are
+secret. None of those are *security* holes (use **codee-payload-security** for those) — they are
 the operational and architectural mistakes that cause data loss, slow queries, flaky
 deploys, and 3am incidents. Use this skill to review a project for those gaps and fix them
 consistently.
@@ -17,13 +17,13 @@ self-contained — adapt names and paths to the codebase at hand. They are delib
 concise: this skill tells you *what to fix and why*, and hands off to the build skills for
 *how to build it well*. When a fix needs deeper build guidance, reach for the right one:
 
-- **payload** — how to structure a collection, field, hook, endpoint, query, or
+- **codee-payload** — how to structure a collection, field, hook, endpoint, query, or
   access-control function (detailed how-to references).
-- **payload-build-collections** — step-by-step when the fix means adding a new collection
+- **codee-payload-build-collections** — step-by-step when the fix means adding a new collection
   or extending the schema.
-- **payload-build-modules** — step-by-step when the fix means a custom admin view or field
+- **codee-payload-build-modules** — step-by-step when the fix means a custom admin view or field
   component.
-- **code-style** — conventions for any code you write while applying a fix (comments,
+- **codee-code-style** — conventions for any code you write while applying a fix (comments,
   naming, file organisation).
 
 ---
@@ -79,7 +79,7 @@ The checks below feed the rows of this file; map each one to a status marker.
 ## Run the security review too
 
 This skill deliberately leaves security out of scope — but a project is not "reviewed"
-until both halves are covered. As part of any review, also run the **payload-security**
+until both halves are covered. As part of any review, also run the **codee-payload-security**
 skill (access control, auth, CORS/CSRF, uploads, headers, logging). The two are
 complementary: security closes attack surface, this skill keeps the app correct and
 operable. They write separate audit files (`security-audit.md` vs
@@ -219,7 +219,7 @@ Keep `.env` gitignored and a `.env.example` committed listing every required key
 **Check:** a custom `endpoints` handler that trusts `req.data` / query params without
 validating them, or that returns `200` regardless of outcome, is a correctness hazard —
 bad input flows straight into queries and callers can't tell success from failure.
-(Access control on custom endpoints is a security concern — covered by **payload-security**.)
+(Access control on custom endpoints is a security concern — covered by **codee-payload-security**.)
 
 **Fix:** validate and coerce input before using it, and return status codes that match the
 outcome:
@@ -251,7 +251,7 @@ data old→new in the `up` step rather than a bare rename that loses it. Set `re
 
 ## Review checklist
 
-- [ ] Security review run via the **payload-security** skill (separate audit file)
+- [ ] Security review run via the **codee-payload-security** skill (separate audit file)
 - [ ] DB adapter has `push: false`; no path auto-syncs schema
 - [ ] Every schema change has a committed migration (`migrate:create` + `migrate`)
 - [ ] Migrations applied with an explicit `payload migrate`, never on app boot

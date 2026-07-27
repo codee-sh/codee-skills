@@ -1,5 +1,5 @@
 ---
-name: payload-build-collections
+name: codee-payload-build-collections
 description: Step-by-step guide for adding a new Payload CMS collection to this project. Use when asked to create a new collection, add a new data type, or extend the backend schema.
 ---
 

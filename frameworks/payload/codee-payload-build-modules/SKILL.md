@@ -1,5 +1,5 @@
 ---
-name: payload-build-modules
+name: codee-payload-build-modules
 description: Step-by-step guide for adding a custom admin view or field component to this Payload CMS project. Use when asked to create a new admin panel view, custom tab, or custom field UI.
 ---
 

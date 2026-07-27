@@ -1,5 +1,5 @@
 ---
-name: code-style
+name: codee-code-style
 description: General code style conventions — comments, naming, file organisation. Load when writing or reviewing any TypeScript code.
 ---
 
@@ -73,4 +73,4 @@ This applies to all higher-order functions: `map`, `filter`, `find`, `reduce`, `
 
 | When you are also... | Load |
 |----------------------|------|
-| Writing any user-facing string (labels, descriptions, headings, toasts) | `ui-copy` |
+| Writing any user-facing string (labels, descriptions, headings, toasts) | `codee-ui-copy` |

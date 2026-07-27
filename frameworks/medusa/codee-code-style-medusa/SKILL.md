@@ -1,13 +1,13 @@
 ---
-name: code-style-medusa
-description: Medusa-specific code style conventions for workflows and steps. Load alongside code-style when writing or reviewing any Medusa workflow or step code.
+name: codee-code-style-medusa
+description: Medusa-specific code style conventions for workflows and steps. Load alongside codee-code-style when writing or reviewing any Medusa workflow or step code.
 ---
 
 # Code Style — Medusa
 
-Extends the general `code-style` skill with conventions specific to Medusa workflows and steps.
+Extends the general `codee-code-style` skill with conventions specific to Medusa workflows and steps.
 
-> **Override:** The general `code-style` skill says "comment only when the why is non-obvious." For Medusa workflows and steps, JSDoc is **always required** regardless — the rules below apply unconditionally.
+> **Override:** The general `codee-code-style` skill says "comment only when the why is non-obvious." For Medusa workflows and steps, JSDoc is **always required** regardless — the rules below apply unconditionally.
 
 ---
 
