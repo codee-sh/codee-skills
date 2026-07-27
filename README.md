@@ -27,6 +27,20 @@ Install one specific skill:
 npx skills add codee-sh/codee-skills --skill codee-code-style
 ```
 
+Install spec writing with the matching technical review:
+
+```bash
+# Medusa
+npx skills add codee-sh/codee-skills \
+  --skill codee-spec-writing \
+  --skill codee-spec-review-medusa
+
+# Payload CMS / Next.js
+npx skills add codee-sh/codee-skills \
+  --skill codee-spec-writing \
+  --skill codee-spec-review-payload
+```
+
 Install all skills for Claude Code and Codex:
 
 ```bash
@@ -69,6 +83,7 @@ them to GitHub.
 
 - `codee-admin-forms-with-medusa`
 - `codee-code-style-medusa`
+- `codee-spec-review-medusa`
 
 ### Payload
 
@@ -78,6 +93,7 @@ them to GitHub.
 - `codee-payload-frontend-build-components`
 - `codee-payload-review`
 - `codee-payload-security`
+- `codee-spec-review-payload`
 
 ## Repository structure
 
@@ -95,14 +111,16 @@ codee-skills/
 ├── frameworks/
 │   ├── medusa/
 │   │   ├── codee-admin-forms-with-medusa/
-│   │   └── codee-code-style-medusa/
+│   │   ├── codee-code-style-medusa/
+│   │   └── codee-spec-review-medusa/
 │   └── payload/
 │       ├── codee-payload/
 │       ├── codee-payload-build-collections/
 │       ├── codee-payload-build-modules/
 │       ├── codee-payload-frontend-build-components/
 │       ├── codee-payload-review/
-│       └── codee-payload-security/
+│       ├── codee-payload-security/
+│       └── codee-spec-review-payload/
 ├── bin/
 ├── commands/
 └── package.json
