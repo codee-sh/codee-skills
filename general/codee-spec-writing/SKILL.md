@@ -194,11 +194,14 @@ Sub-specs should answer:
    - Treat the main spec as closed once the module is closed and there are no active sub-specs left
    - Move the whole closed module folder into global `.ai/specs/ended/`
 
-9. **Run compliance review before finalizing**
-   - First run [references/spec-checklist.md](references/spec-checklist.md)
-   - Then run [references/compliance-review.md](references/compliance-review.md)
-   - Load the stack-specific compliance file named there
-   - Treat compliance review as the final gate before calling the spec ready
+9. **Run the final reviews**
+   - First run [references/spec-checklist.md](references/spec-checklist.md).
+   - Then load the review skill required by the repository's `AGENTS.md`.
+   - For Codee Medusa projects, load `codee-spec-review-medusa`.
+   - For Codee Payload projects, load `codee-spec-review-payload`.
+   - Treat the stack review as the final gate before calling the spec ready.
+   - If the required review skill is unavailable, report that the technical
+     compliance review could not run and do not mark the spec ready.
 
 ---
 
@@ -303,15 +306,19 @@ Bad:
 
 Before finalizing any spec:
 
-1. Run [references/spec-checklist.md](references/spec-checklist.md)
-2. Run [references/compliance-review.md](references/compliance-review.md)
-3. Load and fill the stack-specific compliance matrix
-4. Fix violations before marking the spec ready
+1. Run [references/spec-checklist.md](references/spec-checklist.md).
+2. Follow the skill combination defined in the repository's `AGENTS.md`.
+3. For Medusa, run `codee-spec-review-medusa`.
+4. For Payload CMS or Next.js, run `codee-spec-review-payload`.
+5. Fix violations before marking the spec ready.
 
 Use this split consistently:
 
 - `spec-checklist.md` validates structure, brevity, and tracker hygiene
-- `compliance-review.md` validates hard technical rules for the project stack
+- the stack review skill validates hard technical rules
+
+Do not claim final approval when the required stack review skill is not
+installed or its review has not run.
 
 ---
 
