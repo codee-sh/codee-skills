@@ -23,8 +23,8 @@ concise: this skill tells you *what to fix and why*, and hands off to the build 
   or extending the schema.
 - **codee-payload-build-modules** — step-by-step when the fix means a custom admin view or field
   component.
-- **codee-code-style** — conventions for any code you write while applying a fix (comments,
-  naming, file organisation).
+- **codee-ts-code-conventions** — TypeScript comments, JSDoc, naming, and code clarity
+  conventions for fixes.
 
 ---
 

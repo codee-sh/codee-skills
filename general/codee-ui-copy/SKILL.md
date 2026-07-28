@@ -1,64 +1,54 @@
 ---
 name: codee-ui-copy
-description: Guidelines for writing user-facing text in this project — labels, descriptions, headings, empty states, error messages, tooltips. Load when writing any UI string regardless of framework or surface.
+description: Create or review user-facing UI text in Polish or English using Codee language-specific copy rules. Use for labels, buttons, headings, descriptions, placeholders, validation messages, notifications, empty states, and tooltips.
 ---
 
 # UI Copy
 
----
+Prevent recurring copy mistakes when creating or revising text shown to users.
 
-## Language
+## Workflow
 
-All UI text is written in **English**. This includes headings, labels, descriptions, button text, empty states, error messages, and tooltips.
+1. Determine the target language from the request, repository instructions,
+   translation file, locale, and neighboring copy.
+2. Load the matching rules:
+   - English: [references/rules-en.md](references/rules-en.md)
+   - Polish: [references/rules-pl.md](references/rules-pl.md)
+   - Both languages: load both files
+3. Read adjacent UI text and relevant specs to identify established terminology,
+   tone, and capitalization.
+4. Create or revise the copy using the shared rules and the selected
+   language-specific rules.
+5. Check every changed string before returning or applying it.
 
----
+If the language remains ambiguous and the choice changes the result, ask which
+locale is required.
 
-## Tone
+## Shared Rules
 
-- Clear and direct. No filler words.
-- Neutral and professional. Not conversational or playful.
-- Write for someone who knows the domain.
+- Be clear, direct, neutral, and concise.
+- Use established domain terminology consistently.
+- Do not expose internal identifiers, implementation details, or developer
+  terminology unless users need them.
+- Preserve interpolation variables, markup, and formatting tokens exactly.
+- Write complete translatable messages instead of concatenated sentence
+  fragments.
+- Do not rename translation keys or change i18n integration unless the task
+  explicitly requires it.
+- Give icon-only controls and other non-text controls an accessible name.
+- Do not use a tooltip as a substitute for a required visible label.
 
----
+## Final Check
 
-## Punctuation
+- The correct language rules were applied.
+- The wording matches neighboring UI and project terminology.
+- The user can understand what happened and what action is available.
+- Dynamic values still fit grammatically.
+- No placeholder, variable, markup, or translation key changed accidentally.
 
-**No em dashes (`—`) or en dashes (`–`).** Use a period or rewrite the sentence instead.
+## Output
 
-| Instead of | Write |
-|------------|-------|
-| `Fixed mapping — resolves each customer's Sales Org` | `Fixed mapping. Resolves each customer's Sales Org.` |
-| `Read-only — cannot be edited` | `Read-only. Cannot be edited.` |
+When creating copy, return the final strings in the requested structure.
 
-**Single-sentence descriptions** do not end with a period.
-
-**Multi-sentence descriptions** end every sentence with a period.
-
-**Button labels** use sentence case, not title case.
-- Correct: `Add mapping`, `Save changes`
-- Incorrect: `Add Mapping`, `Save Changes`
-
-**Section headings** use title case (`Sales Channel Mapping`). Form labels and inline descriptions use sentence case.
-
----
-
-## Naming
-
-- Use the full, descriptive name when context is needed. Avoid abbreviations in user-facing text.
-- Prefer the domain term over a generic synonym. Match the language used in specs and in conversation with the client.
-- When an internal identifier or constant is shown in UI, its label should reflect what it represents to the user, not what it is in code.
-
----
-
-## Empty states
-
-Short and non-alarming. Do not explain why something is empty unless the reason is actionable.
-
-- `No mappings configured yet.`
-- `No results found.`
-
----
-
-## When to load this skill
-
-Load before writing any user-facing string: headings, labels, descriptions, placeholders, success/error messages, empty states, tooltips.
+When reviewing copy, provide the corrected version first. Explain corrections
+briefly only when the rationale is useful or the user asks for it.

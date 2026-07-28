@@ -196,7 +196,8 @@ Trigger: extract a hook when there are >= 2 mutations sharing loading/error stat
 - Client component: `const t = useTranslations('namespace')`.
 - Server component: `const t = await getTranslations('namespace')`; dates via `const format = await getFormatter()` (never hardcode a locale like `'pl-PL'`).
 - Add keys to BOTH `messages/pl.json` and `messages/en.json`.
-- Plain ASCII in UI strings (see the `codee-code-style` skill).
+- Apply the language-specific rules from the `codee-ui-copy` skill to every UI
+  string.
 
 ---
 

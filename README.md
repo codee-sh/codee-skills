@@ -24,7 +24,15 @@ npx skills add codee-sh/codee-skills
 Install one specific skill:
 
 ```bash
-npx skills add codee-sh/codee-skills --skill codee-code-style
+npx skills add codee-sh/codee-skills --skill codee-ts-code-conventions
+```
+
+Install the TypeScript conventions with the Medusa extension:
+
+```bash
+npx skills add codee-sh/codee-skills \
+  --skill codee-ts-code-conventions \
+  --skill codee-medusa-code-conventions
 ```
 
 Install spec writing with the matching technical review:
@@ -70,19 +78,19 @@ them to GitHub.
 
 ### General
 
-- `codee-code-style`
 - `codee-generate-pr-description`
 - `codee-project-organization`
 - `codee-skill-creator`
 - `codee-spec-notes`
 - `codee-spec-writing`
+- `codee-ts-code-conventions`
 - `codee-ui-copy`
 - `codee-writing-questions`
 
 ### Medusa
 
 - `codee-admin-forms-with-medusa`
-- `codee-code-style-medusa`
+- `codee-medusa-code-conventions`
 - `codee-spec-review-medusa`
 
 ### Payload
@@ -100,18 +108,18 @@ them to GitHub.
 ```text
 codee-skills/
 ├── general/
-│   ├── codee-code-style/
 │   ├── codee-generate-pr-description/
 │   ├── codee-project-organization/
 │   ├── codee-skill-creator/
 │   ├── codee-spec-notes/
 │   ├── codee-spec-writing/
+│   ├── codee-ts-code-conventions/
 │   ├── codee-ui-copy/
 │   └── codee-writing-questions/
 ├── frameworks/
 │   ├── medusa/
 │   │   ├── codee-admin-forms-with-medusa/
-│   │   ├── codee-code-style-medusa/
+│   │   ├── codee-medusa-code-conventions/
 │   │   └── codee-spec-review-medusa/
 │   └── payload/
 │       ├── codee-payload/
@@ -152,12 +160,12 @@ Replace `/path/to/codee-skills` with the actual path to the repository.
 
 ```bash
 ags skills add                              # interactive installer
-ags skills add codee-code-style             # install one skill
+ags skills add codee-ts-code-conventions    # install one skill
 ags skills add frameworks/medusa            # install a group
 ags skills list                             # list installed skills
 ags skills update                           # update all installed skills
-ags skills update codee-code-style          # update one skill
-ags skills remove codee-code-style          # remove one skill
+ags skills update codee-ts-code-conventions # update one skill
+ags skills remove codee-ts-code-conventions # remove one skill
 ```
 
 `ags skills add` installs to both `.claude/skills/` and `.agents/skills/`.
@@ -179,8 +187,8 @@ Then push a skill edited in `.agents/skills/`:
 
 ```bash
 ags push-skill
-ags push-skill codee-code-style
-ags push-skill codee-code-style --dry-run
+ags push-skill codee-ts-code-conventions
+ags push-skill codee-ts-code-conventions --dry-run
 ```
 
 The command:
