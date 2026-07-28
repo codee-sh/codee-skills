@@ -74,6 +74,19 @@ npx skills add ./codee-skills --skill codee-spec-writing
 Using a local source is useful when developing or testing changes before pushing
 them to GitHub.
 
+## Agent instruction templates
+
+Copy the `Skill Router` section for your stack into the repository's agent
+instruction file. Keep only rows for skills installed in that repository.
+
+- [Default](agents-templates/default.md)
+- [Medusa](agents-templates/medusa.md)
+- [Payload](agents-templates/payload.md)
+
+The Medusa template combines Codee skills with the official
+[`medusajs/medusa-agent-skills`](https://github.com/medusajs/medusa-agent-skills)
+skills.
+
 ## Available skills
 
 ### General
