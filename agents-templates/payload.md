@@ -21,4 +21,6 @@ unavailable skill.
 | Write or restructure specifications | `codee-spec-writing` |
 | Review a Payload or Next.js specification | `codee-spec-review-payload` |
 | Cross-cutting working notes | `codee-spec-notes` |
+| Pull request description | `codee-generate-pr-description` |
 | Client or stakeholder questions | `codee-writing-questions` |
+| New agent skill | `codee-skill-creator` |

@@ -1,422 +1,220 @@
 ---
 name: codee-spec-writing
-description: Write short module specs with one main spec plus linked sub-specs. Use for new spec work when the team wants concise, reference-driven documentation instead of long monolithic specs.
+description: Write or review evidence-based software specifications using a concise main-spec and sub-spec system, with skeleton-first discovery, a critical Open Questions gate, repository research, architecture and failure analysis, and phased testable implementation plans. Use for non-trivial feature specs, architecture decisions, spec restructuring, lifecycle updates, and general spec review; load the repository's stack-specific review skill separately for technical compliance.
 ---
 
-# Spec Writing
+# Specification Writing and Review
 
-Write specifications as a small document system, not as one growing epic file.
+Create decision-complete specifications that another engineer or agent can implement without inventing architecture along the way. Keep documents concise by separating stable module context from focused delivery slices.
 
-This skill replaces the older "one big spec" style when the topic is large enough to split into a module-level main spec and smaller execution sub-specs.
+The repository's instructions are the architectural law. This skill defines the process and document model; it does not replace stack-specific skills or authoritative project documentation.
 
----
+## Operating Modes
 
-## When to Apply
+- **Interactive (default):** unresolved questions that would materially change scope, contracts, data, security, or architecture are a hard gate. Write the skeleton, present the questions, and pause.
+- **Autonomous:** use only when the user or an orchestrating workflow explicitly requests unattended execution. Resolve unknowns with the smallest reversible choice, document each assumption and its rationale, and mark any security, compatibility, or high-blast-radius assumption as `NEEDS HUMAN CONFIRMATION`.
 
-Use this skill when:
+Do not treat ordinary permission to write a spec as permission to enter autonomous mode.
 
-- a spec is getting too long or mixing history with active work
-- a module needs one stable source-of-truth plus several focused follow-ups
-- the team wants specs to stay short and scannable
-- you are creating a new module spec structure from scratch
+## Document System
 
-Do not use this skill when:
+### Main spec
 
-- the change is small enough that a maintained spec would add more overhead than value
-- the user wants a temporary working note, not a long-lived source-of-truth document
+One stable source of truth per module or initiative. It owns boundaries, shared architecture, cross-cutting contracts, references, active sub-specs, and their dependency order. It does not duplicate execution detail from sub-specs.
 
----
+### Sub-spec
 
-## Core Model
+One independently deliverable capability or coherent implementation slice. It owns detailed behavior, affected code, contracts, failure scenarios, acceptance criteria, phases, steps, and active execution state.
 
-There are only two living spec types:
+If two capabilities could be designed, implemented, shipped, or rolled back independently, raise splitting them into separate sub-specs as a critical scope question.
 
-1. **Main spec**
-   - one per module / initiative
-   - stable source of truth
-   - short overview + architecture + references
-   - usually stays active for a long time
+### Supporting locations
 
-2. **Sub-spec**
-   - one per flow / refactor / implementation slice
-   - execution-focused
-   - short and narrow
-   - can move to `ended/` when done
+- `notes.md` contains temporary observations, hypotheses, and unresolved exploration. It is not a source of truth.
+- module-local `ended/` contains closed sub-specs.
+- global `.ai/specs/ended/` contains fully closed module folders.
+- `.ai/specs/references/` contains authoritative supporting data when the repository uses it.
 
-The main spec should link to sub-specs instead of repeating their details.
+Use the repository's own spec location, configuration, and lifecycle rules when they differ.
 
-There is also one optional support file:
+## Evidence Rules
 
-3. **`notes.md`**
-   - one per module folder when needed
-   - short working notes
-   - hypotheses, observations, test results, and unresolved thoughts
-   - not a source of truth
-   - can be cleaned up aggressively
+Specifications must be grounded in inspectable evidence. Do not turn memory or plausible framework behavior into a requirement.
 
-There are also two closed-spec locations:
+Use sources in this order:
 
-4. **module-local `ended/`**
-   - lives inside a module folder
-   - stores closed sub-specs for that module
+1. repository instructions and local overrides
+2. related main specs, active sub-specs, ended specs when historically relevant, notes, and spec reference data
+3. current implementation, tests, schemas, migrations, configuration, and installed dependency source/types
+4. repository documentation and applicable local skills
+5. authoritative external documentation, standards, source repositories, or primary research when local evidence is insufficient or likely stale
+6. market-leading implementations when comparing product or architecture choices adds material value
 
-5. **global `.ai/specs/ended/`**
-   - lives at the top of the specs tree
-   - stores closed module folders / fully closed module initiatives
+Stop researching once the affected modules, existing primitives, public contracts, and material unknowns are known. Cite file paths or external links close to the decisions they support. Clearly label inference and assumptions.
 
----
+Research should answer:
 
-## Folder Structure
-
-Specs are grouped by module folder, not stored as one flat list.
-
-Use this structure:
-
-```text
-.ai/specs/
-  ended/
-    {module-name}/
-      YYYY-MM-DD-main-spec.md
-      ended/
-        YYYY-MM-DD-sub-{closed-topic}.md
-  {module-name}/
-    YYYY-MM-DD-main-spec.md
-    YYYY-MM-DD-sub-{topic-a}.md
-    YYYY-MM-DD-sub-{topic-b}.md
-    notes.md
-    ended/
-      YYYY-MM-DD-sub-{closed-topic}.md
-```
-
-Rules:
-
-- folder name is stable and module-oriented, for example `terminal-tap-to-pay`
-- the main spec filename should be `YYYY-MM-DD-main-spec.md`
-- sub-spec filenames should be `YYYY-MM-DD-sub-{focused-topic}.md`
-- keep sub-spec topic names short; the folder already carries the module context
-- `notes.md` is optional and stays local to the module folder
-- closed sub-specs move into `ended/` inside the same module folder
-- once a module is closed, move the whole module folder into global `.ai/specs/ended/`
-- only truly global or cross-module specs should live directly under `.ai/specs/`
-
----
-
-## Hard Rules
-
-### 1. Keep every spec short
-
-Default target:
-
-- **Main spec**: roughly 1-2 screens
-- **Sub-spec**: roughly 0.5-1.5 screens
-
-If the spec is growing into a long narrative, split it.
-
-### 2. Do not mix history with active work
-
-- Historical decisions belong in a short changelog or in ended specs.
-- Active work belongs in sub-specs and trackers.
-- Do not turn the main spec into a running diary.
-
-### 3. Link instead of repeating
-
-If a detail already lives in another spec:
-
-- add a reference
-- add one sentence of summary if needed
-- do not duplicate the whole section
-
-### 4. One tracker per active spec
-
-- Main spec: no large operational checklist
-- Sub-spec: use a **Short Tracker**
-
-### 5. Working notes do not belong in specs
-
-If you are still exploring and do not want to declare direction yet:
-
-- use `notes.md`
-- do not pollute `Short Tracker`
-- do not turn speculative thoughts into fake requirements
-
-### 6. Main spec is not the place for deep execution detail
-
-Main spec should answer:
-
-- what this module is
-- why it exists
-- what sub-specs are active
-- what order they depend on
-
-Sub-specs should answer:
-
-- what exact change is needed
-- what behavior should result
-- what code areas must change
-
----
+- What exists today, including reusable primitives and current constraints?
+- What changes, and what deliberately remains unchanged?
+- Which public or cross-module contracts are affected?
+- Is a standard or market-proven mechanism preferable to a new local abstraction?
+- Which complexity seen elsewhere is unnecessary for this scope?
 
 ## Workflow
 
-1. **Load context**
-   - Read `AGENTS.md` Task Router.
-   - Read the existing main spec if one exists.
-   - Read only the relevant active sub-specs.
-   - Read `notes.md` only if the module folder already uses it and it looks relevant.
+### 1. Preflight
 
-2. **Choose spec type**
-   - If this is module-level architecture or coordination: update/create the **main spec**
-   - If this is one focused implementation slice: create/update a **sub-spec**
-
-3. **Choose or create the module folder**
-   - Put the main spec and all of its sub-specs in one module folder.
-   - Do not create a new top-level spec file if the topic clearly belongs to an existing module folder.
+- Read the root and nearest scoped agent instructions.
+- Read the repository's spec rules and inspect the spec tree.
+- Read every file in the repository's authoritative spec-reference directory when required by repository instructions.
+- Load all applicable domain and stack skills before making architecture decisions.
+- Check the implementation and related tests before proposing changes.
+- Preserve unrelated working-tree changes.
 
-4. **Start minimal**
-   - Before writing, identify critical unknowns.
-   - If unknowns block architecture or scope, add `Open Questions` and stop after the skeleton.
+### 2. Classify the deliverable
 
-5. **Write the shortest useful version**
-   - Main spec: overview + references + ordering
-   - Sub-spec: problem + target behavior + required changes + acceptance
+- Update or create the **main spec** for module boundaries, shared architecture, or coordination between several delivery slices.
+- Update or create a **sub-spec** for one focused, implementable capability.
+- Use `notes.md` while direction is exploratory.
+- Skip a maintained spec when the repository rules classify the change as trivial.
 
-6. **Use notes when direction is still forming**
-   - Put short working notes in `notes.md` when you are still exploring.
-   - Promote a note into a spec only when it becomes a decision, requirement, or active implementation slice.
+### 3. Write a minimal skeleton
 
-7. **Track only what is still live**
-   - Use a short tracker in sub-specs
-   - Do not mirror the entire changelog in the tracker
+Start with TLDR and two or three sections sufficient to expose the intended scope. Do not write the full design in one pass.
 
-8. **Close specs intentionally**
-   - Move finished sub-specs to the module's `ended/`
-   - Keep the main spec active only while the module still has active work
-   - Treat the main spec as closed once the module is closed and there are no active sub-specs left
-   - Move the whole closed module folder into global `.ai/specs/ended/`
+Before expanding it, identify critical unknowns. Always test scope cohesion: could any bundled capability function and ship without the others?
 
-9. **Run the final reviews**
-   - First run [references/spec-checklist.md](references/spec-checklist.md).
-   - Then load the review skill required by the repository's `AGENTS.md`.
-   - For Codee Medusa projects, load `codee-spec-review-medusa`.
-   - For Codee Payload projects, load `codee-spec-review-payload`.
-   - Treat the stack review as the final gate before calling the spec ready.
-   - If the required review skill is unavailable, report that the technical
-     compliance review could not run and do not mark the spec ready.
+If critical unknowns exist, place a numbered `Open Questions` section immediately after TLDR. Keep each question short and decision-oriented. In interactive mode, pause after the skeleton until all are answered.
 
----
+Do not use Open Questions for facts discoverable from the repository or authoritative documentation; research those directly.
 
-## Main Spec Format
+### 4. Resolve decisions
 
-Use the template in [references/main-spec-template.md](references/main-spec-template.md).
+Apply the answers, record material decisions, and remove `Open Questions` before approval. If a new critical unknown appears, reopen the gate only for that decision.
 
-Minimum sections:
+An approved spec must not contain unresolved implementation-changing questions.
 
-- `# Title`
-- `TLDR`
-- `Scope`
-- `Architecture`
-- `Folder References`
-- `Active Sub-specs`
-- `Ended Sub-specs`
-- `Implementation Order`
-- `Current Status`
-- `Short Changelog` (optional, but recommended for major decision changes)
+### 5. Research the current state and alternatives
 
-### What belongs here
+Inspect the concrete code paths and contracts named by the skeleton. Compare alternatives only where they affect architecture, operational risk, compatibility, or meaningful product behavior. Record why the chosen approach fits the repository better than rejected alternatives.
 
-- module boundaries
-- high-level architecture
-- stable decisions
-- folder-local references to active and ended follow-ups
-- dependency order between sub-specs
-- short references to active work
+### 6. Complete the design
 
-### What does not belong here
+Describe only feature-specific details. Cover applicable concerns:
 
-- long trackers
-- detailed code-step plans
-- repeated copies of sub-spec content
-- lengthy historical narrative
+- components, ownership, and boundaries
+- data flow and ordering
+- data model, migration, compatibility, and sensitive-data handling
+- API, event, job, configuration, or UI contracts
+- authorization and scoping
+- failure behavior, retries, idempotency, observability, and degraded operation
+- performance, query shape, cache ownership, keys, TTL, and invalidation
+- rollout, rollback, cleanup, and operational verification
 
-### When the main spec is closed
+Do not re-document standard framework boilerplate. Name the canonical repository mechanism that will be reused.
 
-Close the main spec only when both are true:
+### 7. Break implementation into phases and steps
 
-- there are no active sub-specs left in the module folder
-- the module / initiative is no longer an active source of truth
+Every active, non-trivial sub-spec must end with a phased implementation plan. A main spec keeps only cross-sub-spec dependency order.
 
-At that point:
+#### Phases
 
-- move the whole module folder into global `.ai/specs/ended/`
-- keep the main spec at `{module-name}/YYYY-MM-DD-main-spec.md` inside that archived module folder
-- keep ended sub-specs in `{module-name}/ended/` for module history
-- update any references that still point to the old active location
+- A phase is a coherent delivery story with a concrete outcome.
+- Prefer vertical slices over layer-only batches when practical.
+- A phase may depend on an earlier phase, but completing it must leave the repository working, reviewable, and safe to merge.
+- State the phase goal, prerequisites, and exit gate.
+- Separate migrations, compatibility bridges, or rollout stages when they carry distinct operational risk.
 
----
+#### Steps
 
-## Sub-spec Format
+- Number steps as `P1.1`, `P1.2`, `P2.1`, and so on.
+- Each step must name the outcome and concrete code areas or artifacts involved.
+- Each step must state how its behavior is verified.
+- Include tests at the layer required by repository testing guidance; do not defer all testing to a final generic step.
+- Include repository-prescribed lint, typecheck, format, migration, or runtime verification at the relevant checkpoint.
+- A step that cannot be tested or objectively inspected is not implementation-ready.
+- Do not create steps that require the implementer to choose a new architecture, contract, or product behavior.
 
-Use the template in [references/sub-spec-template.md](references/sub-spec-template.md).
+Use the Short Tracker as a live pointer to the current phase and step, not as a duplicate of the plan.
 
-Minimum sections:
+### 8. Review
 
-- `# Title`
-- `TLDR`
-- `Problem`
-- `Target Behavior`
-- `Required Changes`
-- `Dependencies`
-- `Acceptance Criteria`
-- `Short Tracker`
+Run the structural checklist in [references/spec-checklist.md](references/spec-checklist.md), using [references/architectural-review-template.md](references/architectural-review-template.md) when producing a review deliverable, then run the stack-specific review required by repository instructions.
 
-Optional:
+Review findings use these severities:
 
-- `Out of Scope`
-- `Current Status`
+- **Critical:** security/data isolation issue, hard repository-rule violation, or architecture that cannot safely ship
+- **High:** missing phasing, rollback, compatibility plan, major failure behavior, or incorrect component ownership
+- **Medium:** incomplete acceptance evidence, inconsistent contract, unclear step, terminology drift, or avoidable spec bloat
+- **Low:** readability, diagrams, or non-blocking editorial improvements
 
-### Short Tracker
+When authorized and available, use a fresh-context reviewer for scope cohesion and hidden assumptions. Otherwise perform the review directly and do not claim independent review.
 
-The **Short Tracker** is a small operational checklist for active work.
+Approval requires no Critical, High, or unresolved Medium findings. Low findings may remain only when explicitly non-blocking.
 
-Rules:
+### 9. Finalize and maintain
 
-- include only `pending`, `in_progress`, or `blocked` items by default
-- include `done` items only if they materially affect the remaining scope
-- update existing lines instead of duplicating them
+- Update the main spec's active/ended references and dependency order.
+- Keep Current Status and Short Tracker aligned with actual implementation state.
+- Add a short dated changelog entry for material decision or lifecycle changes.
+- Close and move specs only according to repository lifecycle rules.
+- Do not edit production code while the task is specifically spec writing or review.
 
-Good:
+## Required Formats
 
-```md
-## Short Tracker
-
-- `pending` - refactor cleanup step into a reuse-aware decision step
-- `pending` - update arm workflow to reuse the current collection
-- `pending` - verify diagnostics after the lifecycle refactor
-```
-
-Bad:
-
-- 20+ item tracker
-- repeating full changelog entries
-- mixing future ideas with active scope
-
----
-
-## Final Review
-
-Before finalizing any spec:
-
-1. Run [references/spec-checklist.md](references/spec-checklist.md).
-2. Follow the skill combination defined in the repository's `AGENTS.md`.
-3. For Medusa, run `codee-spec-review-medusa`.
-4. For Payload CMS or Next.js, run `codee-spec-review-payload`.
-5. Fix violations before marking the spec ready.
-
-Use this split consistently:
-
-- `spec-checklist.md` validates structure, brevity, and tracker hygiene
-- the stack review skill validates hard technical rules
-
-Do not claim final approval when the required stack review skill is not
-installed or its review has not run.
-
----
-
-## Changelog
-
-Changelog is allowed, but keep it short.
-
-Use it mainly in the **main spec** for:
-
-- major architecture decisions
-- scope reversals
-- superseded approaches
-
-Do not maintain a large dated diary inside every sub-spec.
-
-If a sub-spec needs too much history, it is probably trying to be a main spec.
-
----
-
-## notes.md
-
-Use `notes.md` for short-lived working notes inside a module folder.
-
-Good use cases:
-
-- "I am trying to reason through this but I have not chosen direction yet"
-- test observations
-- quick option lists
-- open hypotheses
-- rough follow-up ideas that are not yet active scope
-
-Rules:
-
-- keep it short
-- do not treat it as a source of truth
-- move confirmed decisions into the main spec or a sub-spec
-- move active work items into a `Short Tracker`
-- delete or compress stale notes freely
-
-`notes.md` exists to prevent premature spec bloat.
-
----
-
-## Implementation Order
-
-Keep `Implementation Order`, but treat it as a dependency map, not a giant plan.
-
-Good:
-
-- `Sub-spec A before Sub-spec B because B depends on the new model`
-- `Webhook route before tap-open because the webhook is the trigger`
-
-Bad:
-
-- a long phase narrative that duplicates the tracker and plan
-
-In main specs, `Implementation Order` should be short and cross-reference sub-specs.
-
-In sub-specs, use `Dependencies` plus a tiny `Implementation Plan` only when needed.
-
----
-
-## Status Rules
-
-Recommended statuses:
-
-- `done` - implemented and reflected in the codebase
-- `in_progress` - actively being worked on
-- `pending` - planned but not started
-- `blocked` - cannot proceed because of an external dependency or unresolved decision
-- `dropped` - intentionally abandoned
-
-Do not mark a scope item `in_progress` if only its surrounding initiative is active.
-
-Example:
-
-- `done` - `pos_terminal` model + migration
-- `in_progress` - `pos_terminal -> reader_id` integration in webhook and display flows
-
----
-
-## Review Heuristics
-
-1. **Spec type fit** - is this really a main spec or should it be a sub-spec?
-2. **Folder fit** - is this spec in the correct module folder?
-3. **Brevity** - can a whole section be replaced by a reference?
-4. **No duplication** - does the main spec repeat sub-spec details?
-5. **Tracker size** - is the tracker still short and operational?
-6. **Notes hygiene** - are working thoughts kept in `notes.md` instead of bloating specs or trackers?
-7. **Ordering clarity** - does the main spec explain dependencies between sub-specs?
-8. **Ended hygiene** - are closed sub-specs moved into the module-local `ended/` folder?
-9. **Status accuracy** - do statuses reflect code reality, not just planning intent?
-
----
-
-## Reference Materials
-
-- [Main Spec Template](references/main-spec-template.md)
-- [Sub-spec Template](references/sub-spec-template.md)
-- [Spec Checklist](references/spec-checklist.md)
-- [Root AGENTS.md](../../../AGENTS.md)
+Use [references/main-spec-template.md](references/main-spec-template.md) for main specs and [references/sub-spec-template.md](references/sub-spec-template.md) for sub-specs. Adapt conditional sections to the feature, but address every applicable concern.
+
+### Main spec minimum
+
+- title and metadata
+- TLDR
+- Scope
+- Architecture
+- Evidence and References
+- Active Sub-specs
+- Ended Sub-specs
+- Implementation Order
+- Risks and Cross-cutting Concerns
+- Current Status
+
+### Sub-spec minimum
+
+- title and metadata
+- TLDR
+- Problem
+- Current State and Evidence
+- Target Behavior
+- Proposed Solution and alternatives
+- applicable contracts and architecture details
+- Edge Cases and Failure Scenarios
+- Risks, Rollout, and Rollback
+- Dependencies
+- Acceptance Criteria
+- Phasing
+- Implementation Plan
+- Short Tracker
+
+## Tracker and Status Rules
+
+Allowed statuses are `pending`, `in_progress`, `blocked`, `done`, and `dropped`.
+
+- `done` means implemented and verified in the codebase, not merely specified.
+- `in_progress` identifies the one currently active item when work is underway.
+- `blocked` states the concrete unresolved dependency.
+- Keep only current phase/step pointers and material remaining work in Short Tracker.
+- Do not copy every implementation step into Short Tracker.
+- Do not use changelog entries as execution status.
+
+## Hard Rules
+
+- Repository instructions override this skill.
+- One independently deliverable capability per sub-spec.
+- Skeleton first; critical Open Questions are a hard gate in interactive mode.
+- Every implementation-changing statement must be evidenced, explicitly decided, or labeled as an assumption.
+- Specs describe the unique architectural diff, not generic framework behavior.
+- Every active non-trivial sub-spec has phases, numbered testable steps, and phase exit gates.
+- Every implementation step leaves the repository working and does not require an unstated design decision.
+- Public contract changes include compatibility and rollout/rollback treatment.
+- State changes and external dependencies include failure behavior and reversibility.
+- Reviews rank findings by severity and justify the verdict.
+- Spec writing and review do not authorize production-code changes.

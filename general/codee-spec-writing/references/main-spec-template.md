@@ -1,55 +1,71 @@
 # Main Spec Template
 
-Use this template for the stable source-of-truth document of one module or initiative.
+Use this template for the stable source of truth of one module or initiative. Keep implementation detail in linked sub-specs.
 
 ```md
 # {Module / Initiative Title}
 
 **Date:** YYYY-MM-DD
 **Status:** review | active | decided
-**Area:** backend | frontend | integration | device | tooling
+**Area:** backend | frontend | integration | device | tooling | cross-cutting
 
 > Folder: `.ai/specs/{module-name}/`
 
 ## TLDR
 
-{1-3 short paragraphs}
+{What the initiative changes, why it matters, and for whom.}
+
+## Open Questions
+
+> Include only while critical decisions are unresolved. Remove before approval.
+
+- Q1. {Short decision-oriented question}
 
 ## Scope
 
-- in
-- out
+### In scope
+
+- {capability or boundary}
+
+### Out of scope
+
+- {explicit exclusion}
 
 ## Architecture
 
-{short description}
+{Stable component boundaries, ownership, data flow, canonical mechanisms reused, and cross-cutting decisions. Link to sub-specs for details.}
 
-## Folder References
+## Evidence and References
 
-- main spec: `./YYYY-MM-DD-main-spec.md`
-- active sub-specs live in the same folder
-- optional working notes: `./notes.md`
-- closed sub-specs move to `./ended/`
+- `{repo path}` - {what it proves or constrains}
+- [{authoritative external source}]({url}) - {decision it supports}
 
 ## Active Sub-specs
 
-- [sub-collection-reuse](./YYYY-MM-DD-sub-collection-reuse.md) - {one-line purpose}
-- [sub-diagnostics-refresh](./YYYY-MM-DD-sub-diagnostics-refresh.md) - {one-line purpose}
+- [sub-{topic}](./YYYY-MM-DD-sub-{topic}.md) - {one independently deliverable capability}
 
 ## Ended Sub-specs
 
-- [ended/sub-reader-pairing](./ended/YYYY-MM-DD-sub-reader-pairing.md) - {one-line purpose}
+- [ended/sub-{topic}](./ended/YYYY-MM-DD-sub-{topic}.md) - {closed capability}
 
 ## Implementation Order
 
-1. {dependency / ordering note}
-2. {dependency / ordering note}
+1. {Sub-spec/dependency order and why}
+2. {Sub-spec/dependency order and why}
+
+## Risks and Cross-cutting Concerns
+
+| Risk / failure scenario | Severity | Affected area | Mitigation | Residual risk |
+|---|---|---|---|---|
+| {concrete scenario} | low / medium / high / critical | {area} | {prevention/recovery} | {what remains} |
 
 ## Current Status
 
-{2-5 short bullets or a short paragraph}
+- `{status}` - {current initiative-level state}
 
 ## Short Changelog
 
-- YYYY-MM-DD - {major decision}
+- YYYY-MM-DD - {material decision, scope change, or lifecycle change}
 ```
+
+Remove the Open Questions section once resolved. Omit an empty changelog, but retain the other sections and keep them concise.

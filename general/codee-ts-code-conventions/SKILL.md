@@ -13,11 +13,14 @@ formatting.
 
 ### When to comment
 
-Comment only when the why is non-obvious: a hidden constraint, subtle invariant,
-external-system quirk, or workaround for a specific bug.
+Document every named function and class method with JSDoc, including private
+helpers, one-line functions, accessors, and constructors. Inline anonymous
+callbacks do not require JSDoc.
 
-Do not describe what the code does. Prefer identifiers that make the behavior
-self-explanatory.
+State the function or method's purpose concisely. Add implementation comments
+only when the why is non-obvious: a hidden constraint, subtle invariant,
+external-system quirk, or workaround for a specific bug. Prefer identifiers
+that make the implementation self-explanatory.
 
 ### Format
 
@@ -26,8 +29,10 @@ self-explanatory.
 | Single-line note | `// note` |
 | Multi-line block | `/** */` |
 | Multi-line type-field annotation | `/** */` inside the type body |
+| Function or method documentation | Multi-line `/** */` block |
 
 Do not use consecutive `//` lines as a substitute for a documentation block.
+Do not collapse function or method JSDoc to a single-line `/** ... */` block.
 
 ### Characters
 
@@ -43,16 +48,17 @@ Prefer words such as "to", "from", "returns", and "depends on".
 
 ### JSDoc
 
-Use JSDoc tags only when they add information that is not already clear from
-the signature:
+When a documented function or method declares parameters, include an `@param`
+tag for every parameter in signature order. This is required even when the
+parameter name and type already make its purpose clear.
 
-- `@param name - description` when a parameter's semantics are non-obvious
+Use the remaining JSDoc tags when they add information that is not already clear
+from the signature:
+
+- `@param name - description` for every declared parameter
 - `@returns description` when the result's shape or semantics need explanation
 - `@throws` for non-obvious error conditions
 - `@example` for non-trivial usage
-
-Skip JSDoc on trivial one-liners and getters whose signatures are
-self-documenting.
 
 ## Naming
 

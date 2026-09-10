@@ -14,4 +14,6 @@ unavailable skill.
 | User-facing UI text | `codee-ui-copy` |
 | Write or restructure specifications | `codee-spec-writing` |
 | Cross-cutting working notes | `codee-spec-notes` |
+| Pull request description | `codee-generate-pr-description` |
 | Client or stakeholder questions | `codee-writing-questions` |
+| New agent skill | `codee-skill-creator` |

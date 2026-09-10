@@ -85,7 +85,12 @@ instruction file. Keep only rows for skills installed in that repository.
 
 The Medusa template combines Codee skills with the official
 [`medusajs/medusa-agent-skills`](https://github.com/medusajs/medusa-agent-skills)
-skills.
+skills, so its router covers two sources. Install both to make every row resolve:
+
+```bash
+npx skills add codee-sh/codee-skills --skill '*'
+npx skills add medusajs/medusa-agent-skills
+```
 
 ## Available skills
 
@@ -104,6 +109,7 @@ skills.
 
 - `codee-admin-forms-with-medusa`
 - `codee-medusa-code-conventions`
+- `codee-medusa-testing`
 - `codee-spec-review-medusa`
 
 ### Payload
@@ -133,6 +139,7 @@ codee-skills/
 │   ├── medusa/
 │   │   ├── codee-admin-forms-with-medusa/
 │   │   ├── codee-medusa-code-conventions/
+│   │   ├── codee-medusa-testing/
 │   │   └── codee-spec-review-medusa/
 │   └── payload/
 │       ├── codee-payload/
