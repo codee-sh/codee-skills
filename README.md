@@ -98,6 +98,8 @@ npx skills add medusajs/medusa-agent-skills
 
 - `codee-generate-pr-description`
 - `codee-project-organization`
+- `codee-root-cause`
+- `codee-setup-agent-pipeline`
 - `codee-skill-creator`
 - `codee-spec-notes`
 - `codee-spec-writing`
@@ -129,6 +131,8 @@ codee-skills/
 ├── general/
 │   ├── codee-generate-pr-description/
 │   ├── codee-project-organization/
+│   ├── codee-root-cause/
+│   ├── codee-setup-agent-pipeline/
 │   ├── codee-skill-creator/
 │   ├── codee-spec-notes/
 │   ├── codee-spec-writing/

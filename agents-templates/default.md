@@ -10,6 +10,7 @@ unavailable skill.
 
 | Task | Skills |
 |------|--------|
+| Bug report, before proposing or writing a fix | `codee-root-cause` |
 | TypeScript implementation or review | `codee-ts-code-conventions` |
 | User-facing UI text | `codee-ui-copy` |
 | Write or restructure specifications | `codee-spec-writing` |
@@ -17,3 +18,4 @@ unavailable skill.
 | Pull request description | `codee-generate-pr-description` |
 | Client or stakeholder questions | `codee-writing-questions` |
 | New agent skill | `codee-skill-creator` |
+| Configure or re-configure the agent pipeline | `codee-setup-agent-pipeline` |

@@ -19,6 +19,7 @@ unavailable skill.
 | Generate a migration for a Medusa module | `db-generate` |
 | Run pending database migrations | `db-migrate` |
 | Guided Medusa learning tutorial | `learning-medusa` |
+| Bug report, before proposing or writing a fix | `codee-root-cause` |
 | TypeScript implementation or review | `codee-ts-code-conventions` |
 | Medusa workflow or step | `codee-medusa-code-conventions` |
 | Test for a Medusa step, workflow, module, API route, or util | `codee-medusa-testing` |
@@ -30,6 +31,7 @@ unavailable skill.
 | Pull request description | `codee-generate-pr-description` |
 | Client or stakeholder questions | `codee-writing-questions` |
 | New agent skill | `codee-skill-creator` |
+| Configure or re-configure the agent pipeline | `codee-setup-agent-pipeline` |
 
 `db-generate`, `db-migrate`, and `learning-medusa` are listed for completeness. The user
 invokes them explicitly, so the router is not expected to match them on its own.
