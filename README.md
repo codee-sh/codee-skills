@@ -97,6 +97,7 @@ npx skills add medusajs/medusa-agent-skills
 ### General
 
 - `codee-generate-pr-description`
+- `codee-lessons`
 - `codee-project-organization`
 - `codee-root-cause` *
 - `codee-setup-agent-pipeline` *
@@ -137,6 +138,7 @@ and generalised the pipeline references. The MIT notice stays inside each adapte
 codee-skills/
 ├── general/
 │   ├── codee-generate-pr-description/
+│   ├── codee-lessons/
 │   ├── codee-project-organization/
 │   ├── codee-root-cause/
 │   ├── codee-setup-agent-pipeline/

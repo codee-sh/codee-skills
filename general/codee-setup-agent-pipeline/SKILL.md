@@ -42,6 +42,13 @@ Every skill in this collection reads its repository-specific settings from `.ai/
     "scripts": ".ai/scripts",
     "qa": ".ai/qa"
   },
+  "lessons": {
+    "path": ".ai/lessons",
+    "index": ".ai/lessons.md",
+    "modulesFrom": ".ai/specs",
+    "areas": ["backend", "frontend", "integration", "tooling"],
+    "topics": []
+  },
   "reviewChecklist": null,
   "closeKeywords": []
 }
@@ -69,6 +76,12 @@ Field reference:
 - `paths.specs` — where feature specifications live (default `.ai/specs`). Spec filenames follow `{YYYY-MM-DD}-{kebab-case-title}.md`. `codee-spec-writing` writes here, issue-preparation and follow-up skills link from here, and shaping conversations write handoff briefs under `<paths.specs>/briefs/`.
 - `paths.scripts` — where reusable environment scripts are generated (default `.ai/scripts`); environment bring-up and teardown scripts are written here.
 - `paths.qa` — where QA working state and artifacts live (default `.ai/qa`): the shared `test-env.json` descriptor, and QA reports/screenshots under `<paths.qa>/artifacts_<runId>/`.
+- `lessons.path` — where individual lesson records live (default `.ai/lessons`), one kebab-case markdown file each, with JSON front matter carrying `title`, `modules`, `areas`, and `topics`.
+- `lessons.index` — the catalog that indexes them (default `.ai/lessons.md`). It is a retrieval index, not a session-start document: route the task, match rows by module, area, or topic, then open only the records that match. Never bulk-read `lessons.path`.
+- `lessons.modulesFrom` — the directory whose folder names are the module vocabulary (default `paths.specs`). Module tags are derived, never listed: a tag is valid when a folder of that exact name exists. A hand-maintained list drifts from the repository; a directory cannot.
+- `lessons.areas` — the closed area vocabulary. Derive it from the repository's actual top-level split (apps, packages, or layers), not from another project's list.
+- `lessons.topics` — the closed cross-cutting vocabulary. Start empty and grow it deliberately: adding a topic is an edit here, which is exactly the friction that stops a tag set from sprawling into one term per lesson.
+
 - `reviewChecklist` — optional path to a repo-local review checklist file. When set, the configured review skill reads it in addition to its built-in checklist. A root `CODE_REVIEW.md` (see Project docs) is always picked up regardless.
 - `closeKeywords` — optional list of extra words that mark a PR as closing an issue, for repositories whose PR bodies are not written in English. Issue-closing housekeeping matches the built-in English keywords (`fix`/`fixes`/`fixed`, `close`/`closes`/`closed`, `resolve`/`resolves`/`resolved`) plus everything listed here, case-insensitively and only immediately before a `#N` token; configured words extend the built-ins and never replace them. The tracker's own `closingIssuesReferences` parse is English-only too, so a Polish repo writing `Zamyka #88` gets no closing signal from either source until it sets, for example, `["zamyka", "naprawia", "rozwiązuje"]`. Leave it empty on an English repository. Whatever the setting, a run that finds issue mentions without a recognized keyword reports them rather than passing over them silently.
 

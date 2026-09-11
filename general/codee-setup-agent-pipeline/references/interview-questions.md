@@ -18,4 +18,8 @@ The questions step 3 of `codee-setup-agent-pipeline` asks the user (skipped with
 5. QA gate on or off. Recommend on when the repo ships user-facing changes.
 6. Where specs live (`paths.specs`, default `.ai/specs`) — confirm or point at an existing design-doc directory.
 7. Optional repo-local review checklist path.
-8. Project docs to generate (each only when missing): `SDLC.md` (recommended), `AGENTS.md` with the task-routing table (when no agent instruction file exists), `CODE_REVIEW.md`, and `BACKWARD_COMPATIBILITY.md`.
+8. The lesson vocabulary: confirm the areas derived from the repository's own
+   top-level split, and start `topics` empty unless the repo already tags its
+   findings. Module tags need no question — they are the folder names under
+   `lessons.modulesFrom`.
+9. Project docs to generate (each only when missing): `SDLC.md` (recommended), `AGENTS.md` with the task-routing table (when no agent instruction file exists), `CODE_REVIEW.md`, and `BACKWARD_COMPATIBILITY.md`.
