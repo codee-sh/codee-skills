@@ -10,8 +10,11 @@ repositories.
 
 ## Use the skills
 
-You can install the skills directly from GitHub or clone the repository and use
-your local copy.
+**Always install from GitHub.** `codee-sh/codee-skills` is the source every
+installation should name, so that `skills-lock.json` records the same source for
+everyone on the project and `ags skills update` pulls the same published version
+for all of them. A local clone is for developing the skills themselves, not for
+installing them - see [Develop against a local clone](#develop-against-a-local-clone).
 
 ### Install directly with `npx skills`
 
@@ -58,21 +61,24 @@ npx skills add codee-sh/codee-skills --skill '*' -a claude-code -a codex
 Add `-g` to install globally instead of in the current project, or `-y` to skip
 confirmation prompts.
 
-### Clone and use the repository locally
+### Develop against a local clone
+
+Only for working on the skills themselves - testing an edit before it is pushed.
 
 ```bash
 git clone git@github.com:codee-sh/codee-skills.git
-npx skills add ./codee-skills
-```
-
-You can also install a single skill from the cloned repository:
-
-```bash
 npx skills add ./codee-skills --skill codee-spec-writing
 ```
 
-Using a local source is useful when developing or testing changes before pushing
-them to GitHub.
+A local install records `"sourceType": "local"` and a filesystem path in the
+project's `skills-lock.json`, instead of `codee-sh/codee-skills`. That entry is
+specific to one machine: a teammate cloning the project gets a path that does not
+exist, and `ags skills update` pulls from your working copy rather than from the
+published repository. Mixing both source types in one project means some skills
+update from GitHub and some from your disk, and the two drift apart.
+
+Install a skill this way while you are changing it; reinstall it from GitHub once
+the change is pushed.
 
 ## Agent instruction templates
 
@@ -203,6 +209,12 @@ ags skills remove codee-ts-code-conventions # remove one skill
 
 `ags skills add` installs to both `.claude/skills/` and `.agents/skills/`.
 Installed sources are recorded in `skills-lock.json`.
+
+Note that `ags skills add` installs from your local clone, so it writes a `local`
+source into the lock file, with the consequences described in
+[Develop against a local clone](#develop-against-a-local-clone). Use it while
+developing a skill; install the published version with
+`npx skills add codee-sh/codee-skills --skill <name>` once it is pushed.
 
 For local sources, `ags skills update` pulls the latest version of this repository,
 compares the installed copies, and reinstalls skills that changed. External GitHub
