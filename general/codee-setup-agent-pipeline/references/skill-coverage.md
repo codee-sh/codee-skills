@@ -1,11 +1,10 @@
 # Cross-skill coverage check
 
-Skills in this collection delegate to each other by name (e.g. the autofix
-chain `om-verify-in-repo` → `codee-root-cause` → `om-fix` → `om-open-pr` →
-`om-auto-review-pr`) and point at each other's reference files
-(`om-<skill>/references/<file>`). A cherry-picked install can leave those
-references dangling. This check finds every dangling reference and produces one
-ready-to-paste command that installs everything missing.
+Skills in this collection delegate to each other by name and point at each
+other's reference files (`codee-<skill>/references/<file>`). A cherry-picked
+install can leave those references dangling. This check finds every dangling
+reference and produces one ready-to-paste command that installs what is
+missing.
 
 Run it during setup (workflow step "Verify cross-skill coverage") and any time
 the user reports a skill "not found" mid-pipeline.
@@ -14,9 +13,9 @@ the user reports a skill "not found" mid-pipeline.
 
 `SKILLS_ROOT` is the directory that contains the installed skills — the parent
 of this skill's own directory (the directory holding the `SKILL.md` you are
-reading). For Claude Code this is typically `~/.claude/skills`; for Codex
-`~/.codex/skills`; project-level installs use the agent's project skill
-directory. Resolve it from this skill's actual location, not from a guess.
+reading). For Claude Code this is typically `.claude/skills`; agent-neutral
+installs use `.agents/skills`. Resolve it from this skill's actual location,
+not from a guess.
 
 A reference is also satisfied by a repo-local skill at
 `.ai/skills/<name>/SKILL.md` — repo-local skills count as available.
@@ -25,46 +24,45 @@ A reference is also satisfied by a repo-local skill at
 
 Two kinds of references must resolve:
 
-1. **Name references** — mentions of a collection skill (`om-…`) in any of an
-   installed skill's markdown files. Only names in the roster below count;
-   other `om-…` tokens (repo docs like a philosophy file, or substrings of
-   hyphenated words) are not missing skills.
+1. **Name references** — mentions of a collection skill (`codee-…`) in any of
+   an installed skill's markdown files.
 2. **File references** — explicit cross-skill pointers of the form
-   `om-<skill>/references/<file>`; the target must exist inside the installed
-   sibling skill.
+   `codee-<skill>/references/<file>`; the target must exist inside the
+   installed sibling skill.
+
+There is no hardcoded roster. Every `codee-…` token that does not resolve to an
+installed directory is reported — a genuinely missing skill and a typo both
+deserve the same attention, and a roster would have to be kept in sync with the
+collection to be worth anything.
 
 Runnable check (POSIX shell; run from the repository root so repo-local
 `.ai/skills/` overrides are seen):
 
 ```bash
 # SKILLS_ROOT: parent directory of this skill's installed directory.
-SKILLS_ROOT=${SKILLS_ROOT:-"$HOME/.claude/skills"}
-ROSTER="om-apply-upgrade-notes om-approve-merge-pr om-auto-continue-pr om-auto-continue-pr-loop om-auto-create-pr om-auto-create-pr-loop om-auto-fix-issue om-auto-fix-pr om-auto-implement-spec om-auto-manage-issues om-auto-qa-pr om-auto-review-pr om-auto-update-changelog om-auto-write-spec om-brainstorm om-check-and-commit om-close-fixed-issues om-code-review om-create-skill om-discover om-fix om-followup-issue-from-pr om-integration-tests om-merge-buddy om-open-pr om-pipeline-retro om-pr-autopilot om-prepare-issue om-prepare-test-env om-review-prs codee-root-cause codee-setup-agent-pipeline om-spec-writing om-ux-review-pr om-ux-setup om-ux-shape om-verify-in-repo"
+SKILLS_ROOT=${SKILLS_ROOT:-".claude/skills"}
 missing=""
 add_missing() { case " $missing " in *" $1 "*) ;; *) missing="$missing $1" ;; esac; }
-for dir in "$SKILLS_ROOT"/om-*/; do
+for dir in "$SKILLS_ROOT"/codee-*/; do
   [ -f "${dir}SKILL.md" ] || continue
-  for ref in $(grep -rhoE '(^|[^A-Za-z-])om-[a-z][a-z-]*[a-z]' --include='*.md' "$dir" 2>/dev/null \
-               | grep -oE 'om-[a-z][a-z-]*[a-z]' | sort -u); do
-    case " $ROSTER " in *" $ref "*) ;; *) continue ;; esac   # roster names only
+  for ref in $(grep -rhoE '(^|[^A-Za-z-])codee-[a-z][a-z0-9-]*[a-z0-9]' --include='*.md' "$dir" 2>/dev/null \
+               | grep -oE 'codee-[a-z][a-z0-9-]*[a-z0-9]' | sort -u); do
     [ -d "$SKILLS_ROOT/$ref" ] && continue                   # installed
     [ -f ".ai/skills/$ref/SKILL.md" ] && continue            # repo-local skill
     add_missing "$ref"
   done
 done
 # Cross-skill file pointers must resolve inside the installed sibling.
-for hit in $(grep -rhoE 'om-[a-z-]+/references/[A-Za-z0-9._/-]+' --include='*.md' \
-             "$SKILLS_ROOT"/om-*/ 2>/dev/null | sort -u); do
+for hit in $(grep -rhoE 'codee-[a-z0-9-]+/references/[A-Za-z0-9._/-]+' --include='*.md' \
+             "$SKILLS_ROOT"/codee-*/ 2>/dev/null | sort -u); do
   [ -e "$SKILLS_ROOT/$hit" ] || add_missing "${hit%%/*}"
 done
 [ -z "$missing" ] && echo "SKILL_COVERAGE_OK" || echo "SKILL_COVERAGE_MISSING:$missing"
 ```
 
-The roster is the complete list of skills this collection ships and is kept in
-sync with the collection by the repo's lint gate. The leading-context guard in
-the first grep (`(^|[^A-Za-z-])`) drops substrings of hyphenated words such as
-`custom-provider`; the roster intersection drops everything that is not a
-collection skill.
+The leading-context guard in the first grep (`(^|[^A-Za-z-])`) drops substrings
+of hyphenated words, so a token like `my-codee-thing` is not read as a skill
+reference.
 
 ## Remediation
 
@@ -73,7 +71,7 @@ missing, which installed skills need it, and give them one command they can
 paste and run as-is — one `--skill` flag per missing name:
 
 ```bash
-npx skills add <collection-source> --skill om-fix --skill codee-root-cause
+npx skills add <collection-source> --skill codee-root-cause --skill codee-spec-writing
 ```
 
 When many skills are missing, the simplest fix is installing the whole
@@ -86,11 +84,11 @@ npx skills add <collection-source> --skill '*'
 `<collection-source>` is the `<owner>/<repo>` argument the skills were
 originally installed with — never guess it. Resolve it in this order:
 
-1. If this skill's installed directory is a symlink into a development
+1. `skills-lock.json` at the repository root, when present: it records the
+   source of every installed skill.
+2. If this skill's installed directory is a symlink into a development
    checkout, follow it and read the checkout's `package.json`
    (`repository.url`) or `git remote get-url origin`.
-2. Install metadata the skills CLI keeps near `SKILLS_ROOT` (a lock or
-   manifest file naming the source), when present.
 3. Ask the operator once, then reuse the answer for every command printed in
    this run.
 

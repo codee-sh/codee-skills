@@ -15,5 +15,5 @@ uses local browser processes only — no cloud-browser account or API key.
 
 Backward compatibility is deliberate: a config without `browser.provider` is
 read as `playwright`, and browser consumers accept the legacy `playwright`
-object in `test-env.json`. Re-run this setup skill or `om-apply-upgrade-notes`
+object in `test-env.json`. Re-run this setup skill
 to make the choice explicit and install a browser descriptor.

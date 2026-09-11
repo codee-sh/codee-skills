@@ -98,8 +98,8 @@ npx skills add medusajs/medusa-agent-skills
 
 - `codee-generate-pr-description`
 - `codee-project-organization`
-- `codee-root-cause`
-- `codee-setup-agent-pipeline`
+- `codee-root-cause` *
+- `codee-setup-agent-pipeline` *
 - `codee-skill-creator`
 - `codee-spec-notes`
 - `codee-spec-writing`
@@ -123,6 +123,13 @@ npx skills add medusajs/medusa-agent-skills
 - `codee-payload-review`
 - `codee-payload-security`
 - `codee-spec-review-payload`
+
+\* Adapted from the [open-mercato/skills](https://github.com/open-mercato/skills)
+collection (MIT, Copyright (c) 2026 Open Mercato). The original skills are the work of
+the Open Mercato team; we reworked them for a stack-agnostic, non-autonomous workflow —
+renamed them to the `codee-` prefix, removed the dependencies on skills we do not ship,
+and generalised the pipeline references. The MIT notice stays inside each adapted
+`SKILL.md`.
 
 ## Repository structure
 

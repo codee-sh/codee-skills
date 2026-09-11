@@ -68,7 +68,7 @@ Copy this file to `.ai/trackers/{name}.md`, set `"tracker": "{name}"` in `.ai/ag
 - **get-pr-checks** — number → CI check runs (name, state, link).
 - **get-required-checks** — base branch → required status checks; when unreadable, treat all reported checks as required.
 - **get-pr-comment / get-review-comment** — comment id → body, author, URL (conversation vs inline review comment).
-- **list-review-comments** — number → the PR's inline review comments (file, line, author, body). This is how a skill reads feedback left *on the diff* rather than in the conversation: `om-auto-review-pr` carries it as inherited findings, and `om-auto-continue-pr` mines it for remaining work when it adopts a PR that has no execution plan. When the tracker has no separate inline-comment surface, document that here — consumers degrade to review bodies plus conversation comments and say so in their report.
+- **list-review-comments** — number → the PR's inline review comments (file, line, author, body). This is how a skill reads feedback left *on the diff* rather than in the conversation: a review skill carries it as inherited findings, and a resuming skill mines it for remaining work when it adopts a PR that has no execution plan. When the tracker has no separate inline-comment surface, document that here — consumers degrade to review bodies plus conversation comments and say so in their report.
 
 ### CI runs
 

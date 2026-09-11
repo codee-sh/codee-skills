@@ -1,7 +1,7 @@
 # Browser provider: <name>
 
 This descriptor implements the browser-automation operations used by
-`om-prepare-test-env`, `om-auto-qa-pr`, and `om-integration-tests`. The
+the QA and integration-test skills. The
 config's `browser.provider` value selects the committed copy at
 `.ai/browsers/<name>.md`.
 
