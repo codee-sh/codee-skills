@@ -27,18 +27,20 @@ Apply `codee-ts-code-conventions` and `codee-medusa-code-conventions` as well. U
 
 ## Which directory
 
-Four places hold scripts, and they are not interchangeable. Pick by what the script needs, not
+Three places hold scripts, and they are not interchangeable. Pick by what the script needs, not
 by what is nearby:
 
 | Location | Runs | Has the Medusa container | For |
 |---|---|---|---|
 | `apps/backend/src/migration-scripts/` | automatically, every `medusa db:migrate` | yes | schema-time work that must happen unattended on deploy |
 | `apps/backend/src/scripts/` | manually, `medusa exec <path> [args]` | yes | data fixes, backfills, seeds, operational tools |
-| `apps/backend/scripts/` | manually, `pnpm db:*` | no - bash, reads `DATABASE_URL` from `.env` | acting on the database or environment from outside the app (`pg_dump` / `pg_restore`) |
-| `tools/` | manually, `pnpm <name>` | no - plain Node, repo root | repo tooling that never touches the app (doc budget checks, catalogue dumps) |
+| `tools/` | manually, `pnpm <name>` | no - plain Node or bash at the repo root | everything outside the app process: database dump / restore, code generation, repo checks |
 
-Needing the container decides between the top and bottom halves; needing to run unattended
-decides between the first two.
+Needing the container is the first question: if the script can do its job with a connection
+string, an HTTP client or the file tree, it belongs in `tools/` and should not boot Medusa to get
+there. A `tools/` script resolves the repo root from its own location and reads what it needs from
+`apps/backend/.env` - see `tools/db-snapshot.sh` and `tools/dump-struct-product.mjs` for the two
+shapes. Among the container scripts, needing to run unattended decides between the first two.
 
 **`src/migration-scripts/` is the dangerous one.** It fires on every migrate and a failure is
 **not compensated**, so partial writes stay. Nothing that creates or deletes data belongs there
