@@ -18,6 +18,7 @@ unavailable skill.
 | Ecommerce storefront UI or flow | `storefront-best-practices` |
 | Generate a migration for a Medusa module | `db-generate` |
 | Run pending database migrations | `db-migrate` |
+| Script in `src/scripts/` or `src/migration-scripts/`, or a one-off data backfill | `codee-medusa-scripts` |
 | Guided Medusa learning tutorial | `learning-medusa` |
 | Bug report, before proposing or writing a fix | `codee-root-cause` |
 | TypeScript implementation or review | `codee-ts-code-conventions` |
