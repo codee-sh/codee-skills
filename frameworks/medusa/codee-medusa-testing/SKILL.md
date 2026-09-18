@@ -66,6 +66,16 @@ a second exported function out of a step (or route, or service method) whose onl
 is the test. The harness exists precisely so production code stays shaped by its real
 use. See `references/steps-tests.md`.
 
+Extraction is right for exactly two reasons, and testability is neither:
+
+- the logic has a **second consumer** — another step, route or workflow calls it too;
+- it belongs to a **module's domain** rather than to a workflow, in which case it lives in
+  `src/modules/<module>/lib/`, not beside the step.
+
+Before extracting, check: `grep -rl '\bmyFunction\b' src | grep -v __tests__` should list
+more than the file it came from. If it does not, put the body back in the step and test
+the step.
+
 ## Conventions
 
 | Thing | Rule |

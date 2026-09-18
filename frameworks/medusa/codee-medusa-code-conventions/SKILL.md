@@ -57,3 +57,21 @@ Example:
  */
 export const mapCatalogAttributesStep = createStep(...)
 ```
+
+## Step naming
+
+A step's prefix says what kind of work it does. Pick from these before inventing a verb:
+
+| Prefix | The step… | Example |
+|---|---|---|
+| `plan-` | reads current state and **decides a branch**, returning an action and a reason | `planAssetRegenerationStep` answers `skip` or `regenerate` |
+| `prepare-` | **readies data for the next step**, which is the one that writes | `prepareAssetLinksStep` feeds `createRemoteLinkStep` |
+| `list-` / `fetch-` | **reads** rows or an upstream response and returns them | `listProductImagesStep` |
+| `register-` / `link-` / `repoint-` | **writes**, and owns its compensation | `registerAssetFormatsStep` |
+
+Do not use `build-` for a step. It reads as a synonym of `prepare-`, and where both are in play
+they drift until they name the same job under different words. `build-` stays for plain functions.
+
+When a `transform()` in the workflow already does the shaping, do not add a step for it. A step
+earns its place when the workflow needs a named node to pass along, or when the shaping is worth
+a test of its own — and then it is the step that is tested, per `codee-medusa-testing`.
