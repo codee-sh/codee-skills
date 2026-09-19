@@ -28,12 +28,12 @@ Comprehensive backend development guide for Medusa applications. Contains patter
 
 **Load these references based on what you're implementing:**
 
-- **Creating a module?** → MUST load `reference/custom-modules.md` first
-- **Creating workflows?** → MUST load `reference/workflows.md` first
-- **Creating API routes?** → MUST load `reference/api-routes.md` first
-- **Creating module links?** → MUST load `reference/module-links.md` first
-- **Querying data?** → MUST load `reference/querying-data.md` first
-- **Adding authentication?** → MUST load `reference/authentication.md` first
+- **Creating a module?** → MUST load `references/custom-modules.md` first
+- **Creating workflows?** → MUST load `references/workflows.md` first
+- **Creating API routes?** → MUST load `references/api-routes.md` first
+- **Creating module links?** → MUST load `references/module-links.md` first
+- **Querying data?** → MUST load `references/querying-data.md` first
+- **Adding authentication?** → MUST load `references/authentication.md` first
 
 **Minimum requirement:** Load at least 1-2 reference files relevant to your specific task before implementing.
 
@@ -305,16 +305,16 @@ I've added the following routes:
 **For detailed patterns and examples, load reference files:**
 
 ```
-reference/custom-modules.md    - Creating modules with data models
-reference/workflows.md          - Workflow creation and step patterns
-reference/api-routes.md         - API route structure and validation
-reference/module-links.md       - Linking entities across modules
-reference/querying-data.md      - Query patterns and filtering rules
-reference/authentication.md     - Protecting routes and accessing users
-reference/error-handling.md     - MedusaError types and patterns
-reference/scheduled-jobs.md     - Cron jobs and periodic tasks
-reference/subscribers-and-events.md - Event handling
-reference/troubleshooting.md    - Common errors and solutions
+references/custom-modules.md    - Creating modules with data models
+references/workflows.md          - Workflow creation and step patterns
+references/api-routes.md         - API route structure and validation
+references/module-links.md       - Linking entities across modules
+references/querying-data.md      - Query patterns and filtering rules
+references/authentication.md     - Protecting routes and accessing users
+references/error-handling.md     - MedusaError types and patterns
+references/scheduled-jobs.md     - Cron jobs and periodic tasks
+references/subscribers-and-events.md - Event handling
+references/troubleshooting.md    - Common errors and solutions
 ```
 
 Each reference file contains:
