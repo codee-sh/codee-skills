@@ -19,12 +19,9 @@ Create these tasks in your todo list:
 
 ## Basic Workflow Structure
 
-**File Organization:**
-- Group by domain, not by kind: steps in `src/workflows/<domain>/steps/<step-name>.ts`,
-  composition functions in `src/workflows/<domain>/workflows/<workflow-name>.ts`
-- Deep domains nest one level further: `src/workflows/<domain>/<sub-domain>/steps/<step-name>.ts`
-- Helpers shared inside a single domain go in `src/workflows/<domain>/utils/`
-- If the project's own AGENTS.md defines a different layout, follow the project
+**File Organization:** steps and composition functions are grouped by domain, and the paths in the
+examples below follow that layout. The layout and the naming rules behind it are owned by
+`codee-medusa-backend-conventions` - read it there rather than inferring them from these examples.
 
 ```typescript
 // src/workflows/my-model/steps/create-my-model.ts

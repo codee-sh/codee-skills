@@ -127,16 +127,15 @@ Frontend (admin dashboard/storefront via SDK)
 
 ### 6. File Organization (MEDIUM)
 
-- `file-workflow-domain` - Group workflows by domain, not by kind:
-  `src/workflows/<domain>[/<sub-domain>]/{steps,workflows,utils,types}/<name>.ts`. A flat
-  `src/workflows/steps/` stops scaling as soon as a codebase carries more than a few domains.
-- `file-middleware-exports` - Export schemas and types from middleware files
-- `file-links-directory` - Define module links in `src/links/[name].ts`
-- `file-project-wins` - If the project's own `AGENTS.md` (or `apps/<app>/AGENTS.md`) defines a
-  different layout, the project's layout wins over this section.
+- `file-links-directory` - Define module links in `src/links/[name].ts` - Medusa scans that directory
+- `file-api-route-path` - The directory path under `src/api/` is the URL, and the handler file is
+  always `route.ts`
 
-Naming rules for those files - one `createStep` per file, file name matching the exported symbol,
-workflow id matching the file name - live in `codee-medusa-backend-conventions`.
+Everything else about where a backend file goes and what it is called - the workflow directory
+layout, one `createStep` per file, the file name matching the exported symbol, the workflow id
+matching the file name, how `validators.ts` and `middlewares.ts` sit beside a route - is a project
+convention, not a framework rule. `codee-medusa-backend-conventions` owns it. Do not restate it
+here; the two would drift.
 
 ## Workflow Composition Rules
 
