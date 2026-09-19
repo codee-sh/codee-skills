@@ -1,6 +1,6 @@
 ---
 name: codee-medusa-backend-conventions
-description: Where a file goes, what it is called, and what its JSDoc must say across a Medusa backend - workflows and steps, API routes, modules, links, subscribers and jobs. Use when writing or reviewing any Medusa backend file, and whenever naming a new one.
+description: Where a file goes, what it is called, what its JSDoc must say, and what shape a step takes, across a Medusa backend - workflows and steps, API routes, modules, links, subscribers and jobs. Use when writing or reviewing any Medusa backend file, when naming a new step or workflow, and when deciding what a step should accept and return.
 ---
 
 # Medusa Backend Conventions
@@ -135,21 +135,79 @@ export const mapCatalogAttributesStep = createStep(...)
 
 ## Step naming
 
-A step's prefix says what kind of work it does. Pick from these before inventing a verb:
+A step's prefix says what kind of work it does, on three axes. Pick from these before inventing
+a verb.
 
-| Prefix | The step… | Example |
-|---|---|---|
-| `plan-` | reads current state and **decides a branch**, returning an action and a reason | `planImageRegenerationStep` answers `skip` or `regenerate` |
-| `prepare-` | **readies data for the next step**, which is the one that writes | `prepareReviewLinksStep` feeds `createRemoteLinkStep` |
-| `list-` / `fetch-` | **reads** rows or an upstream response and returns them | `listProductImagesStep` |
-| `register-` / `link-` / `repoint-` | **writes**, and owns its compensation | `registerProductVariantsStep` |
+**Reads**
 
-Do not use `build-` for a step. It reads as a synonym of `prepare-`, and where both are in play
-they drift until they name the same job under different words. `build-` stays for plain functions.
+| Prefix | The step… |
+|---|---|
+| `list-` | returns many records from Medusa or a local module |
+| `get-` | returns one record from Medusa, or throws |
+| `fetch-` | reads from **outside** Medusa - a foreign API, a foreign database, a file |
+
+**Checks and shapes**
+
+| Prefix | The step… |
+|---|---|
+| `validate-` | checks and throws; changes no state and returns no working data |
+| `prepare-` | readies the input for the step that comes next |
+
+**Writes**
+
+| Prefix | The step… |
+|---|---|
+| `create-` / `update-` / `delete-` | writes to Medusa and owns its compensation |
+| `upsert-` | writes insert-or-update, where that is genuinely one operation |
+| `link-` / `unlink-` | writes a module link rather than a row |
+
+`fetch-` is not a longer word for `list-`. The difference is where the data comes from, and it
+decides how the step must behave: anything crossing a network boundary can fail, so the step is
+the place that owns the timeout, the retry and an error the caller can act on.
+
+**Verbs that are not step prefixes.** Each is a synonym of one above, and where both are in play
+they drift until they name the same job under different words:
+
+| Instead of | Use |
+|---|---|
+| `plan-`, `resolve-`, `build-` | `prepare-` - or `list-`/`get-`/`fetch-` when the step's real work is reading |
+| `load-`, `retrieve-`, `collect-` | `list-` or `get-` |
+| `remove-` | `delete-` |
+| `register-`, `write-`, `set-`, `add-`, `repoint-` | `create-` or `update-` |
+
+`build-` stays available for plain functions; only steps may not use it.
 
 When a `transform()` in the workflow already does the shaping, do not add a step for it. A step
 earns its place when the workflow needs a named node to pass along, or when the shaping is worth
 a test of its own — and then it is the step that is tested, per `codee-medusa-testing`.
+
+## Step shape
+
+**A step that drives a branch returns a discriminated union.** Where a workflow calls `when()` on
+a step's result, that result carries an `action` to switch on, and the arm that does nothing
+carries a `reason`:
+
+```ts
+export type RegenerationPlan =
+  | { action: "skip"; imageId: string; reason: SkipReason }
+  | { action: "regenerate"; imageId: string; widths: number[] }
+```
+
+The workflow then reads as `when(..., ({ plan }) => plan.action === "regenerate")`. Keeping the
+signal in the type rather than in the step's name lets the compiler hold the two together; a
+prefix cannot.
+
+**A step that accepts `fields` accepts a union, not strings.** A step promises the shape of what
+it returns. A caller free to pass any field string can ask for one the output type has no room
+for - it will be read from the database and then silently dropped:
+
+```ts
+/** Fields readable on top of the defaults, bounded by what the output type can hold. */
+export type ProductExtraField = "thumbnail" | "variants.id" | "variants.thumbnail"
+```
+
+A caller that genuinely needs arbitrary fields does not need this step - it needs
+`useQueryGraphStep`, which `codee-medusa-backend` covers. Do not rebuild it.
 
 ## Deviations
 
