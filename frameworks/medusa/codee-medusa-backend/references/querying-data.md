@@ -637,7 +637,7 @@ Before using `query.index()`, ensure the Index Module is configured:
    MEDUSA_FF_INDEX_ENGINE=true
    ```
 
-4. **Run migrations:**
+4. **Ask the user to run migrations:**
    ```bash
    npx medusa db:migrate
    ```

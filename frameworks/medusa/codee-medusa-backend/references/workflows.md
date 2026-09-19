@@ -20,12 +20,14 @@ Create these tasks in your todo list:
 ## Basic Workflow Structure
 
 **File Organization:**
-- **Recommended**: Create workflow steps in `src/workflows/steps/[step-name].ts`
-- Workflow composition functions go in `src/workflows/[workflow-name].ts`
-- This keeps steps reusable and organized
+- Group by domain, not by kind: steps in `src/workflows/<domain>/steps/<step-name>.ts`,
+  composition functions in `src/workflows/<domain>/workflows/<workflow-name>.ts`
+- Deep domains nest one level further: `src/workflows/<domain>/<sub-domain>/steps/<step-name>.ts`
+- Helpers shared inside a single domain go in `src/workflows/<domain>/utils/`
+- If the project's own AGENTS.md defines a different layout, follow the project
 
 ```typescript
-// src/workflows/steps/create-my-model.ts
+// src/workflows/my-model/steps/create-my-model.ts
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
 type Input = {
@@ -55,7 +57,7 @@ export const createMyModelStep = createStep(
   }
 )
 
-// src/workflows/create-my-model.ts
+// src/workflows/my-model/workflows/create-my-model.ts
 import { createWorkflow, WorkflowResponse } from "@medusajs/framework/workflows-sdk"
 import { createMyModelStep } from "./steps/create-my-model"
 
@@ -456,7 +458,7 @@ Check Medusa documentation or `@medusajs/medusa/core-flows` for available built-
 ### ✅ CORRECT - Validation in Workflow Step
 
 ```typescript
-// src/workflows/steps/delete-review.ts
+// src/workflows/review/steps/delete-review.ts
 export const deleteReviewStep = createStep(
   "delete-review",
   async ({ reviewId, customerId }: Input, { container }) => {

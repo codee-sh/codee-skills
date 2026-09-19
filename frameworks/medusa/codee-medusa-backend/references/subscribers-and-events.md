@@ -237,7 +237,7 @@ export default async function productUpdatedHandler({
 Emit custom events from workflows using the `emitEventStep`:
 
 ```typescript
-// src/workflows/create-review.ts
+// src/workflows/review/workflows/create-review.ts
 import { createWorkflow, WorkflowResponse } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep } from "@medusajs/medusa/core-flows"
 

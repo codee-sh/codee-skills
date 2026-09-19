@@ -41,8 +41,9 @@ Create these tasks in your todo list:
 - Create service extending MedusaService
 - Export module definition in index.ts
 - **CRITICAL: Register module in medusa-config.ts** (do this before using the module)
-- **CRITICAL: Generate migrations: npx medusa db:generate [module-name]** (Never skip!)
-- **CRITICAL: Run migrations: npx medusa db:migrate** (Never skip!)
+- **STOP - migrations belong to the user.** Define the models, then ask the user to run
+  `npx medusa db:generate [module-name]` and `npx medusa db:migrate`. Never run either command
+  yourself and never hand-write a migration file.
 - Use module service in API routes/workflows
 - **CRITICAL: Run build to validate implementation** (catches type errors and issues)
 
@@ -130,20 +131,20 @@ module.exports = defineConfig({
 
 ## Steps 5-6: Generate and Run Migrations
 
-**⚠️ CRITICAL - DO NOT SKIP**: After creating a module and registering it in medusa-config.ts, you MUST run TWO SEPARATE commands. Without this step, the module's database tables won't exist and you will get runtime errors.
+**⚠️ STOP HERE**: After creating a module and registering it in medusa-config.ts, the schema still has to reach the database. Those two commands are the user's to run, not yours - hand them over and wait. Until they run, the module's tables do not exist and every service call fails.
 
 ```bash
-# Step 5: Generate migrations (creates migration files)
+# Step 5 - ask the user to run this: it creates the migration files
 # Command format: npx medusa db:generate <module-name>
 npx medusa db:generate blog
 
-# Step 6: Run migrations (applies changes to database)
+# Step 6 - ask the user to run this: it applies the changes to the database
 # This command takes NO arguments
 npx medusa db:migrate
 ```
 
-**⚠️ CRITICAL: These are TWO separate commands:**
-- ✅ CORRECT: Run `npx medusa db:generate blog` then `npx medusa db:migrate`
+**⚠️ These are TWO separate commands, run by the user in this order:**
+- ✅ CORRECT: `npx medusa db:generate blog`, then `npx medusa db:migrate`
 - ❌ WRONG: `npx medusa db:generate blog "create blog module"` (no description parameter!)
 - ❌ WRONG: Combining into one command
 

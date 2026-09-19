@@ -18,9 +18,22 @@ Comprehensive backend development guide for Medusa applications. Contains patter
 - Querying data across modules
 - Implementing authentication/authorization
 
-**Also load these skills when:**
-- **building-admin-dashboard-customizations:** Building admin UI (widgets, pages, forms)
-- **building-storefronts:** Calling backend API routes from storefronts (SDK integration)
+## Which Skill Owns What
+
+This skill covers how Medusa works and what the framework dictates. It does not carry the project's
+own conventions, its test rules, or its frontend guidance - load the skill that owns them:
+
+| Subject | Skill |
+|---|---|
+| Architecture, modules, API routes, querying, links, subscribers, jobs | **this skill** |
+| File layout, file and symbol naming, workflow/step JSDoc | `codee-medusa-backend-conventions` |
+| Which test to write, at which layer, and where it lives | `codee-medusa-testing` |
+| One-off and operational scripts | `codee-medusa-scripts` |
+| Admin UI - widgets, pages, tables | `codee-medusa-admin-dashboard` |
+| Admin forms | `codee-medusa-admin-dashboard-forms` |
+| Calling backend routes from a storefront (SDK, data fetching) | `codee-medusa-storefront-sdk` |
+| Commerce surfaces - cart, checkout, PDP, PLP, SEO | `codee-medusa-storefront-ux` |
+| General TypeScript conventions | `codee-ts-code-conventions` |
 
 ## CRITICAL: Load Reference Files When Needed
 
@@ -114,10 +127,16 @@ Frontend (admin dashboard/storefront via SDK)
 
 ### 6. File Organization (MEDIUM)
 
-- `file-workflow-steps` - Recommended: Create steps in `src/workflows/steps/[name].ts`
-- `file-workflow-composition` - Composition functions in `src/workflows/[name].ts`
+- `file-workflow-domain` - Group workflows by domain, not by kind:
+  `src/workflows/<domain>[/<sub-domain>]/{steps,workflows,utils,types}/<name>.ts`. A flat
+  `src/workflows/steps/` stops scaling as soon as a codebase carries more than a few domains.
 - `file-middleware-exports` - Export schemas and types from middleware files
 - `file-links-directory` - Define module links in `src/links/[name].ts`
+- `file-project-wins` - If the project's own `AGENTS.md` (or `apps/<app>/AGENTS.md`) defines a
+  different layout, the project's layout wins over this section.
+
+Naming rules for those files - one `createStep` per file, file name matching the exported symbol,
+workflow id matching the file name - live in `codee-medusa-backend-conventions`.
 
 ## Workflow Composition Rules
 
@@ -217,88 +236,11 @@ If the build fails:
 - Type mismatches (e.g., missing `MedusaRequest<T>` type argument)
 - Incorrect workflow composition (async functions, conditionals)
 
-## Next Steps - Testing Your Implementation
+## Tests
 
-**After successfully implementing a feature, always provide these next steps to the user:**
-
-### 1. Start the Development Server
-
-If the server isn't already running, start it:
-
-```bash
-npm run dev      # or pnpm dev / yarn dev
-```
-
-### 2. Access the Admin Dashboard
-
-Open your browser and navigate to:
-- **Admin Dashboard:** http://localhost:9000/app
-
-Log in with your admin credentials to test any admin-related features.
-
-### 3. Test API Routes
-
-If you implemented custom API routes, list them for the user to test:
-
-**Admin Routes (require authentication):**
-- `POST http://localhost:9000/admin/[your-route]` - Description of what it does
-- `GET http://localhost:9000/admin/[your-route]` - Description of what it does
-
-**Store Routes (public or customer-authenticated):**
-- `POST http://localhost:9000/store/[your-route]` - Description of what it does
-- `GET http://localhost:9000/store/[your-route]` - Description of what it does
-
-**Testing with cURL example:**
-```bash
-# Admin route (requires authentication)
-curl -X POST http://localhost:9000/admin/reviews/123/approve \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  --cookie "connect.sid=YOUR_SESSION_COOKIE"
-
-# Store route
-curl -X POST http://localhost:9000/store/reviews \
-  -H "Content-Type: application/json" \
-  -d '{"product_id": "prod_123", "rating": 5, "comment": "Great product!"}'
-```
-
-### 4. Additional Testing Steps
-
-Depending on what was implemented, mention:
-- **Workflows:** Test mutation operations and verify rollback on errors
-- **Subscribers:** Trigger events and check logs for subscriber execution
-- **Scheduled jobs:** Wait for job execution or check logs for cron output
-
-### Format for Presenting Next Steps
-
-Always present next steps in a clear, actionable format after implementation:
-
-```markdown
-## Implementation Complete
-
-The [feature name] has been successfully implemented. Here's how to test it:
-
-### Start the Development Server
-[server start command based on package manager]
-
-### Access the Admin Dashboard
-Open http://localhost:9000/app in your browser
-
-### Test the API Routes
-I've added the following routes:
-
-**Admin Routes:**
-- POST /admin/[route] - [description]
-- GET /admin/[route] - [description]
-
-**Store Routes:**
-- POST /store/[route] - [description]
-
-### What to Test
-1. [Specific test case 1]
-2. [Specific test case 2]
-3. [Specific test case 3]
-```
+Every step, workflow, module service, API route and exported util carries a test. This skill does
+not decide which one: `codee-medusa-testing` names the layer, the runner, the file location and the
+mock harness for the change at hand. Load it before writing the code, not after.
 
 ## How to Use
 
@@ -314,6 +256,9 @@ references/authentication.md     - Protecting routes and accessing users
 references/error-handling.md     - MedusaError types and patterns
 references/scheduled-jobs.md     - Cron jobs and periodic tasks
 references/subscribers-and-events.md - Event handling
+references/data-models.md        - Data model definitions and properties
+references/workflow-hooks.md     - Extending core workflows through hooks
+references/frontend-integration.md - Reaching the backend from a frontend
 references/troubleshooting.md    - Common errors and solutions
 ```
 
@@ -353,7 +298,7 @@ When building features that span backend and frontend:
 
 **For Admin Dashboard:**
 1. **Backend (this skill):** Module → Workflow → API Route
-2. **Frontend:** Load `building-admin-dashboard-customizations` skill
+2. **Frontend:** Load `codee-medusa-admin-dashboard` skill
 3. **Connection:**
    - Built-in endpoints: Use existing SDK methods (`sdk.admin.product.list()`)
    - Custom API routes: Use `sdk.client.fetch("/admin/my-route")`
@@ -361,7 +306,7 @@ When building features that span backend and frontend:
 
 **For Storefronts:**
 1. **Backend (this skill):** Module → Workflow → API Route
-2. **Frontend:** Load `building-storefronts` skill
+2. **Frontend:** Load `codee-medusa-storefront-sdk` skill
 3. **Connection:**
    - Built-in endpoints: Use existing SDK methods (`sdk.store.product.list()`)
    - Custom API routes: Use `sdk.client.fetch("/store/my-route")`
