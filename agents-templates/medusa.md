@@ -22,7 +22,7 @@ unavailable skill.
 | Guided Medusa learning tutorial | `learning-medusa` |
 | Bug report, before proposing or writing a fix | `codee-root-cause` |
 | TypeScript implementation or review | `codee-ts-code-conventions` |
-| Medusa workflow or step | `codee-medusa-code-conventions` |
+| Medusa workflow or step | `codee-medusa-backend-conventions` |
 | Test for a Medusa step, workflow, module, API route, or util | `codee-medusa-testing` |
 | Medusa Admin form | `codee-admin-forms-with-medusa` |
 | User-facing UI text | `codee-ui-copy` |

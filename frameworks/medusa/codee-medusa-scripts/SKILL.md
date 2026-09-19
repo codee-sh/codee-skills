@@ -22,7 +22,7 @@ into production data. This skill exists because that combination went wrong once
 channel, publishable key and store, then failed on the region step - and a failed
 migration script is not compensated, so every deploy left another set behind.
 
-Apply `codee-ts-code-conventions` and `codee-medusa-code-conventions` as well. Use
+Apply `codee-ts-code-conventions` and `codee-medusa-backend-conventions` as well. Use
 `codee-medusa-testing` for the test you owe.
 
 ## Which directory

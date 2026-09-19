@@ -35,7 +35,7 @@ Install the TypeScript conventions with the Medusa extension:
 ```bash
 npx skills add codee-sh/codee-skills \
   --skill codee-ts-code-conventions \
-  --skill codee-medusa-code-conventions
+  --skill codee-medusa-backend-conventions
 ```
 
 Install spec writing with the matching technical review:
@@ -117,7 +117,7 @@ npx skills add medusajs/medusa-agent-skills
 ### Medusa
 
 - `codee-admin-forms-with-medusa`
-- `codee-medusa-code-conventions`
+- `codee-medusa-backend-conventions`
 - `codee-medusa-testing`
 - `codee-spec-review-medusa`
 
@@ -157,7 +157,7 @@ codee-skills/
 ├── frameworks/
 │   ├── medusa/
 │   │   ├── codee-admin-forms-with-medusa/
-│   │   ├── codee-medusa-code-conventions/
+│   │   ├── codee-medusa-backend-conventions/
 │   │   ├── codee-medusa-testing/
 │   │   └── codee-spec-review-medusa/
 │   └── payload/

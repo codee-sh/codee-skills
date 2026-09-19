@@ -84,5 +84,5 @@ other higher-order functions.
 
 | When you are also... | Load |
 |----------------------|------|
-| Writing or reviewing Medusa TypeScript code | `codee-medusa-code-conventions` |
+| Writing or reviewing Medusa TypeScript code | `codee-medusa-backend-conventions` |
 | Writing user-facing strings | `codee-ui-copy` |

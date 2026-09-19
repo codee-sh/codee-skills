@@ -1,5 +1,5 @@
 ---
-name: codee-medusa-code-conventions
+name: codee-medusa-backend-conventions
 description: Medusa-specific TypeScript code conventions for workflows and steps. Use when writing or reviewing Medusa workflow or step code.
 ---
 

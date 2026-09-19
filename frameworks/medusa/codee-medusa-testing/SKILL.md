@@ -19,7 +19,7 @@ description: >-
 
 Pick the right test layer for a backend change and write it the way the repository
 already does. Apply after `codee-ts-code-conventions` and
-`codee-medusa-code-conventions` — those still govern naming, JSDoc, and clarity inside
+`codee-medusa-backend-conventions` — those still govern naming, JSDoc, and clarity inside
 the test file.
 
 The goal: no step, workflow, module service, API route, or exported util lands "blind".
