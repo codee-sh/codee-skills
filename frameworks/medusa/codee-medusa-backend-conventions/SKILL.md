@@ -1,16 +1,91 @@
 ---
 name: codee-medusa-backend-conventions
-description: Medusa-specific TypeScript code conventions for workflows and steps. Use when writing or reviewing Medusa workflow or step code.
+description: Where a file goes, what it is called, and what its JSDoc must say across a Medusa backend - workflows and steps, API routes, modules, links, subscribers and jobs. Use when writing or reviewing any Medusa backend file, and whenever naming a new one.
 ---
 
-# Medusa Code Conventions
+# Medusa Backend Conventions
 
 Apply this skill after `codee-ts-code-conventions`.
 
-This skill adds Medusa-specific conventions. It overrides the base comment rule
-only where it explicitly requires JSDoc for workflows and steps. Use
-`building-with-medusa` for architecture, API usage, data modeling, and workflow
-design patterns.
+`codee-medusa-backend` covers what Medusa dictates. This skill covers what we decided where Medusa
+left room: where a file goes, what it is called, and what its JSDoc must say. It overrides the base
+comment rule only where it explicitly requires JSDoc.
+
+## File layout
+
+### `workflows/`
+
+Group by domain, not by kind:
+
+```
+src/workflows/<domain>[/<sub-domain>]/{steps,workflows,utils,types}/<name>.ts
+```
+
+- **One `createStep` per file, one `createWorkflow` per file.** A file that defines two of either
+  is splitting work the caller cannot name.
+- **The file name is the exported symbol in kebab-case, minus the suffix.** `list-assets.ts`
+  exports `listAssetsStep`; `attach-asset.ts` exports `attachAssetWorkflow`.
+- **A workflow's id string matches its file name.** `createWorkflow("export-order-to-sap-sql")`
+  lives in `export-order-to-sap-sql.ts`. The id is what shows up in logs and the workflow engine,
+  so a reader who sees one must be able to open the other.
+- **Helpers shared inside a domain go in `<domain>/utils/`.** Extract a helper out of a step only
+  when it has a second consumer, or when it belongs to a module's domain rather than to the
+  workflow. Testability is never a reason to extract: steps are tested through the `createStep`
+  harness, per `codee-medusa-testing`.
+
+### `api/`
+
+Medusa fixes the directory path - it is the URL - and the name `route.ts`. The rest is ours:
+
+| File | Holds |
+|---|---|
+| `route.ts` | the handlers for that URL |
+| `validators.ts` | Zod schemas and their inferred types, beside the route that uses them |
+| `query-config.ts` | listed fields and pagination defaults, where a route paginates |
+| `middlewares.ts` | that resource's own middleware |
+
+`middlewares.ts` composes bottom-up: each resource declares its own, the area file
+(`api/admin/middlewares.ts`, `api/store/middlewares.ts`) collects its resources, and
+`api/middlewares.ts` collects the areas. Medusa only requires the last one; the rest keep a
+middleware next to the route it guards.
+
+Middleware shared across resources goes in `api/middlewares/<verb>-<subject>.ts`, named with the
+verb that says what it does to the request: `enforce-`, `ensure-`, `verify-`.
+
+### `modules/`
+
+```
+src/modules/<module-name>/
+  index.ts                       module definition and the <NAME>_MODULE constant
+  service.ts                     the module service
+  models/                        one file per data model, plus an index.ts barrel
+  migrations/                    generated, never hand-written
+  types/ lib/ clients/ loaders/  as the module needs them
+```
+
+- The directory is kebab-case. The exported constant is `<NAME>_MODULE` in SCREAMING_SNAKE, and its
+  **value is camelCase** (`"productData"`) - Medusa fails at runtime on a dash in a module name.
+- The service class is `<Pascal>ModuleService`.
+- A model file is kebab-case and exports the PascalCase model of the same name: `asset-format.ts`
+  exports `AssetFormat`. Keep the two in step - a file that drops a word its model keeps makes the
+  model unfindable by name.
+
+### `links/`
+
+One file per link, named after both sides, left to right: `asset-product.ts`,
+`company-customer-group.ts`, `sap-portal-channel-sales-channel.ts`.
+
+Singular or plural in the file name carries no meaning - it does not track `isList`, and reading
+one into it will mislead you. Check the definition.
+
+### `subscribers/` and `jobs/`
+
+Both are flat and kebab-case, and both export a default async handler plus a named `config`.
+
+- **A subscriber is named after the event it answers, then what it does with it:**
+  `order-placed-sap-export.ts`, `struct-pim-product-migrated.ts`.
+- **A job is named after the work, verb first:** `expire-impersonation-sessions.ts`,
+  `process-integration-jobs.ts`.
 
 ## Workflow JSDoc
 
@@ -75,3 +150,9 @@ they drift until they name the same job under different words. `build-` stays fo
 When a `transform()` in the workflow already does the shaping, do not add a step for it. A step
 earns its place when the workflow needs a named node to pass along, or when the shaping is worth
 a test of its own — and then it is the step that is tested, per `codee-medusa-testing`.
+
+## Deviations
+
+A codebase that predates these rules will break them in places. Leave those alone unless you are
+fixing them deliberately, and record them in the project's own notes — not here. A shared skill
+states the rule; the backlog of what does not yet meet it belongs to the project that carries it.
