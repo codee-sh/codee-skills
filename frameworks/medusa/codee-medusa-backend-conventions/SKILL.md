@@ -23,10 +23,10 @@ src/workflows/<domain>[/<sub-domain>]/{steps,workflows,utils,types}/<name>.ts
 
 - **One `createStep` per file, one `createWorkflow` per file.** A file that defines two of either
   is splitting work the caller cannot name.
-- **The file name is the exported symbol in kebab-case, minus the suffix.** `list-assets.ts`
-  exports `listAssetsStep`; `attach-asset.ts` exports `attachAssetWorkflow`.
-- **A workflow's id string matches its file name.** `createWorkflow("export-order-to-sap-sql")`
-  lives in `export-order-to-sap-sql.ts`. The id is what shows up in logs and the workflow engine,
+- **The file name is the exported symbol in kebab-case, minus the suffix.** `list-products.ts`
+  exports `listProductsStep`; `create-order.ts` exports `createOrderWorkflow`.
+- **A workflow's id string matches its file name.** `createWorkflow("sync-order-to-erp")`
+  lives in `sync-order-to-erp.ts`. The id is what shows up in logs and the workflow engine,
   so a reader who sees one must be able to open the other.
 - **Helpers shared inside a domain go in `<domain>/utils/`.** Extract a helper out of a step only
   when it has a second consumer, or when it belongs to a module's domain rather than to the
@@ -63,17 +63,17 @@ src/modules/<module-name>/
   types/ lib/ clients/ loaders/  as the module needs them
 ```
 
-- The directory is kebab-case. The exported constant is `<NAME>_MODULE` in SCREAMING_SNAKE, and its
-  **value is camelCase** (`"productData"`) - Medusa fails at runtime on a dash in a module name.
+- The directory is kebab-case and the exported constant is `<NAME>_MODULE` in SCREAMING_SNAKE.
+  What its *value* may contain is Medusa's constraint rather than ours - see `codee-medusa-backend`.
 - The service class is `<Pascal>ModuleService`.
-- A model file is kebab-case and exports the PascalCase model of the same name: `asset-format.ts`
-  exports `AssetFormat`. Keep the two in step - a file that drops a word its model keeps makes the
+- A model file is kebab-case and exports the PascalCase model of the same name: `product-review.ts`
+  exports `ProductReview`. Keep the two in step - a file that drops a word its model keeps makes the
   model unfindable by name.
 
 ### `links/`
 
-One file per link, named after both sides, left to right: `asset-product.ts`,
-`company-customer-group.ts`, `sap-portal-channel-sales-channel.ts`.
+One file per link, named after both sides, left to right: `review-product.ts`,
+`wishlist-customer.ts`, `loyalty-tier-sales-channel.ts`.
 
 Singular or plural in the file name carries no meaning - it does not track `isList`, and reading
 one into it will mislead you. Check the definition.
@@ -83,9 +83,9 @@ one into it will mislead you. Check the definition.
 Both are flat and kebab-case, and both export a default async handler plus a named `config`.
 
 - **A subscriber is named after the event it answers, then what it does with it:**
-  `order-placed-sap-export.ts`, `struct-pim-product-migrated.ts`.
-- **A job is named after the work, verb first:** `expire-impersonation-sessions.ts`,
-  `process-integration-jobs.ts`.
+  `order-placed-send-receipt.ts`, `product-updated-reindex.ts`.
+- **A job is named after the work, verb first:** `expire-abandoned-carts.ts`,
+  `process-pending-payouts.ts`.
 
 ## Workflow JSDoc
 
@@ -139,10 +139,10 @@ A step's prefix says what kind of work it does. Pick from these before inventing
 
 | Prefix | The step… | Example |
 |---|---|---|
-| `plan-` | reads current state and **decides a branch**, returning an action and a reason | `planAssetRegenerationStep` answers `skip` or `regenerate` |
-| `prepare-` | **readies data for the next step**, which is the one that writes | `prepareAssetLinksStep` feeds `createRemoteLinkStep` |
+| `plan-` | reads current state and **decides a branch**, returning an action and a reason | `planImageRegenerationStep` answers `skip` or `regenerate` |
+| `prepare-` | **readies data for the next step**, which is the one that writes | `prepareReviewLinksStep` feeds `createRemoteLinkStep` |
 | `list-` / `fetch-` | **reads** rows or an upstream response and returns them | `listProductImagesStep` |
-| `register-` / `link-` / `repoint-` | **writes**, and owns its compensation | `registerAssetFormatsStep` |
+| `register-` / `link-` / `repoint-` | **writes**, and owns its compensation | `registerProductVariantsStep` |
 
 Do not use `build-` for a step. It reads as a synonym of `prepare-`, and where both are in play
 they drift until they name the same job under different words. `build-` stays for plain functions.
