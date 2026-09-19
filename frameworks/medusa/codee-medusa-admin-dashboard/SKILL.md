@@ -7,7 +7,7 @@ description: Load automatically when planning, researching, or implementing Medu
 
 Build custom UI extensions for the Medusa Admin dashboard using the Admin SDK and Medusa UI components.
 
-**Note:** "UI Routes" are custom admin pages, different from backend API routes (which use building-with-medusa skill).
+**Note:** "UI Routes" are custom admin pages, different from backend API routes (which use codee-medusa-backend skill).
 
 ## When to Apply
 
@@ -19,8 +19,8 @@ Build custom UI extensions for the Medusa Admin dashboard using the Admin SDK an
 - Adding navigation between pages
 
 **Also load these skills when:**
-- **building-with-medusa:** Building backend API routes that the admin UI calls
-- **building-storefronts:** If working on storefront instead of admin dashboard
+- **codee-medusa-backend:** Building backend API routes that the admin UI calls
+- **codee-medusa-storefront-sdk:** If working on storefront instead of admin dashboard
 
 ## CRITICAL: Load Reference Files When Needed
 
@@ -328,7 +328,7 @@ const createReview = useMutation({
 - **Built-in endpoints**: Use existing SDK methods (`sdk.admin.product.list()`, `sdk.store.product.list()`)
 - **Custom endpoints**: Use `sdk.client.fetch()` for your custom API routes
 
-**For implementing backend API routes**, load the `building-with-medusa` skill.
+**For implementing backend API routes**, load the `codee-medusa-backend` skill.
 
 ## Widget vs UI Route
 

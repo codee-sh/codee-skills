@@ -1,6 +1,6 @@
 ---
-name: codee-admin-forms-with-medusa
-description: Conventions for building admin UI forms in this Medusa project — ManagerFields, Zod v4, zodV4Resolver, file structure. Load alongside building-admin-dashboard-customizations whenever creating or editing an admin form.
+name: codee-medusa-admin-dashboard-forms
+description: Conventions for building admin UI forms in this Medusa project — ManagerFields, Zod v4, zodV4Resolver, file structure. Load alongside codee-medusa-admin-dashboard whenever creating or editing an admin form.
 ---
 
 # Admin Forms

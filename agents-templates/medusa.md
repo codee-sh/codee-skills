@@ -12,10 +12,10 @@ unavailable skill.
 
 | Task | Skills |
 |------|--------|
-| Medusa backend | `building-with-medusa` |
-| Medusa Admin UI | `building-admin-dashboard-customizations` |
-| Medusa storefront integration | `building-storefronts` |
-| Ecommerce storefront UI or flow | `storefront-best-practices` |
+| Medusa backend | `codee-medusa-backend` |
+| Medusa Admin UI | `codee-medusa-admin-dashboard` |
+| Medusa storefront integration | `codee-medusa-storefront-sdk` |
+| Ecommerce storefront UI or flow | `codee-medusa-storefront-ux` |
 | Generate a migration for a Medusa module | `db-generate` |
 | Run pending database migrations | `db-migrate` |
 | Script in `src/scripts/` or `src/migration-scripts/`, or a one-off data backfill | `codee-medusa-scripts` |
@@ -24,7 +24,7 @@ unavailable skill.
 | TypeScript implementation or review | `codee-ts-code-conventions` |
 | Any Medusa backend file - where it goes, what it is named, its JSDoc | `codee-medusa-backend-conventions` |
 | Test for a Medusa step, workflow, module, API route, or util | `codee-medusa-testing` |
-| Medusa Admin form | `codee-admin-forms-with-medusa` |
+| Medusa Admin form | `codee-medusa-admin-dashboard-forms` |
 | User-facing UI text | `codee-ui-copy` |
 | Write or restructure specifications | `codee-spec-writing` |
 | Review a Medusa specification | `codee-spec-review-medusa` |

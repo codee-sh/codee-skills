@@ -26,7 +26,7 @@ Repository instructions override a conflicting generic skill rule. Do not preser
 Before reviewing:
 
 1. Read `codee-spec-writing` and apply its structural checklist.
-2. Read `building-with-medusa` completely.
+2. Read `codee-medusa-backend` completely.
 3. Load only the Medusa reference files matching the spec's components, such as API routes, querying data, workflows, modules, links, authentication, subscribers/events, scheduled jobs, or error handling.
 4. Load `codee-medusa-testing` when the spec creates or changes a backend route, workflow, step, service, subscriber, job, middleware/validator, or exported utility.
 5. Load the applicable storefront/admin skills when the spec crosses those boundaries.

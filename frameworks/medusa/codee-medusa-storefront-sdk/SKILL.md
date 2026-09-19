@@ -16,7 +16,7 @@ Frontend integration guide for building storefronts with Medusa. Covers SDK usag
 - Implementing mutations with optimistic updates
 - Error handling and cache invalidation
 
-**Also load building-with-medusa when:** Building the backend API routes that the storefront calls
+**Also load codee-medusa-backend when:** Building the backend API routes that the storefront calls
 
 ## CRITICAL: Load Reference Files When Needed
 
@@ -162,7 +162,7 @@ The reference file contains:
 
 When building features that span backend and frontend:
 
-1. **Backend (building-with-medusa skill):** Module → Workflow → API Route
+1. **Backend (codee-medusa-backend skill):** Module → Workflow → API Route
 2. **Storefront (this skill):** SDK → React Query → UI Components
 3. **Connection:**
    - Built-in endpoints: Use existing SDK methods (`sdk.store.product.list()`)
@@ -175,4 +175,4 @@ When building features that span backend and frontend:
 - SDK handles all required headers automatically
 - Regular fetch() without headers → authentication/authorization errors
 
-See `building-with-medusa` for backend API route patterns.
+See `codee-medusa-backend` for backend API route patterns.
