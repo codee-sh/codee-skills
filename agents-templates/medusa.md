@@ -16,10 +16,7 @@ unavailable skill.
 | Medusa Admin UI | `codee-medusa-admin-dashboard` |
 | Medusa storefront integration | `codee-medusa-storefront-sdk` |
 | Ecommerce storefront UI or flow | `codee-medusa-storefront-ux` |
-| Generate a migration for a Medusa module | `db-generate` |
-| Run pending database migrations | `db-migrate` |
 | Script in `src/scripts/` or `src/migration-scripts/`, or a one-off data backfill | `codee-medusa-scripts` |
-| Guided Medusa learning tutorial | `learning-medusa` |
 | Bug report, before proposing or writing a fix | `codee-root-cause` |
 | TypeScript implementation or review | `codee-ts-code-conventions` |
 | Any Medusa backend file - where it goes, what it is named, its JSDoc | `codee-medusa-backend-conventions` |

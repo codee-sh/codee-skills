@@ -116,8 +116,13 @@ npx skills add medusajs/medusa-agent-skills
 
 ### Medusa
 
+- `codee-medusa-admin-dashboard`
 - `codee-medusa-admin-dashboard-forms`
+- `codee-medusa-backend`
 - `codee-medusa-backend-conventions`
+- `codee-medusa-scripts`
+- `codee-medusa-storefront-sdk`
+- `codee-medusa-storefront-ux`
 - `codee-medusa-testing`
 - `codee-spec-review-medusa`
 
@@ -156,8 +161,13 @@ codee-skills/
 │   └── codee-writing-questions/
 ├── frameworks/
 │   ├── medusa/
+│   │   ├── codee-medusa-admin-dashboard/
 │   │   ├── codee-medusa-admin-dashboard-forms/
+│   │   ├── codee-medusa-backend/
 │   │   ├── codee-medusa-backend-conventions/
+│   │   ├── codee-medusa-scripts/
+│   │   ├── codee-medusa-storefront-sdk/
+│   │   ├── codee-medusa-storefront-ux/
 │   │   ├── codee-medusa-testing/
 │   │   └── codee-spec-review-medusa/
 │   └── payload/
