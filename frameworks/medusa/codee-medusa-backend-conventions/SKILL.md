@@ -150,8 +150,14 @@ a verb.
 
 | Prefix | The step… |
 |---|---|
-| `validate-` | checks and throws; changes no state and returns no working data |
+| `validate-` | checks its input against rules and changes no state; throws on a violation, or returns the verdict when the workflow must record the outcome instead of aborting |
 | `prepare-` | readies the input for the step that comes next |
+
+`validate-` and `prepare-` differ in the question they answer. A `validate-` step asks whether the
+input is acceptable, and may hand back what it checked - the validated values, the ids it matched -
+so the next step does not repeat the work. A `prepare-` step judges nothing; it only shapes input
+for the step after it. Return the verdict instead of throwing only when the workflow has to persist
+the failure: a throw rolls the workflow back, and the record of why goes with it.
 
 **Writes**
 
