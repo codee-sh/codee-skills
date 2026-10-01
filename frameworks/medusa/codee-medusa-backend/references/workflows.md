@@ -143,6 +143,10 @@ export const processCustomersWorkflow = createWorkflow(
 ### Date/Time Operations
 - ❌ No `new Date()` (will be fixed to load time) → Wrap in `transform()` for execution-time evaluation
 
+### Values That Must Not Change
+- ❌ No generated token or random id in `transform()` when a later step must see the same value → Create it inside a step and pass the step's output on
+- A step's output is checkpointed with the transaction. A `transform()` result is only memoized in memory on the transaction object (`DistributedTransaction#setTemporaryData` in `@medusajs/orchestration`, checked on 2.18.0), so it is computed again whenever the transaction is reloaded from its checkpoint. A timestamp that moves on a reload is usually harmless; a lease token or an idempotency key that changes between the write and its reader is not.
+
 ### Conditional Logic
 - ❌ No `if`/`else` statements → Use `when(input, (input) => input.is_active).then(() => { /* steps */ })` instead
 - ❌ No ternary operators (`? :`) → Use `transform()` instead

@@ -87,6 +87,35 @@ Both are flat and kebab-case, and both export a default async handler plus a nam
 - **A job is named after the work, verb first:** `expire-abandoned-carts.ts`,
   `process-pending-payouts.ts`.
 
+## Workflow naming
+
+A workflow is named after the operation, verb first. Its verb may be one that no step may use -
+`sync-`, `process-`, `recover-`, `finish-`, `claim-`: the operation word lives on the workflow, and
+the steps it composes keep the prefixes from [Step naming](#step-naming).
+
+**`claim-` names one operation only:** taking exclusive ownership of one unit of work from a pool
+that several runs draw from. A claim workflow:
+
+1. reads the pool and the record that will carry the lease (`list-`, `get-`);
+2. decides in a `prepare-` step that returns `skip` with a `reason`, or `claim` with the unit and a
+   new lease token - the token is created in that step, not in a `transform()`, see
+   `codee-medusa-backend` `references/workflows.md`, "Values That Must Not Change";
+3. in the `claim` arm, marks the unit taken and writes the lease through `update-` steps whose
+   compensation puts both back;
+4. returns the claimed unit and the token, or nothing.
+
+Later steps renew the token while they work and compare it before they write; the operation that
+closes the unit releases it. Without a lease and that exclusivity it is not a claim - name the
+workflow for what it writes.
+
+A claim built from separate read and write steps is not atomic: two runs can read the same free
+unit before either writes. Say in the workflow JSDoc how exclusive the claim is, and make the write
+conditional (`UPDATE ... WHERE` the unit is still free) when two concurrent runs are a real case.
+
+Medusa already uses "claim" as a noun - an order claim (`beginClaimOrderWorkflow`,
+`orderClaimItemWorkflow`). Put the unit after the verb - `claim-import-batch`,
+`claim-export-task` - so a claim workflow never reads as order-claim handling.
+
 ## Workflow JSDoc
 
 Every `createWorkflow` call must have a JSDoc block that describes:
@@ -132,6 +161,23 @@ Example:
  */
 export const mapCatalogAttributesStep = createStep(...)
 ```
+
+## One job per step
+
+A step reads, decides, or writes - one of the three, which are the three groups of prefixes below.
+A step whose body needs two groups is two steps.
+
+- A read step (`list-`, `get-`, `fetch-`) changes no state.
+- A decision step (`validate-`, `prepare-`) changes no state.
+- A write step (`create-`, `update-`, `delete-`, `upsert-`, `link-`, `unlink-`) writes what it is
+  given and decides nothing. Before writing it may read the current values it is about to
+  overwrite, so that its compensation can put them back - Medusa's own update steps do the same.
+  That read belongs to the write; it is not a second job.
+
+An operation that needs all three - take a unit of work, close a batch, sync a record - is a
+workflow named after the operation (see [Workflow naming](#workflow-naming)). A caller that needs
+it as one node runs it with `.runAsStep()`, and the nested workflow's steps are compensated when
+the caller rolls back.
 
 ## Step naming
 
@@ -180,6 +226,7 @@ they drift until they name the same job under different words:
 | `load-`, `retrieve-`, `collect-` | `list-` or `get-` |
 | `remove-` | `delete-` |
 | `register-`, `write-`, `set-`, `add-`, `repoint-` | `create-` or `update-` |
+| `claim-`, `acquire-`, `lock-`, `take-` | a `claim-` workflow built from read, `prepare-` and `update-` steps - see [Workflow naming](#workflow-naming) |
 
 `build-` stays available for plain functions; only steps may not use it.
 
