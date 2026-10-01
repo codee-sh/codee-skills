@@ -2,43 +2,28 @@
 
 > Examples below use a placeholder `blog` / `Post` domain. Substitute your own route.
 
-## Two layers
+## One layer: the HTTP integration test
 
 | Target | Test | Runner |
 |---|---|---|
-| Zod validator / middleware schema in isolation | unit — `schema.parse` / `.safeParse` | plain Jest |
-| Full request path: validator + handler + workflow + response shape | HTTP integration — **optional / manual** | `medusaIntegrationTestRunner` |
+| The route: middleware, Zod validator, handler, workflow call, response shape | HTTP integration — **required, run manually** | `medusaIntegrationTestRunner` |
 
-## Unit — the validator
+Nothing under `src/api/` carries a test - no `__tests__` beside a route.
 
-Export the schema from the middleware file so the test imports the real one.
+- **No handler unit test.** One that calls `GET(req, res)` with a mocked container and a hand-built
+  `req.validatedQuery` or `req.queryConfig` tests the mock: it passes while the middleware is
+  unregistered, the query config is wrong, or `res.json` serializes something the client cannot
+  read.
+- **No validator unit test.** The schema's defaults, coercion and rejections are the route's
+  behavior; assert them as the response the client gets - a default page size, a `400`.
 
-```ts
-import { CreatePostSchema } from "../middlewares"
+Logic that is worth a test of its own and is not request handling belongs in a step, a
+workflow or a module, and is tested there.
 
-describe("CreatePostSchema", () => {
-  it("defaults status to draft", () => {
-    expect(CreatePostSchema.parse({ title: "T" }).status).toBe("draft")
-  })
-
-  it.each(["draft", "scheduled", "published"] as const)("accepts status %s", (status) => {
-    expect(CreatePostSchema.parse({ title: "T", status }).status).toBe(status)
-  })
-
-  it("rejects an unknown status", () => {
-    expect(CreatePostSchema.safeParse({ title: "T", status: "archived" }).success).toBe(false)
-  })
-})
-```
-
-Cover: defaults/coercion, each accepted enum value (`it.each`), and rejection of bad input.
-
-## Integration — the route
-
-**Optional / manual.** Boots the app + a real Postgres.
+## Location and run
 
 - **Location:** `integration-tests/http/<area>/<route>.spec.ts`.
-- **Run:** `test:integration:http`.
+- **Run:** `test:integration:http`, manually - it boots the app and a real Postgres.
 
 ```ts
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
@@ -81,6 +66,12 @@ medusaIntegrationTestRunner({
         expect(response.data).toHaveProperty("posts")
       })
 
+      it("answers the default page when no pagination is sent", async () => {
+        const response = await api.get("/admin/blog/posts", { headers })
+
+        expect(response.data).toMatchObject({ limit: 20, offset: 0 })
+      })
+
       it("400s on an unknown query param", async () => {
         const { response } = await api
           .get("/admin/blog/posts?bogus=1", { headers })
@@ -89,9 +80,28 @@ medusaIntegrationTestRunner({
         expect(response.status).toEqual(400)
       })
     })
+
+    describe("POST /admin/blog/posts", () => {
+      it.each(["draft", "scheduled", "published"])("accepts status %s", async (status) => {
+        const response = await api.post("/admin/blog/posts", { title: "T", status }, { headers })
+
+        expect(response.data.post.status).toEqual(status)
+      })
+
+      it("400s on an unknown status", async () => {
+        const { response } = await api
+          .post("/admin/blog/posts", { title: "T", status: "archived" }, { headers })
+          .catch((e) => e)
+
+        expect(response.status).toEqual(400)
+      })
+    })
   },
 })
 ```
+
+Cover the validator here: defaults and coercion as the response they produce, each accepted enum
+value (`it.each`), and every rejection as a `400`.
 
 ## Notes
 

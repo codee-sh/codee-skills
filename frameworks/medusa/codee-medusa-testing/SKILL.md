@@ -28,18 +28,18 @@ one-line note in the PR/commit saying why not.
 
 ## Test altitude
 
-Find the row for what you just wrote. The default is a fast unit test. A workflow is the exception: it gets an integration test, the way Medusa documents it. The other integration runners are opt-in because they boot a real Postgres database.
+Find the row for what you just wrote. The default is a fast unit test. A workflow and an API route are the exceptions: each gets an integration test against the real app. The other integration runners are opt-in because they boot a real Postgres database.
 
 | You wrote… | Default test | Runner | Reference |
 |---|---|---|---|
-| Pure function: builder, mapper, normalizer, hash, Zod schema | unit `*.unit.spec.ts`, colocated | plain Jest | `references/unit-tests.md` |
+| Pure function: builder, mapper, normalizer, hash, Zod schema outside `src/api/` | unit `*.unit.spec.ts`, colocated | plain Jest | `references/unit-tests.md` |
 | Step (`createStep`), no compensation | step unit `*.unit.spec.ts`, colocated | `createStep` mock harness | `references/steps-tests.md` |
 | Step with compensation | step unit — exercise `invoke` **and** `compensate` | `createStep` mock harness (`[invoke, compensate]`) | `references/steps-tests.md` |
 | Workflow (`createWorkflow`) | workflow integration — **required, run manually** | `medusaIntegrationTestRunner` + `workflow.run()` | `references/workflows-tests.md` |
 | Module service — HTTP client / outbound calls | unit, mock `global.fetch` | plain Jest | `references/modules-tests.md` |
 | Module service — DML / data-model / repository logic | module integration — **optional / manual** | `moduleIntegrationTestRunner` | `references/modules-tests.md` |
-| Custom API route — full request path (validator + handler + workflow) | HTTP integration — **optional / manual** | `medusaIntegrationTestRunner` + `api.*` | `references/api-routes-tests.md` |
-| Middleware / Zod validator in isolation | unit — `schema.parse` / `.safeParse` | plain Jest | `references/api-routes-tests.md` |
+| Custom API route — validator, middleware, handler, response shape | HTTP integration in `integration-tests/http/` — **required, run manually** | `medusaIntegrationTestRunner` + `api.*` | `references/api-routes-tests.md` |
+| A route's middleware or Zod validator | through that route's HTTP integration test — no test of its own | `medusaIntegrationTestRunner` + `api.*` | `references/api-routes-tests.md` |
 | Subscriber / scheduled job | unit for the handler's own logic; integration only if it must touch the container | plain Jest / `medusaIntegrationTestRunner` | `references/workflows-tests.md` |
 
 `references/medusa-test-utils.md` — condensed `@medusajs/test-utils` reference (runner
@@ -55,9 +55,15 @@ DML method names, workflow error serialization, MikroORM metadata, Jest flags.
   recommends one for every workflow and documents no other way to test one. Steps are
   tested through the step harness; the workflow test is what shows them working together
   against the real app.
+- **Every new or changed API route has an HTTP integration test** in
+  `integration-tests/http/`, and nothing under `src/api/` carries a test. A handler unit
+  test with a mocked container exercises the mock rather than the route - the middleware
+  registration, the validator, `req.queryConfig` and the serialized response are exactly
+  what it fakes - and a validator unit test repeats what the route's `400` cases already
+  show. Both go in the HTTP test instead.
 - **Integration runners run manually.** `moduleIntegrationTestRunner` and
   `medusaIntegrationTestRunner` need a live Postgres; they are not part of the routine
-  check. Outside workflows, add one when the risk is real (irreversible writes, auth
+  check. Outside workflows and API routes, add one when the risk is real (irreversible writes, auth
   wiring, a route whose middleware must be registered). Note in every integration test
   file that it is manual (`test:integration:modules` / `test:integration:http`).
 - If the interesting logic can be pulled into a pure function or tested through the step

@@ -59,6 +59,10 @@ describe("buildPostPayload", () => {
 
 ## Shape — Zod schema
 
+For a schema outside `src/api/` - a config, a form, a payload a step parses. A schema that
+validates an API route is tested through that route's HTTP integration test instead, see
+`api-routes-tests.md`.
+
 Assert both directions — `parse` for defaults/coercion, `safeParse(...).success === false`
 for rejection.
 
