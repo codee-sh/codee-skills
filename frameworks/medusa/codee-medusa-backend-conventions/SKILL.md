@@ -170,9 +170,13 @@ A step whose body needs two groups is two steps.
 - A read step (`list-`, `get-`, `fetch-`) changes no state.
 - A decision step (`validate-`, `prepare-`) changes no state.
 - A write step (`create-`, `update-`, `delete-`, `upsert-`, `link-`, `unlink-`) writes what it is
-  given and decides nothing. Before writing it may read the current values it is about to
-  overwrite, so that its compensation can put them back - Medusa's own update steps do the same.
-  That read belongs to the write; it is not a second job.
+  given and decides nothing. It may read in two cases, and both belong to the write rather than
+  being a second job:
+  - before writing, the current values it is about to overwrite, so that its compensation can put
+    them back - Medusa's own update steps do the same;
+  - after a create fails on a unique key, the row it collided with, to tell a lost race from a
+    real failure. That read decides whether the write failed at all, so it cannot move to a
+    following step.
 
 An operation that needs all three - take a unit of work, close a batch, sync a record - is a
 workflow named after the operation (see [Workflow naming](#workflow-naming)). A caller that needs
