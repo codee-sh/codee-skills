@@ -31,14 +31,33 @@ jest.mock("@medusajs/framework/workflows-sdk", () => {
   const actual = jest.requireActual("@medusajs/framework/workflows-sdk")
   return {
     ...actual,
-    createStep: (_n: unknown, invoke: unknown) => invoke,               // no compensation
-    // createStep: (_n, invoke, compensate) => [invoke, compensate],    // with compensation
+    createStep: (_nameOrConfig: unknown, invoke: unknown) => invoke,               // no compensation
+    // createStep: (_nameOrConfig, invoke, compensate) => [invoke, compensate],    // with compensation
   }
 })
 ```
 
 `jest.requireActual` keeps `StepResponse` and `createWorkflow` real — only `createStep` is
 replaced.
+
+### Error: a fake global leaks into the next test file
+
+**Cause**: the test assigned the global - `global.fetch = jest.fn(...)` - and nothing put the real
+one back. `jest.restoreAllMocks()` restores only what `jest.spyOn` replaced, so the fake survives
+into later tests and files, and a suite passes or fails depending on file order.
+
+**Solution**: replace a global through a spy, and restore after each test:
+
+```ts
+afterEach(() => {
+  jest.restoreAllMocks()
+})
+
+jest.spyOn(global, "fetch").mockResolvedValue(response as unknown as Response)
+```
+
+Run the suite in reverse file order once (`--testSequencer` with a sequencer that reverses
+`sort()`); a leak shows up as a failure that the normal order hides.
 
 ### Error: mock service method returns undefined
 

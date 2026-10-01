@@ -21,7 +21,7 @@ jest.mock("@medusajs/framework/workflows-sdk", () => {
     // no compensation:
     createStep: (_nameOrConfig: unknown, invoke: unknown) => invoke,
     // with compensation:
-    // createStep: (_n, invoke, compensate) => [invoke, compensate],
+    // createStep: (_nameOrConfig, invoke, compensate) => [invoke, compensate],
   }
 })
 ```
@@ -42,7 +42,7 @@ import {
 
 jest.mock("@medusajs/framework/workflows-sdk", () => {
   const actual = jest.requireActual("@medusajs/framework/workflows-sdk")
-  return { ...actual, createStep: (_n: unknown, invoke: unknown) => invoke }
+  return { ...actual, createStep: (_nameOrConfig: unknown, invoke: unknown) => invoke }
 })
 
 /** All external services the step resolves, as jest mocks. */
@@ -107,7 +107,7 @@ jest.mock("@medusajs/framework/workflows-sdk", () => {
   const actual = jest.requireActual("@medusajs/framework/workflows-sdk")
   return {
     ...actual,
-    createStep: (_n: unknown, invoke: unknown, compensate: unknown) => [invoke, compensate],
+    createStep: (_nameOrConfig: unknown, invoke: unknown, compensate: unknown) => [invoke, compensate],
   }
 })
 
@@ -141,6 +141,8 @@ that compensation touches **only** what this run created.
 
 ## Conventions
 
+- The `createStep` mock names its first parameter `_nameOrConfig` in every file - `createStep`
+  takes a name or a config object there - so a search finds every harness the same way.
 - `createDependencies()` / `createXModuleService()` factory returns all mocks; a stateful
   factory (`let seq = 0`, in-memory arrays) models create→read within one test.
 - `containerFor(deps)` / inline `container` — `resolve` is a `jest.fn`, unknown key throws.

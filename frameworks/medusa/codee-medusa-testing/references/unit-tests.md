@@ -92,6 +92,15 @@ describe("CreatePostSchema", () => {
   the dependency in as a plain argument.
 - Async pure functions: `await expect(fn(input)).resolves.toEqual(...)` /
   `.rejects.toThrow(...)`.
+- **One clock mechanism per file**: either `jest.useFakeTimers()` with `setSystemTime` and
+  `advanceTimersByTimeAsync`, or a `jest.spyOn(Date, "now")`, never both. Fake timers already fake
+  `Date.now`, so a second mechanism makes the result depend on which one ran last. Spy once per
+  test, outside any loop.
+- **A concurrency test asserts both sides**: that the limit held and that work really ran in
+  parallel - the peak in-flight count equals the limit, not merely stays under it. A sequential
+  implementation passes `peak <= limit`.
+- **No `expect` inside `if`/`else`**: a branch decides which assertion runs, so a test can pass
+  without asserting anything. Split the cases into separate tests or `it.each` rows.
 
 ## Invariant / parity tests
 
