@@ -252,3 +252,53 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   // Your logic here
 }
 ```
+
+### 6. Catch Narrowly
+
+Catch only the error you can answer. A transport failure - a timeout, a 5xx, a dropped connection -
+says nothing about whether the thing exists, so it must never become a domain verdict such as "not
+found" or "skip".
+
+```typescript
+// ❌ WRONG: an outage reads as a deletion
+const remote = await client.getDocument(id).catch(() => null)
+if (!remote) {
+  return new StepResponse({ action: "skip", reason: "not_found" })
+}
+
+// ✅ CORRECT: only the answer "it does not exist" is a verdict
+try {
+  remote = await client.getDocument(id)
+} catch (error) {
+  if (error instanceof RemoteApiError && error.status === 404) {
+    return new StepResponse({ action: "skip", reason: "not_found" })
+  }
+  return new StepResponse({ action: "failed", reason: describe(error) })
+}
+```
+
+The same holds for a Medusa module lookup: catch `MedusaError.Types.NOT_FOUND` and let every other
+error propagate. A client that throws a plain `Error` with the status inside its message cannot be
+caught narrowly - give it an error class that carries the status.
+
+### 7. Detect Database Errors by Re-reading, Not by Message
+
+Never decide what a database error means by matching its text. Medusa's error mapper rewrites
+Postgres errors into its own wording (a unique violation becomes `INVALID_DATA` "... already
+exists"), and that wording is not a contract. When a create may lose a race on a unique key, re-read
+the row it may have collided with:
+
+```typescript
+try {
+  return await service.createDocuments(data)
+} catch (error) {
+  const [winner] = await service.listDocuments({ external_id: data.external_id })
+  if (!winner) {
+    throw error // not a race: the create failed for another reason
+  }
+  return winner // a concurrent run created it first
+}
+```
+
+The re-read belongs to the write step: it decides whether the write failed at all (see
+`codee-medusa-backend-conventions`, "One job per step").

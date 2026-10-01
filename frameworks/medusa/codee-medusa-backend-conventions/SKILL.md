@@ -52,6 +52,11 @@ middleware next to the route it guards.
 Middleware shared across resources goes in `api/middlewares/<verb>-<subject>.ts`, named with the
 verb that says what it does to the request: `enforce-`, `ensure-`, `verify-`.
 
+**A list route answers `{ <plural>, count, limit, offset }`** - `{ reviews, count, limit, offset }` -
+the shape Medusa's own list routes return, so the Admin's table code reads every list the same way.
+Its default page size is one constant in its `query-config.ts`, which the route and the Admin hook
+both use instead of repeating the number.
+
 ### `modules/`
 
 ```
@@ -115,6 +120,13 @@ conditional (`UPDATE ... WHERE` the unit is still free) when two concurrent runs
 Medusa already uses "claim" as a noun - an order claim (`beginClaimOrderWorkflow`,
 `orderClaimItemWorkflow`). Put the unit after the verb - `claim-import-batch`,
 `claim-export-task` - so a claim workflow never reads as order-claim handling.
+
+## Workflow composition
+
+**Every `when()` is named:** `when("sync-variant-images", input, (input) => ...)`. The name is
+what the workflow engine shows for the branch, and it lets several `when()` blocks run one after
+another in the same workflow. Medusa's own constraint - a nested `when()` breaks the outer block at
+composition - is in `codee-medusa-backend` `references/workflows.md`, "Conditional Logic".
 
 ## Workflow JSDoc
 
@@ -220,6 +232,15 @@ the failure: a throw rolls the workflow back, and the record of why goes with it
 `fetch-` is not a longer word for `list-`. The difference is where the data comes from, and it
 decides how the step must behave: anything crossing a network boundary can fail, so the step is
 the place that owns the timeout, the retry and an error the caller can act on.
+
+**Every outbound HTTP call has a timeout and retries transient failures** - a network error, a
+timeout, 429, 502/503/504 - a bounded number of times with a growing delay; any other status fails
+at once. When a module client already owns that policy, the `fetch-` step calls the client and adds
+nothing on top: a second retry loop multiplies the attempts. A raw `fetch` in a step - a binary from
+a public URL the client cannot serve - applies the same policy, with its numbers kept as named
+constants. Tell a transient error by its `name` (`TypeError`, `TimeoutError`, `AbortError`), not by
+`instanceof`: an error from `fetch` or an abort signal may come from another realm. The error a step
+throws names what it called, without credentials or query string.
 
 **Verbs that are not step prefixes.** Each is a synonym of one above, and where both are in play
 they drift until they name the same job under different words:
