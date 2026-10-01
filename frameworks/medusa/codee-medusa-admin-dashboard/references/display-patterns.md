@@ -47,7 +47,7 @@ import {
   useDataTable,
 } from "@medusajs/ui"
 import { useState, useMemo } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { sdk } from "../lib/client"
 
 const columnHelper = createDataTableColumnHelper<HttpTypes.AdminProduct>()
@@ -88,7 +88,7 @@ export function ProductTable() {
         q: searchValue || undefined, // Search query
       }),
     queryKey: ["products", limit, offset, searchValue],
-    keepPreviousData: true, // Smooth pagination
+    placeholderData: keepPreviousData, // Smooth pagination
   })
 
   const table = useDataTable({
@@ -364,11 +364,11 @@ Always handle empty states gracefully:
 Show loading states while data is being fetched:
 
 ```tsx
-import { Spinner } from "@medusajs/ui"
+import { Spinner } from "@medusajs/icons" // an icon, not a `@medusajs/ui` component
 
 {isLoading ? (
   <div className="flex items-center justify-center p-8">
-    <Spinner />
+    <Spinner className="animate-spin" />
   </div>
 ) : (
   <div className="flex flex-col gap-2">
@@ -434,3 +434,32 @@ className="outline-none focus-within:shadow-borders-interactive-with-focus round
 ```tsx
 className="text-ui-fg-muted rtl:rotate-180"
 ```
+
+## Error Toasts
+
+One policy for every failed action:
+
+- the title is translated and says what failed, in the user's words: "Could not regenerate the
+  image", never the HTTP status or an exception name;
+- the server's message, when it helps the user act, goes in the `description` - never as the title;
+- nothing goes to `console.error` in UI code: the toast is the report, and the Admin has no console
+  reader.
+
+```tsx
+onError: (error) => {
+  toast.error(t("reviews.publish.failed"), { description: error.message })
+}
+```
+
+## Dates
+
+Format every date through one helper that uses the Admin's current locale - never a bare
+`toLocaleString()`, which follows the browser instead of the language the Admin is set to, and never
+a raw ISO string. Keep the helper in the admin's `lib/` and pass it the date and the format it needs.
+
+## Action Columns and Prompts
+
+- A table column that holds only actions still has a header: an empty visible label with an
+  accessible one (`<span className="sr-only">{t("general.actions")}</span>`), never `header: ""`.
+- `Prompt` buttons follow Medusa's own order: cancel first, then the confirming action
+  (`Prompt.Cancel`, `Prompt.Action`), the same as every modal footer.

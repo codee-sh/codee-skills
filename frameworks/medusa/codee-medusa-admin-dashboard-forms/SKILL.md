@@ -59,6 +59,11 @@ Example: `src/admin/sap-settings/sap-settings-form/`
 
 All schema and field definitions go here — never inline in the component.
 
+Validation messages and field labels are translation keys, translated where they are shown - see
+`codee-ui-copy`, "Translation Keys". The English text below keeps the example short; a form in an
+Admin with more than one language replaces each with its key and passes it through `t()` in the
+component.
+
 ```ts
 import { z } from "zod"
 import { FieldConfig } from "../../components/manager-fields/types/types"

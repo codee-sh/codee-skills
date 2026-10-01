@@ -22,6 +22,11 @@ only when the why is non-obvious: a hidden constraint, subtle invariant,
 external-system quirk, or workaround for a specific bug. Prefer identifiers
 that make the implementation self-explanatory.
 
+A comment states how the code behaves now. Leave out history ("changed from 2
+to 3"), dates, measurements and the names of callers: they go stale while the
+code stays the same, and nothing flags them. Measurements and decisions belong
+in specs or commit messages; callers are found with search.
+
 ### Format
 
 | Situation | Format |
@@ -79,6 +84,10 @@ addresses.map((address) => address.id)
 
 Apply this rule to `map`, `filter`, `find`, `reduce`, `forEach`, `sort`, and
 other higher-order functions.
+
+Name a React component's props type `<Component>Props` - `ReviewCardProps` for
+`ReviewCard` - even when it is local to the file. A file with several bare
+`Props` types cannot be searched, and the name says whose props they are.
 
 ## Related Skills
 

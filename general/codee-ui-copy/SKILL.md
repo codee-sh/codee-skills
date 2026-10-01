@@ -38,6 +38,14 @@ locale is required.
 - Give icon-only controls and other non-text controls an accessible name.
 - Do not use a tooltip as a substitute for a required visible label.
 
+## Translation Keys
+
+- A validation message is a translation key, translated where it is shown, never English text in
+  the schema: `z.string().min(1, "reviews.form.titleRequired")`.
+- A word every screen uses - Cancel, Save, Close, Not available - lives once in a shared namespace
+  (`general.*`), not once per feature.
+- A key nothing reads any more is removed with the code that used it.
+
 ## Final Check
 
 - The correct language rules were applied.

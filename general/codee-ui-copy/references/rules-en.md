@@ -58,6 +58,9 @@ Correct:
 Do not use em dashes, en dashes, decorative arrows, or ornamental symbols.
 Rewrite the sentence or use plain words.
 
+The one exception is an empty value: a field with nothing to show displays a single em dash, "—", on
+its own, never inside a sentence.
+
 Wrong:
 
 `Read-only — cannot be edited`
