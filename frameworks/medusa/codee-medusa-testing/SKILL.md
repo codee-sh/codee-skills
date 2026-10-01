@@ -28,14 +28,14 @@ one-line note in the PR/commit saying why not.
 
 ## Test altitude
 
-Find the row for what you just wrote. The default is a fast unit test; integration runners are opt-in because they boot a real Postgres database.
+Find the row for what you just wrote. The default is a fast unit test. A workflow is the exception: it gets an integration test, the way Medusa documents it. The other integration runners are opt-in because they boot a real Postgres database.
 
 | You wrote… | Default test | Runner | Reference |
 |---|---|---|---|
 | Pure function: builder, mapper, normalizer, hash, Zod schema | unit `*.unit.spec.ts`, colocated | plain Jest | `references/unit-tests.md` |
 | Step (`createStep`), no compensation | step unit `*.unit.spec.ts`, colocated | `createStep` mock harness | `references/steps-tests.md` |
 | Step with compensation | step unit — exercise `invoke` **and** `compensate` | `createStep` mock harness (`[invoke, compensate]`) | `references/steps-tests.md` |
-| Workflow — emergent behavior only (cross-step compensation, `when` / `transform`, hooks, data passed between steps) | workflow integration — **optional / manual** | `medusaIntegrationTestRunner` + `workflow.run()` | `references/workflows-tests.md` |
+| Workflow (`createWorkflow`) | workflow integration — **required, run manually** | `medusaIntegrationTestRunner` + `workflow.run()` | `references/workflows-tests.md` |
 | Module service — HTTP client / outbound calls | unit, mock `global.fetch` | plain Jest | `references/modules-tests.md` |
 | Module service — DML / data-model / repository logic | module integration — **optional / manual** | `moduleIntegrationTestRunner` | `references/modules-tests.md` |
 | Custom API route — full request path (validator + handler + workflow) | HTTP integration — **optional / manual** | `medusaIntegrationTestRunner` + `api.*` | `references/api-routes-tests.md` |
@@ -51,11 +51,15 @@ DML method names, workflow error serialization, MikroORM metadata, Jest flags.
 ## Policy: unit-first
 
 - **Unit tests are the baseline** and run in CI via the `test:unit` script.
-- **Integration runners are optional and run manually.** `moduleIntegrationTestRunner` and
+- **Every new or changed workflow has a `medusaIntegrationTestRunner` test.** Medusa
+  recommends one for every workflow and documents no other way to test one. Steps are
+  tested through the step harness; the workflow test is what shows them working together
+  against the real app.
+- **Integration runners run manually.** `moduleIntegrationTestRunner` and
   `medusaIntegrationTestRunner` need a live Postgres; they are not part of the routine
-  check. Add one when the risk is real (irreversible writes, cross-step compensation,
-  auth wiring, a route whose middleware must be registered) and note in the test file
-  that it is manual (`test:integration:modules` / `test:integration:http`).
+  check. Outside workflows, add one when the risk is real (irreversible writes, auth
+  wiring, a route whose middleware must be registered). Note in every integration test
+  file that it is manual (`test:integration:modules` / `test:integration:http`).
 - If the interesting logic can be pulled into a pure function or tested through the step
   harness, do that instead of reaching for a runner.
 

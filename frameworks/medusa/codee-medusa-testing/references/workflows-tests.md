@@ -1,14 +1,15 @@
 # Workflow tests — `medusaIntegrationTestRunner`
 
-**Optional / manual.** Needs a live Postgres. Not part of the routine check.
+**Required for every new or changed workflow, run manually.** Needs a live Postgres. Not
+part of the routine check.
 
 > Examples below use a placeholder `blog` / `Post` domain. Substitute your own workflow.
 
-## When a workflow needs its own test
+## What a workflow test covers
 
 Most workflow logic belongs in steps and is covered by the step harness
-(`references/steps-tests.md`). Add a workflow-level test **only** for behavior that emerges
-from orchestration and cannot be seen from a single step:
+(`references/steps-tests.md`). The workflow test covers what emerges from orchestration and
+cannot be seen from a single step:
 
 - **Cross-step compensation** — step C throws, and you need to prove steps A and B rolled
   back (their `compensate` ran with the right input).
@@ -18,8 +19,13 @@ from orchestration and cannot be seen from a single step:
   subclass and the next step receives it degraded (see error serialization in
   `references/troubleshooting.md`).
 
-If none of these apply, a workflow test is redundant with the step tests — skip it and say
-so.
+If none of these apply, one test of the main path is still owed: it proves the workflow runs
+against the real app and its modules.
+
+Do not test a workflow by running it on a bare container with `jest.mock`-ed fake steps.
+Medusa does not document it, and a fake step cannot show what the real module does with
+the data - a `Date` that reaches the next step as an ISO string, a field missing from a
+`select`, a compensation that writes the wrong row.
 
 ## Pattern
 
