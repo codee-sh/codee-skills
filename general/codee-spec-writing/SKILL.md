@@ -30,7 +30,7 @@ If two capabilities could be designed, implemented, shipped, or rolled back inde
 
 ### Supporting locations
 
-- `notes.md` contains temporary observations, hypotheses, and unresolved exploration. It is not a source of truth.
+- Working notes never live in the spec tree. Temporary observations, hypotheses, and unresolved exploration go to `.ai/notes/{topic}/` through `codee-spec-notes`, even when they concern one module. A note is not a source of truth.
 - module-local `ended/` contains closed sub-specs.
 - global `.ai/specs/ended/` contains fully closed module folders.
 - `.ai/specs/references/` contains authoritative supporting data when the repository uses it.
@@ -44,11 +44,13 @@ Specifications must be grounded in inspectable evidence. Do not turn memory or p
 Use sources in this order:
 
 1. repository instructions and local overrides
-2. related main specs, active sub-specs, ended specs when historically relevant, notes, and spec reference data
+2. related main specs, active sub-specs, ended specs when historically relevant, working notes in `.ai/notes/`, and spec reference data
 3. current implementation, tests, schemas, migrations, configuration, and installed dependency source/types
 4. repository documentation and applicable local skills
 5. authoritative external documentation, standards, source repositories, or primary research when local evidence is insufficient or likely stale
 6. market-leading implementations when comparing product or architecture choices adds material value
+
+A working note is a lead, not evidence. When a spec relies on a measurement or finding from a note, record it in the spec itself (Current State and Evidence) or in a lesson, and never link to a note by anchor or line number: notes are trimmed and deleted, and a closed spec cannot be repaired afterwards.
 
 Stop researching once the affected modules, existing primitives, public contracts, and material unknowns are known. Cite file paths or external links close to the decisions they support. Clearly label inference and assumptions.
 
@@ -75,7 +77,7 @@ Research should answer:
 
 - Update or create the **main spec** for module boundaries, shared architecture, or coordination between several delivery slices.
 - Update or create a **sub-spec** for one focused, implementable capability.
-- Use `notes.md` while direction is exploratory.
+- Use a working note in `.ai/notes/{topic}/` (`codee-spec-notes`) while direction is exploratory. Once it becomes a decision or active scope, move it into the spec and delete it from the note.
 - Skip a maintained spec when the repository rules classify the change as trivial.
 
 ### 3. Write a minimal skeleton
@@ -157,6 +159,7 @@ Approval requires no Critical, High, or unresolved Medium findings. Low findings
 - Update the main spec's active/ended references and dependency order.
 - Keep Current Status and Short Tracker aligned with actual implementation state.
 - Add a short dated changelog entry for material decision or lifecycle changes.
+- Before closing a spec or module, make sure nothing in it depends on a working note: what it relies on is recorded in the spec, and the note is trimmed or deleted.
 - Close and move specs only according to repository lifecycle rules.
 - Do not edit production code while the task is specifically spec writing or review.
 

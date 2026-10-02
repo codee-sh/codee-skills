@@ -6,7 +6,7 @@ Apply this checklist before finalizing any document written with `codee-spec-wri
 
 - [ ] Root and scoped repository instructions were read.
 - [ ] The existing implementation and related tests were inspected.
-- [ ] Related main specs, active sub-specs, relevant ended specs, notes, and authoritative spec-reference data were checked.
+- [ ] Related main specs, active sub-specs, relevant ended specs, working notes in `.ai/notes/`, and authoritative spec-reference data were checked.
 - [ ] Applicable domain and stack skills were loaded.
 - [ ] External facts that may be stale or are not locally provable use authoritative sources.
 - [ ] Each implementation-changing statement is evidenced, explicitly decided, or clearly labeled as an assumption/inference.
@@ -14,13 +14,13 @@ Apply this checklist before finalizing any document written with `codee-spec-wri
 
 ## Scope and Structure
 
-- [ ] Correct document type was chosen: main spec, sub-spec, or notes.
+- [ ] Correct document type was chosen: main spec or sub-spec. Working notes go to `.ai/notes/` through `codee-spec-notes`, never into the spec tree.
 - [ ] The document is in the correct module folder and follows repository naming/lifecycle rules.
 - [ ] The sub-spec contains one independently deliverable capability.
 - [ ] Bundled capabilities that can ship independently were split or explicitly resolved through the Open Questions gate.
 - [ ] Repeated detail was replaced with links to its source of truth.
 - [ ] The spec describes the unique architectural diff, not standard framework boilerplate.
-- [ ] Exploratory thoughts remain in `notes.md` until they become decisions or active scope.
+- [ ] Exploratory thoughts stay in a working note until they become decisions or active scope, and the spec records any fact it relies on instead of linking to a note by anchor or line number.
 
 ## Decision Completeness
 
@@ -68,6 +68,7 @@ Apply this checklist before finalizing any document written with `codee-spec-wri
 - [ ] At most one tracker item is `in_progress`.
 - [ ] Every `blocked` item names the concrete blocker.
 - [ ] Changelog records only material decisions or lifecycle changes.
+- [ ] Nothing in a spec being closed depends on a working note.
 - [ ] Closed sub-specs and modules are moved according to repository rules, with cross-references updated.
 
 ## Review Verdict

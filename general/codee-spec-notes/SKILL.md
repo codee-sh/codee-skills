@@ -1,13 +1,13 @@
 ---
 name: codee-spec-notes
-description: Write short, global working notes in .ai/notes/ - one folder per topic, containing a same-named note file. Use for cross-cutting context/decisions that don't belong to a single spec module, unlike codee-spec-writing's module-local notes.md.
+description: Write short working notes in .ai/notes/ - one folder per topic, containing a same-named note file. The only home for working notes - exploration for a single spec module, cross-cutting context, and client questions still being collected all go here, never into .ai/specs/.
 ---
 
 # Spec Notes
 
-Write global working notes as a small, topic-scoped folder - not as one growing file, and not inside a spec module.
+Write working notes as a small, topic-scoped folder - not as one growing file, and never inside the spec tree.
 
-This skill is the global counterpart to `codee-spec-writing`'s `notes.md`. `notes.md` lives inside one module folder and dies with that module's spec work. `.ai/notes/` is not tied to any single spec - it is short-term working memory for context, decisions, or debugging insights that matter regardless of which module or spec touches them next.
+`.ai/notes/` is the only home for working notes. A `notes.md` inside a spec module grows into a second, drifting copy of the spec, gets linked from specs by anchor or line number, and then blocks or breaks the module's closure - so there is none. A note is short-term working memory; whatever a spec relies on moves into the spec.
 
 ---
 
@@ -17,11 +17,12 @@ Use this skill when:
 
 - capturing a decision, gotcha, or debugging insight that spans multiple modules/workflows
 - recording context that a future session needs but that doesn't belong to one active spec
-- the user asks to "save this to notes" / "zapisz to do notatek" without naming a specific spec module
+- exploring a direction for one spec module before it becomes a decision - name the topic after the module
+- collecting questions for a client or stakeholder before they are answered
+- the user asks to "save this to notes" / "zapisz to do notatek"
 
 Do not use this skill when:
 
-- the note is scoped to one module's active spec work - use that module's `notes.md` via `codee-spec-writing` instead
 - the content is a stable decision or requirement - it belongs in a main spec or sub-spec, not a note
 - the information is something Claude's own auto-memory should hold (user preferences, feedback about how to collaborate) - see the auto-memory system instead
 
@@ -66,6 +67,10 @@ If detail already lives in a spec, another note, or a code comment, link to it (
 ### 5. One topic per note file
 
 If a note starts covering two unrelated topics, split it into two topic folders.
+
+### 6. A note is not evidence for a spec
+
+A spec never depends on a note. When a finding from a note supports a spec, copy the finding into the spec and delete it from the note; never link to a note by anchor or line number. When a decision lands in a spec, remove it from the note, and delete a note that is left empty. A spec or module is not closed while it still depends on a note.
 
 ---
 

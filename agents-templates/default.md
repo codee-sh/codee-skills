@@ -14,7 +14,7 @@ unavailable skill.
 | TypeScript implementation or review | `codee-ts-code-conventions` |
 | User-facing UI text | `codee-ui-copy` |
 | Write or restructure specifications | `codee-spec-writing` |
-| Cross-cutting working notes | `codee-spec-notes` |
+| Working notes, including exploration for one spec module | `codee-spec-notes` |
 | Non-obvious finding worth recording, or looking one up | `codee-lessons` |
 | Pull request description | `codee-generate-pr-description` |
 | Client or stakeholder questions | `codee-writing-questions` |

@@ -25,7 +25,7 @@ unavailable skill.
 | User-facing UI text | `codee-ui-copy` |
 | Write or restructure specifications | `codee-spec-writing` |
 | Review a Medusa specification | `codee-spec-review-medusa` |
-| Cross-cutting working notes | `codee-spec-notes` |
+| Working notes, including exploration for one spec module | `codee-spec-notes` |
 | Non-obvious finding worth recording, or looking one up | `codee-lessons` |
 | Pull request description | `codee-generate-pr-description` |
 | Client or stakeholder questions | `codee-writing-questions` |
