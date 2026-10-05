@@ -155,36 +155,6 @@ pnpm add @tanstack/react-query@[exact-version]
 
 **npm/yarn Users**: DO NOT install `@tanstack/react-query` - it's already available through dashboard dependencies.
 
-TanStack Query 5 removed the `keepPreviousData: true` option. Pass the helper instead:
-`import { keepPreviousData } from "@tanstack/react-query"` and `placeholderData: keepPreviousData`.
-
-### Query Keys
-
-Every resource gets one key object from a `queryKeysFactory`, and every query and invalidation of
-that resource uses it - never a hand-written array. Invalidating `keys.lists()` then reaches every
-page and filter of the list, and a detail key can never drift from the one the mutation clears.
-The factory is the one the Medusa dashboard uses; keep a copy in the admin's `lib/`:
-
-```ts
-// admin/lib/query-key-factory.ts
-export const queryKeysFactory = <T, TListQuery = unknown, TDetailQuery = string>(globalKey: T) => {
-  const keys = {
-    all: [globalKey] as const,
-    lists: () => [...keys.all, "list"] as const,
-    list: (query?: TListQuery) => [...keys.lists(), { query }] as const,
-    details: () => [...keys.all, "detail"] as const,
-    detail: (id: TDetailQuery, query?: TListQuery) => [...keys.details(), id, { query }] as const,
-  }
-  return keys
-}
-
-// admin/hooks/api/reviews/reviews.ts
-export const reviewQueryKeys = queryKeysFactory("reviews")
-
-useQuery({ queryKey: reviewQueryKeys.list({ limit, offset }), queryFn: ... })
-queryClient.invalidateQueries({ queryKey: reviewQueryKeys.lists() })
-```
-
 ## Fetching Data with useQuery
 
 ### Basic Query
@@ -215,7 +185,7 @@ const { data: products } = useQuery({
       q: searchTerm, // for search
     }),
   queryKey: ["products", limit, offset, searchTerm],
-  placeholderData: keepPreviousData, // Prevents UI flicker during pagination
+  keepPreviousData: true, // Prevents UI flicker during pagination
 })
 ```
 
@@ -378,7 +348,7 @@ const offset = pagination.pageIndex * limit
 const { data } = useQuery({
   queryFn: () => sdk.admin.product.list({ limit, offset }),
   queryKey: ["products", limit, offset],
-  placeholderData: keepPreviousData, // Prevents UI flicker during pagination
+  keepPreviousData: true, // Prevents UI flicker during pagination
 })
 ```
 

@@ -46,7 +46,7 @@ import {
 import { HttpTypes } from "@medusajs/types"
 import { useMemo, useState } from "react"
 import { DetailWidgetProps } from "@medusajs/framework/types"
-import { keepPreviousData, useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { sdk } from "../lib/client"
 import { PencilSquare } from "@medusajs/icons"
 
@@ -112,7 +112,7 @@ const ProductRelatedProductsWidget = ({
       q: searchValue || undefined,
     }),
     queryKey: ["products-selection", limit, offset, searchValue],
-    placeholderData: keepPreviousData, // Smooth pagination
+    keepPreviousData: true, // Smooth pagination
     enabled: open, // Only load when modal is open
   })
 
@@ -274,7 +274,7 @@ const useColumns = () => {
 }
 
 export const config = defineWidgetConfig({
-  zone: "product.details.after",
+  zone: "product.details",
 })
 
 export default ProductRelatedProductsWidget
@@ -313,7 +313,7 @@ const { data: modalProducts } = useQuery({
   }),
   queryKey: ["products-selection", limit, offset, searchValue],
   enabled: open, // Only when modal is open
-  placeholderData: keepPreviousData,
+  keepPreviousData: true,
 })
 ```
 
@@ -399,7 +399,7 @@ const { data, isLoading } = useQuery({
 1. **Package Manager Considerations**:
    - **pnpm users**: MUST install `@tanstack/react-query` and `react-router-dom` BEFORE implementing (see Pre-Implementation Requirements above)
    - **npm/yarn users**: DO NOT install these packages - they're already available through dashboard
-2. **Always use `placeholderData: keepPreviousData`** for pagination to prevent UI flicker
+2. **Always use keepPreviousData: true** for pagination to prevent UI flicker
 3. **Search is server-side** - Pass the search value in the query function
 4. **Metadata updates replace the entire object** - Spread existing metadata when updating
 5. **Use proper query key dependencies** - Include all parameters that affect the data
