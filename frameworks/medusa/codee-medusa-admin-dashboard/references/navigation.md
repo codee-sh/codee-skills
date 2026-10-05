@@ -324,7 +324,8 @@ export default RelatedProductsWidget
 Make list items clickable to navigate:
 
 ```tsx
-import { Thumbnail, Text } from "@medusajs/ui"
+import { Thumbnail } from "@medusajs/dashboard/components" // not exported by @medusajs/ui
+import { Text } from "@medusajs/ui"
 import { TriangleRightMini } from "@medusajs/icons"
 import { Link } from "react-router-dom"
 

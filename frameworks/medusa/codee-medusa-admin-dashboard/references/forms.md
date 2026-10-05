@@ -1,400 +1,311 @@
 # Forms and Modal Patterns
 
+Codee's own file: it replaces Medusa's `references/forms.md`, which builds forms from `useState`
+with hand-written validation. Every admin form here uses `react-hook-form`, Zod v4 and the
+dashboard's exported modals.
+
 ## Contents
-- [FocusModal vs Drawer](#focusmodal-vs-drawer)
-- [Edit Button Patterns](#edit-button-patterns)
-  - [Simple Edit Button (top right corner)](#simple-edit-button-top-right-corner)
-  - [Dropdown Menu with Actions](#dropdown-menu-with-actions)
-- [Select Component for Small Datasets](#select-component-for-small-datasets)
-- [FocusModal Example](#focusmodal-example)
-- [Drawer Example](#drawer-example)
-- [Form with Validation and Loading States](#form-with-validation-and-loading-states)
-- [Key Form Patterns](#key-form-patterns)
+- [Prerequisites](#prerequisites)
+- [Choose the container](#choose-the-container)
+- [Route modal forms](#route-modal-forms)
+- [In-page modals for widgets](#in-page-modals-for-widgets)
+- [Form state and validation](#form-state-and-validation)
+- [Fields](#fields)
+- [File structure](#file-structure)
+- [Behavior patterns](#behavior-patterns)
 
-## FocusModal vs Drawer
+## Prerequisites
 
-**FocusModal** - Use for creating new entities:
-- Full-screen modal
-- More space for complex forms
-- Better for multi-step flows
+- **`react-hook-form` and `zod` at the dashboard's exact versions.** The dashboard's `Form` and
+  route modal forms render their own `react-hook-form` provider and `Controller`; a project on a
+  different copy gets two contexts that do not meet. With pnpm, declare both - see "pnpm Users
+  ONLY" in `SKILL.md`.
+- **`zodV4Resolver`** at `src/admin/lib/zod-v4-resolver.ts` and **`ManagerFields`** at
+  `src/admin/components/manager-fields/`. Both are Codee project code, not part of Medusa; they
+  live in each project for now and will move to a shared package. If a project has neither, ask
+  before writing a replacement.
 
-**Drawer** - Use for editing existing entities:
-- Side panel that slides in from right
-- Quick edits without losing context
-- Better for single-field updates
+## Choose the container
 
-**Rule of thumb:** FocusModal for creating, Drawer for editing.
+| Situation | Container | Import from |
+|---|---|---|
+| Create an entity from a page | `RouteFocusModal` + `RouteFocusModal.Form` | `@medusajs/dashboard/components` |
+| Edit an entity from a page | `RouteDrawer` + `RouteDrawer.Form` | `@medusajs/dashboard/components` |
+| Pick or add something on top of an open route modal | `StackedFocusModal` / `StackedDrawer` | `@medusajs/dashboard/components` |
+| Form inside a widget on a core page (no route of its own) | `FocusModal` / `Drawer` with `open` state | `@medusajs/ui` |
 
-## Edit Button Patterns
+**Rule of thumb:** FocusModal for creating (full screen, room for complex forms), Drawer for
+editing (side panel, the page stays visible).
 
-Data displayed in a container should not be editable directly. Instead, use an "Edit" button. This can be:
+## Route modal forms
 
-### Simple Edit Button (top right corner)
+A route modal is a nested route rendered over its parent page. Closing it navigates back, and it
+blocks navigation while the form has unsaved changes, with a translated prompt.
+
+The page only mounts the container:
 
 ```tsx
-import { Button } from "@medusajs/ui"
-import { PencilSquare } from "@medusajs/icons"
+// src/admin/routes/brands/@create/page.tsx
+import { RouteFocusModal } from "@medusajs/dashboard/components"
+import { BrandCreateForm } from "../../../brands/brand-create-form"
 
-<div className="flex items-center justify-between px-6 py-4">
-  <Heading level="h2">Section Title</Heading>
-  <Button
-    size="small"
-    variant="secondary"
-    onClick={() => setOpen(true)}
-  >
-    <PencilSquare />
-  </Button>
-</div>
+const BrandCreatePage = () => (
+  <RouteFocusModal>
+    <BrandCreateForm />
+  </RouteFocusModal>
+)
+
+export default BrandCreatePage
 ```
 
-### Dropdown Menu with Actions
+The form wraps itself in `RouteFocusModal.Form` and closes through `handleSuccess`:
 
 ```tsx
-import { EllipsisHorizontal, PencilSquare, Plus, Trash } from "@medusajs/icons"
-import { DropdownMenu, IconButton } from "@medusajs/ui"
+// src/admin/brands/brand-create-form/brand-create-form.tsx
+import { RouteFocusModal, useRouteModal } from "@medusajs/dashboard/components"
+import { Button, Heading, Text, toast } from "@medusajs/ui"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { ManagerFields } from "../../components/manager-fields"
+import { useCreateBrand } from "../../hooks/api/brands/brands"
+import { zodV4Resolver } from "../../lib/zod-v4-resolver"
+import { brandDefaults, brandFields, brandSchema, type BrandFormValues } from "./config"
 
-export function DropdownMenuDemo() {
-  return (
-    <DropdownMenu>
-      <DropdownMenu.Trigger asChild>
-        <IconButton size="small" variant="transparent">
-          <EllipsisHorizontal />
-        </IconButton>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content>
-        <DropdownMenu.Item className="gap-x-2">
-          <PencilSquare className="text-ui-fg-subtle" />
-          Edit
-        </DropdownMenu.Item>
-        <DropdownMenu.Item className="gap-x-2">
-          <Plus className="text-ui-fg-subtle" />
-          Add
-        </DropdownMenu.Item>
-        <DropdownMenu.Separator />
-        <DropdownMenu.Item className="gap-x-2">
-          <Trash className="text-ui-fg-subtle" />
-          Delete
-        </DropdownMenu.Item>
-      </DropdownMenu.Content>
-    </DropdownMenu>
-  )
-}
-```
+export const BrandCreateForm = () => {
+  const { t } = useTranslation()
+  const { handleSuccess } = useRouteModal()
+  const { mutateAsync, isPending } = useCreateBrand()
 
-## Select Component for Small Datasets
+  const form = useForm<BrandFormValues>({
+    resolver: zodV4Resolver(brandSchema),
+    defaultValues: { brand: brandDefaults },
+  })
 
-For selecting from 2-10 options (statuses, types, etc.), use the Select component:
-
-```tsx
-import { Select } from "@medusajs/ui"
-
-<Select>
-  <Select.Trigger>
-    <Select.Value placeholder="Select status" />
-  </Select.Trigger>
-  <Select.Content>
-    {items.map((item) => (
-      <Select.Item key={item.value} value={item.value}>
-        {item.label}
-      </Select.Item>
-    ))}
-  </Select.Content>
-</Select>
-```
-
-**For larger datasets** (Products, Categories, Regions, etc.), use DataTable with FocusModal for search and pagination. See [table-selection.md](table-selection.md) for the complete pattern.
-
-## FocusModal Example
-
-```tsx
-import { FocusModal, Button, Input, Label } from "@medusajs/ui"
-import { useState } from "react"
-
-const MyWidget = () => {
-  const [open, setOpen] = useState(false)
-  const [formData, setFormData] = useState({ title: "" })
-
-  const handleSubmit = () => {
-    // Handle form submission
-    console.log(formData)
-    setOpen(false)
-  }
+  const onSubmit = form.handleSubmit(async (values) => {
+    await mutateAsync(values.brand, {
+      onSuccess: ({ brand }) => {
+        toast.success(t("brands.create.success"))
+        handleSuccess(`/brands/${brand.id}`)
+      },
+      onError: (error) => {
+        toast.error(t("brands.create.failed"), { description: error.message })
+      },
+    })
+  })
 
   return (
-    <>
-      <Button onClick={() => setOpen(true)}>
-        Create New
-      </Button>
-
-      <FocusModal open={open} onOpenChange={setOpen}>
-        <FocusModal.Content>
-          <div className="flex h-full flex-col overflow-hidden">
-            <FocusModal.Header>
-              <div className="flex items-center justify-end gap-x-2">
-                <FocusModal.Close asChild>
-                  <Button size="small" variant="secondary">
-                    Cancel
-                  </Button>
-                </FocusModal.Close>
-                <Button size="small" onClick={handleSubmit}>
-                  Save
-                </Button>
-              </div>
-            </FocusModal.Header>
-
-            <FocusModal.Body className="flex-1 overflow-auto">
-              <div className="flex flex-col gap-y-4">
-                <div className="flex flex-col gap-y-2">
-                  <Label>Title</Label>
-                  <Input
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  />
-                </div>
-                {/* More form fields */}
-              </div>
-            </FocusModal.Body>
-          </div>
-        </FocusModal.Content>
-      </FocusModal>
-    </>
-  )
-}
-```
-
-## Drawer Example
-
-```tsx
-import { Drawer, Button, Input, Label } from "@medusajs/ui"
-import { useState } from "react"
-
-const MyWidget = ({ data }) => {
-  const [open, setOpen] = useState(false)
-  const [formData, setFormData] = useState({ title: data.title })
-
-  const handleSubmit = () => {
-    // Handle form submission
-    console.log(formData)
-    setOpen(false)
-  }
-
-  return (
-    <>
-      <Button onClick={() => setOpen(true)}>
-        Edit
-      </Button>
-
-      <Drawer open={open} onOpenChange={setOpen}>
-        <Drawer.Content>
-          <Drawer.Header>
-            <Drawer.Title>Edit Settings</Drawer.Title>
-          </Drawer.Header>
-
-          <Drawer.Body className="flex-1 overflow-auto p-4">
-            <div className="flex flex-col gap-y-4">
-              <div className="flex flex-col gap-y-2">
-                <Label>Title</Label>
-                <Input
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                />
-              </div>
-              {/* More form fields */}
+    <RouteFocusModal.Form form={form}>
+      <form onSubmit={onSubmit} className="flex h-full flex-col overflow-hidden">
+        <RouteFocusModal.Header />
+        <RouteFocusModal.Body className="flex flex-1 flex-col overflow-y-auto">
+          <div className="mx-auto flex w-full max-w-[720px] flex-col gap-y-6 px-2 py-16">
+            <div className="flex flex-col gap-y-1">
+              <RouteFocusModal.Title asChild>
+                <Heading>{t("brands.create.header")}</Heading>
+              </RouteFocusModal.Title>
+              <RouteFocusModal.Description asChild>
+                <Text size="small" className="text-ui-fg-subtle">
+                  {t("brands.create.hint")}
+                </Text>
+              </RouteFocusModal.Description>
             </div>
-          </Drawer.Body>
-
-          <Drawer.Footer>
-            <div className="flex items-center justify-end gap-x-2">
-              <Drawer.Close asChild>
-                <Button size="small" variant="secondary">
-                  Cancel
-                </Button>
-              </Drawer.Close>
-              <Button size="small" onClick={handleSubmit}>
-                Save
+            <ManagerFields fields={brandFields(t)} name="brand" form={form} />
+          </div>
+        </RouteFocusModal.Body>
+        <RouteFocusModal.Footer>
+          <div className="flex items-center justify-end gap-x-2">
+            <RouteFocusModal.Close asChild>
+              <Button size="small" variant="secondary" disabled={isPending}>
+                {t("actions.cancel")}
               </Button>
-            </div>
-          </Drawer.Footer>
-        </Drawer.Content>
-      </Drawer>
-    </>
-  )
-}
-```
-
-## Form with Validation and Loading States
-
-```tsx
-import { FocusModal, Button, Input, Label, Text, toast } from "@medusajs/ui"
-import { useState } from "react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { sdk } from "../lib/client"
-
-const CreateProductWidget = () => {
-  const [open, setOpen] = useState(false)
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-  })
-  const [errors, setErrors] = useState({})
-  const queryClient = useQueryClient()
-
-  const createProduct = useMutation({
-    mutationFn: (data) => sdk.admin.product.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] })
-      toast.success("Product created successfully")
-      setOpen(false)
-      setFormData({ title: "", description: "" })
-      setErrors({})
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to create product")
-    },
-  })
-
-  const handleSubmit = () => {
-    // Validate
-    const newErrors = {}
-    if (!formData.title) newErrors.title = "Title is required"
-    if (!formData.description) newErrors.description = "Description is required"
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors)
-      return
-    }
-
-    createProduct.mutate(formData)
-  }
-
-  return (
-    <>
-      <Button onClick={() => setOpen(true)}>
-        Create Product
-      </Button>
-
-      <FocusModal open={open} onOpenChange={setOpen}>
-        <FocusModal.Content>
-          <div className="flex h-full flex-col overflow-hidden">
-            <FocusModal.Header>
-              <div className="flex items-center justify-end gap-x-2">
-                <FocusModal.Close asChild>
-                  <Button
-                    size="small"
-                    variant="secondary"
-                    disabled={createProduct.isPending}
-                  >
-                    Cancel
-                  </Button>
-                </FocusModal.Close>
-                <Button
-                  size="small"
-                  onClick={handleSubmit}
-                  isLoading={createProduct.isPending}
-                >
-                  Save
-                </Button>
-              </div>
-            </FocusModal.Header>
-
-            <FocusModal.Body className="flex-1 overflow-auto">
-              <div className="flex flex-col gap-y-4">
-                <div className="flex flex-col gap-y-2">
-                  <Label>Title *</Label>
-                  <Input
-                    value={formData.title}
-                    onChange={(e) => {
-                      setFormData({ ...formData, title: e.target.value })
-                      setErrors({ ...errors, title: undefined })
-                    }}
-                  />
-                  {errors.title && (
-                    <Text size="small" className="text-ui-fg-error">
-                      {errors.title}
-                    </Text>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-y-2">
-                  <Label>Description *</Label>
-                  <Input
-                    value={formData.description}
-                    onChange={(e) => {
-                      setFormData({ ...formData, description: e.target.value })
-                      setErrors({ ...errors, description: undefined })
-                    }}
-                  />
-                  {errors.description && (
-                    <Text size="small" className="text-ui-fg-error">
-                      {errors.description}
-                    </Text>
-                  )}
-                </div>
-              </div>
-            </FocusModal.Body>
+            </RouteFocusModal.Close>
+            <Button size="small" type="submit" isLoading={isPending}>
+              {t("actions.save")}
+            </Button>
           </div>
-        </FocusModal.Content>
-      </FocusModal>
-    </>
+        </RouteFocusModal.Footer>
+      </form>
+    </RouteFocusModal.Form>
   )
 }
 ```
 
-## Key Form Patterns
+An edit form is the same with `RouteDrawer`, `RouteDrawer.Form`, `RouteDrawer.Body` and
+`RouteDrawer.Footer`; the edit page usually renders `RouteDrawer.Header` with the
+`RouteDrawer.Title`.
 
-### Always Disable Actions During Mutations
+**Pitfalls**
 
-```tsx
-<Button
-  disabled={mutation.isPending}
-  onClick={handleAction}
->
-  Action
-</Button>
-```
+- **Every modal needs a Title.** The exported modals do not render a hidden one, and Radix logs an
+  accessibility error without it. Use the visible heading (`Title asChild`) or a visually hidden
+  one: `<RouteFocusModal.Title className="sr-only">...</RouteFocusModal.Title>`. Add a
+  `Description` the same way when a hint is shown.
+- **`RouteModalForm` is not exported.** Use `RouteFocusModal.Form` or `RouteDrawer.Form` - they are
+  the same component, so one form can render in both a create modal and an edit drawer.
+- **`useRouteModal` and `useStackedModal` only work inside the exported containers.** Mixing a local
+  copy of a hook with an exported modal throws "must be used within a RouteModalProvider".
+- **Stacked modals** take an `id` unique within their parent, render
+  `StackedFocusModal.Content`, and need their own `Title`.
 
-### Show Loading State on Submit Button
+## In-page modals for widgets
 
-```tsx
-<Button
-  isLoading={mutation.isPending}
-  onClick={handleSubmit}
->
-  Save
-</Button>
-```
-
-### Clear Form After Success
+A widget lives on a core page and has no route to nest under, so it opens `FocusModal` or `Drawer`
+from `@medusajs/ui` with local `open` state. The form inside is the same: `useForm` with
+`zodV4Resolver`, wrapped in `Form` from `@medusajs/dashboard/components`, fields from
+`ManagerFields`. On success, reset the form and close:
 
 ```tsx
 onSuccess: () => {
-  setFormData(initialState)
-  setErrors({})
+  form.reset(defaults)
   setOpen(false)
 }
 ```
 
-### Validate Before Submitting
+Keep the widget's display query separate from the modal's query - see `data-loading.md`.
 
-```tsx
-const handleSubmit = () => {
-  const errors = validateForm(formData)
-  if (Object.keys(errors).length > 0) {
-    setErrors(errors)
-    return
-  }
-  mutation.mutate(formData)
-}
+## Form state and validation
+
+| Layer | Tool |
+|---|---|
+| Form state | `react-hook-form` |
+| Schema | `zod` v4 |
+| Resolver | `zodV4Resolver` |
+| Fields | `ManagerFields`, or `Form.Field` for anything it does not cover |
+
+**Do not use `@hookform/resolvers/zod` 3.x with Zod v4.** It throws an uncaught `ZodError` instead of
+passing errors to the fields. Resolvers 5.x support Zod v4; until a project moves to it,
+`zodV4Resolver` is the resolver.
+
+```ts
+const form = useForm<FormValues>({
+  resolver: zodV4Resolver(schema),
+  defaultValues: { settings: defaults },
+})
 ```
 
-### Clear Field Errors on Input Change
+**Default values must match the schema type.** A `z.string()` field defaults to `""`, not `null`;
+only `.nullable()` fields take `null`. The API may return `null`, so coerce when resetting:
+
+```ts
+// Correct
+form.reset({ settings: { email: data.settings.email ?? "" } })
+
+// Wrong - null reaches a non-nullable field
+form.reset({ settings: { email: data.settings.email } })
+```
+
+Zod v4 patterns:
+
+```ts
+z.string().min(1, "validation.required")
+z.string().min(1, "validation.required").email("validation.email")
+z.string().email("validation.email").nullable().optional()
+z.number().min(0, "validation.min").max(100, "validation.max")
+z.enum(["option_a", "option_b"], { error: "validation.option" })
+```
+
+Validation messages are translation keys, translated where they are shown - see `codee-ui-copy`,
+"Translation Keys".
+
+## Fields
+
+### ManagerFields
+
+Renders a list of `FieldConfig` entries under one form path (`name`), each through a
+`Controller`:
 
 ```tsx
-<Input
-  value={formData.field}
-  onChange={(e) => {
-    setFormData({ ...formData, field: e.target.value })
-    setErrors({ ...errors, field: undefined }) // Clear error
-  }}
+<ManagerFields fields={brandFields(t)} name="brand" form={form} />
+```
+
+| `type` | Use for |
+|---|---|
+| `"text"` | Plain text input |
+| `"email"` | Email input |
+| `"textarea"` | Multi-line text |
+| `"number"` | Numeric input; `min`, `max`, `step` |
+| `"select"` | Dropdown; `options: [{ value, name }]` or groups `[{ groupName, options }]` |
+| `"checkbox"` | Boolean checkbox |
+| `"switch"` | Boolean toggle with `label`, `description`, `tooltip` |
+| `"chip-input"` | Multi-value tag input |
+| `"currency"` | Price input; `currencyCode` |
+
+`required: true` only draws the asterisk. With a resolver set, `react-hook-form` skips the
+field-level rules, so Zod alone decides whether the form submits.
+
+`ManagerFields` renders `label`, `placeholder` and `description` as given, so build the field list
+with `t` (a function of `t` in `config.ts`) rather than a static array of English strings.
+
+### Form.Field
+
+For a field `ManagerFields` does not cover - a `Combobox`, a `CountrySelect`, a custom input - use
+the dashboard's `Form` parts inside the same `*.Form`:
+
+```tsx
+import { Combobox, Form } from "@medusajs/dashboard/components"
+
+<Form.Field
+  control={form.control}
+  name="brand.country_code"
+  render={({ field }) => (
+    <Form.Item>
+      <Form.Label optional>{t("fields.country")}</Form.Label>
+      <Form.Control>
+        <Combobox {...field} options={countryOptions} />
+      </Form.Control>
+      <Form.ErrorMessage />
+    </Form.Item>
+  )}
 />
 ```
+
+## File structure
+
+Each form lives in `src/admin/{feature}/{form-name}/` with exactly these files:
+
+```
+{feature}/
+└── {form-name}/
+    ├── config.ts        - Zod schema, FormValues type, defaults, field list
+    ├── {form-name}.tsx  - the form component
+    └── index.ts         - re-export
+```
+
+All schema and field definitions go in `config.ts`, never inline in the component:
+
+```ts
+import type { TFunction } from "i18next"
+import { z } from "zod"
+import type { FieldConfig } from "../../components/manager-fields/types"
+
+export const brandSchema = z.object({
+  brand: z.object({
+    name: z.string().min(1, "validation.required"),
+    handle: z.string().min(1, "validation.required"),
+  }),
+})
+
+export type BrandFormValues = z.infer<typeof brandSchema>
+
+export const brandDefaults: BrandFormValues["brand"] = { name: "", handle: "" }
+
+export const brandFields = (t: TFunction): FieldConfig[] => [
+  { key: "name", type: "text", name: "name", label: t("fields.name"), required: true },
+  { key: "handle", type: "text", name: "handle", label: t("fields.handle"), required: true },
+]
+```
+
+## Behavior patterns
+
+- **Data in a section is not edited in place.** Open the edit form from a button in the section
+  header, or from an `ActionMenu` (`@medusajs/dashboard/components`) when the section has more than
+  one action - never a hand-built `DropdownMenu`.
+- **2 to 10 fixed options:** `Select` (or a `"select"` field). Larger sets (products, categories,
+  regions): a `Combobox` with `useComboboxData`, or a `DataTable` in a modal - `StackedFocusModal`
+  inside a route modal, `FocusModal` in a widget - see `table-selection.md`.
+- **Disable actions while a mutation runs** (`disabled={isPending}`) and **show the loading state on
+  the submit button** (`isLoading={isPending}`).
+- **Errors go to a toast** following "Error Toasts" in `display-patterns.md`; field errors come from
+  the schema.
+- **Query keys and invalidation** follow "Query Keys" in `data-loading.md`; after a mutation,
+  invalidate the display queries, not only the modal's.

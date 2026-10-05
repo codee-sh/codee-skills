@@ -7,7 +7,7 @@ description: Load automatically when planning, researching, or implementing Medu
 
 Build custom UI extensions for the Medusa Admin dashboard using the Admin SDK and Medusa UI components.
 
-**Note:** "UI Routes" are custom admin pages, different from backend API routes (which use building-with-medusa skill).
+**Note:** "UI Routes" are custom admin pages, different from backend API routes (which use codee-medusa-backend skill).
 
 ## When to Apply
 
@@ -19,8 +19,8 @@ Build custom UI extensions for the Medusa Admin dashboard using the Admin SDK an
 - Adding navigation between pages
 
 **Also load these skills when:**
-- **building-with-medusa:** Building backend API routes that the admin UI calls
-- **building-storefronts:** If working on storefront instead of admin dashboard
+- **codee-medusa-backend:** Building backend API routes that the admin UI calls
+- **codee-medusa-storefront-sdk:** If working on storefront instead of admin dashboard
 
 ## CRITICAL: Load Reference Files When Needed
 
@@ -28,6 +28,7 @@ Build custom UI extensions for the Medusa Admin dashboard using the Admin SDK an
 
 **Load these references based on what you're implementing:**
 
+- **Choosing a component, hook or helper?** → MUST load `references/components.md` first
 - **Creating widgets?** → MUST load `references/data-loading.md` first
 - **Building forms/modals?** → MUST load `references/forms.md` first
 - **Displaying data in tables/lists?** → MUST load `references/display-patterns.md` first
@@ -92,6 +93,11 @@ pnpm add @tanstack/react-query@[exact-version]
 # If using navigation (Link component)
 pnpm list react-router-dom --depth=10 | grep @medusajs/dashboard
 pnpm add react-router-dom@[exact-version]
+
+# If using forms (Form, RouteFocusModal.Form, RouteDrawer.Form from @medusajs/dashboard/components)
+pnpm list react-hook-form --depth=10 | grep @medusajs/dashboard
+pnpm list zod --depth=10 | grep @medusajs/dashboard
+pnpm add react-hook-form@[exact-version] zod@[exact-version]
 ```
 
 **npm/yarn users:** DO NOT install these packages - already available.
@@ -262,8 +268,9 @@ Before implementing, verify you're NOT doing these:
 Load these for detailed patterns:
 
 ```
+references/components.md         - Components Router: what to use, where to import it from, pitfalls
 references/data-loading.md       - useQuery/useMutation patterns, cache invalidation
-references/forms.md              - FocusModal/Drawer patterns, validation
+references/forms.md              - Route modal forms, react-hook-form + Zod v4, ManagerFields
 references/table-selection.md    - Complete DataTable selection pattern
 references/display-patterns.md   - Lists, tables, cards for entities
 references/typography.md         - Text component patterns
@@ -328,7 +335,7 @@ const createReview = useMutation({
 - **Built-in endpoints**: Use existing SDK methods (`sdk.admin.product.list()`, `sdk.store.product.list()`)
 - **Custom endpoints**: Use `sdk.client.fetch()` for your custom API routes
 
-**For implementing backend API routes**, load the `building-with-medusa` skill.
+**For implementing backend API routes**, load the `codee-medusa-backend` skill.
 
 ## Widget vs UI Route
 
