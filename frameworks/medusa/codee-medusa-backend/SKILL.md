@@ -29,8 +29,7 @@ own conventions, its test rules, or its frontend guidance - load the skill that 
 | File layout, file and symbol naming, workflow/step JSDoc | `codee-medusa-backend-conventions` |
 | Which test to write, at which layer, and where it lives | `codee-medusa-testing` |
 | One-off and operational scripts | `codee-medusa-scripts` |
-| Admin UI - widgets, pages, tables | `codee-medusa-admin-dashboard` |
-| Admin forms | `codee-medusa-admin-dashboard-forms` |
+| Admin UI - widgets, pages, tables, forms | `codee-medusa-admin-dashboard` |
 | Calling backend routes from a storefront (SDK, data fetching) | `codee-medusa-storefront-sdk` |
 | Commerce surfaces - cart, checkout, PDP, PLP, SEO | `codee-medusa-storefront-ux` |
 | General TypeScript conventions | `codee-ts-code-conventions` |
