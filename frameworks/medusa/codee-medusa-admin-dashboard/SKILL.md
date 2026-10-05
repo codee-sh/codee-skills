@@ -96,8 +96,9 @@ pnpm add react-router-dom@[exact-version]
 
 # If using forms (Form, RouteFocusModal.Form, RouteDrawer.Form from @medusajs/dashboard/components)
 pnpm list react-hook-form --depth=10 | grep @medusajs/dashboard
+pnpm list @hookform/resolvers --depth=10 | grep @medusajs/dashboard
 pnpm list zod --depth=10 | grep @medusajs/dashboard
-pnpm add react-hook-form@[exact-version] zod@[exact-version]
+pnpm add react-hook-form@[exact-version] @hookform/resolvers@[exact-version] zod@[exact-version]
 ```
 
 **npm/yarn users:** DO NOT install these packages - already available.

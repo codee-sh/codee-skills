@@ -16,14 +16,13 @@ dashboard's exported modals.
 
 ## Prerequisites
 
-- **`react-hook-form` and `zod` at the dashboard's exact versions.** The dashboard's `Form` and
-  route modal forms render their own `react-hook-form` provider and `Controller`; a project on a
-  different copy gets two contexts that do not meet. With pnpm, declare both - see "pnpm Users
-  ONLY" in `SKILL.md`.
-- **`zodV4Resolver`** at `src/admin/lib/zod-v4-resolver.ts` and **`ManagerFields`** at
-  `src/admin/components/manager-fields/`. Both are Codee project code, not part of Medusa; they
-  live in each project for now and will move to a shared package. If a project has neither, ask
-  before writing a replacement.
+- **`react-hook-form`, `@hookform/resolvers` and `zod` at the dashboard's exact versions.** The
+  dashboard's `Form` and route modal forms render their own `react-hook-form` provider and
+  `Controller`; a project on a different copy gets two contexts that do not meet. With pnpm,
+  declare all three - see "pnpm Users ONLY" in `SKILL.md`.
+- **`ManagerFields`** at `src/admin/components/manager-fields/`. It is Codee project code, not part
+  of Medusa; it lives in each project for now and will move to a shared package. If a project does
+  not have it, ask before writing a replacement.
 
 ## Choose the container
 
@@ -62,13 +61,13 @@ The form wraps itself in `RouteFocusModal.Form` and closes through `handleSucces
 
 ```tsx
 // src/admin/brands/brand-create-form/brand-create-form.tsx
+import { zodResolver } from "@hookform/resolvers/zod"
 import { RouteFocusModal, useRouteModal } from "@medusajs/dashboard/components"
 import { Button, Heading, Text, toast } from "@medusajs/ui"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { ManagerFields } from "../../components/manager-fields"
 import { useCreateBrand } from "../../hooks/api/brands/brands"
-import { zodV4Resolver } from "../../lib/zod-v4-resolver"
 import { brandDefaults, brandFields, brandSchema, type BrandFormValues } from "./config"
 
 export const BrandCreateForm = () => {
@@ -77,7 +76,7 @@ export const BrandCreateForm = () => {
   const { mutateAsync, isPending } = useCreateBrand()
 
   const form = useForm<BrandFormValues>({
-    resolver: zodV4Resolver(brandSchema),
+    resolver: zodResolver(brandSchema),
     defaultValues: { brand: brandDefaults },
   })
 
@@ -151,7 +150,7 @@ An edit form is the same with `RouteDrawer`, `RouteDrawer.Form`, `RouteDrawer.Bo
 
 A widget lives on a core page and has no route to nest under, so it opens `FocusModal` or `Drawer`
 from `@medusajs/ui` with local `open` state. The form inside is the same: `useForm` with
-`zodV4Resolver`, wrapped in `Form` from `@medusajs/dashboard/components`, fields from
+`zodResolver`, wrapped in `Form` from `@medusajs/dashboard/components`, fields from
 `ManagerFields`. On success, reset the form and close:
 
 ```tsx
@@ -169,16 +168,18 @@ Keep the widget's display query separate from the modal's query - see `data-load
 |---|---|
 | Form state | `react-hook-form` |
 | Schema | `zod` v4 |
-| Resolver | `zodV4Resolver` |
+| Resolver | `zodResolver` from `@hookform/resolvers/zod`, the version the dashboard uses (5.x) |
 | Fields | `ManagerFields`, or `Form.Field` for anything it does not cover |
 
-**Do not use `@hookform/resolvers/zod` 3.x with Zod v4.** It throws an uncaught `ZodError` instead of
-passing errors to the fields. Resolvers 5.x support Zod v4; until a project moves to it,
-`zodV4Resolver` is the resolver.
+**`@hookform/resolvers` 3.x does not work with Zod v4.** It throws an uncaught `ZodError` instead of
+passing errors to the fields. It reaches a project silently when the package is not declared and
+another workspace app hoists 3.x, so declare it at the dashboard's version.
 
 ```ts
+import { zodResolver } from "@hookform/resolvers/zod"
+
 const form = useForm<FormValues>({
-  resolver: zodV4Resolver(schema),
+  resolver: zodResolver(schema),
   defaultValues: { settings: defaults },
 })
 ```

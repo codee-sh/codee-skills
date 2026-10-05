@@ -38,7 +38,7 @@ copied upstream verbatim.
 - **`references/forms.md` replaced by Codee's own.** Upstream's builds forms from `useState` with
   hand-written validation; Codee's uses route modal forms, `react-hook-form`, Zod v4 and
   `ManagerFields`.
-- **`SKILL.md`:** `react-hook-form` and `zod` in "pnpm Users ONLY", and `components.md` and
+- **`SKILL.md`:** `react-hook-form`, `@hookform/resolvers` and `zod` in "pnpm Users ONLY", and `components.md` and
   `forms.md` in the reference lists.
 - **Codee sections:** "Query Keys" in `data-loading.md`; "Error Toasts", "Dates" and
   "Action Columns and Prompts" in `display-patterns.md`.
