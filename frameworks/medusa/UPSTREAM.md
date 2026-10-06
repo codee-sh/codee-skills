@@ -8,18 +8,19 @@ installed into projects.
 
 ## Sources
 
-| Codee skill | Upstream path | Copied from | Baseline commit | Upstream checked on 2026-10-05 |
+| Codee skill | Upstream path | Copied from | Baseline commit | Upstream checked on 2026-10-06 |
 |---|---|---|---|---|
 | `codee-medusa-admin-dashboard` | `plugins/medusa-dev/skills/building-admin-dashboard-customizations` | `42da91a` (2026-08-14) | `a993594` | up to date |
 | `codee-medusa-backend` | `plugins/medusa-dev/skills/building-with-medusa` | `88adfce` (2026-02-09) | `923efc5` | behind: `a46f3b1` (2026-09-09) |
 | `codee-medusa-storefront-sdk` | `plugins/medusa-dev/skills/building-storefronts` | `88adfce` (2026-02-09) | `923efc5` | up to date |
-| `codee-medusa-storefront-ux` | `plugins/ecommerce-storefront/skills/storefront-best-practices` | `f923b95` (2026-08-06) | `923efc5` | behind: `da659ef` (2026-10-02) |
+| `codee-medusa-storefront-ux` | `plugins/ecommerce-storefront/skills/storefront-best-practices` | `da659ef` (2026-10-02) | `e246358` | up to date |
 
 The baseline commit holds the verbatim upstream copy; the Codee changes are everything after it.
 
-The three skills not yet re-synced were imported in commit `923efc5`; their "copied from" commit
-was identified by matching `SKILL.md` against upstream history, so check their `references/`
-when syncing them for the first time.
+Every "copied from" commit was confirmed by comparing the whole skill folder at the baseline with
+the upstream folder at that commit, apart from the `name:` field. Matching `SKILL.md` alone is not
+enough: the first storefront-ux import matched `f923b95` on `SKILL.md` but was really `f08f937`,
+two commits older, because only its `reference/` files had changed in between.
 
 ## Codee changes
 
