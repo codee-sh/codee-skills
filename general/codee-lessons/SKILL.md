@@ -60,7 +60,7 @@ and not another when that is the point.>
 
 Front matter is a single JSON object with exactly four keys: `title`, `modules`, `areas`, `topics`.
 
-- `modules` — folder names under `lessons.modulesFrom`, verbatim. A module tag that names no folder is an error, not a new module.
+- `modules` — folder names under `lessons.modulesFrom`, verbatim. A module tag that names no folder is an error, not a new module. Tag a lasting domain module only; a one-off initiative such as an upgrade closes, while its lessons usually outlive it. When a module closes and its folder moves to `ended/`, drop its tag from the lessons that stay - their areas and topics still route them.
 - `areas` — from `lessons.areas`. Several may apply.
 - `topics` — from `lessons.topics`. **MUST NOT invent one.** A finding that needs a new topic is a deliberate edit to the config, made and explained before the record is written; otherwise the vocabulary sprawls into one term per lesson and stops grouping anything.
 
