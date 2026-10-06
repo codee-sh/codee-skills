@@ -38,7 +38,7 @@ A lesson carries the **evidence**, the **failure mode**, and the **durable rule*
 
 When a finding produces both, split it: the rule goes to `AGENTS.md` as a trigger with a link, the explanation stays here. Never write the full explanation in both places.
 
-Do not record: anything the code already states plainly, a one-off environment glitch, or a preference with no failure behind it.
+Do not record: anything the code already states plainly, a one-off environment glitch, or a preference with no failure behind it. Framework knowledge that holds in every project belongs in a shared skill, and the story of one change belongs in its commit message or spec changelog - neither becomes a lesson.
 
 ### The record
 
@@ -97,4 +97,9 @@ Pure filesystem reads, so it costs nothing to run on every edit.
 - **MUST keep one record per finding.** Two findings in one file cannot be tagged or retrieved separately.
 - **MUST update an existing record** when new evidence refines a lesson already written, rather than adding a near-duplicate.
 - **MUST keep the record self-contained.** Someone opening it from a link should not have to read the catalog or another record to understand it.
-- **NEVER delete a lesson because the bug was fixed.** The rule survives the fix; that is the point. Record the fix in the lesson instead.
+- **MUST record the fix in a lesson whose trap can still be hit.** When a framework release fixes the behavior but the code it guards still exists, or the repository could still run an older version, keep the record and state the version that fixed it - the rule still holds below that version.
+- **MUST delete a lesson whose trap can no longer be hit**, together with its catalog row: the code it guards is gone, the version it applied to is behind the repository for good, or its rule now lives in full in an `AGENTS.md` file or a shared skill, which is then its one authoritative source. A record nobody can trip over again only costs every reader context.
+
+## Pruning
+
+After a framework upgrade, review only the records whose topic is `upgrade` or whose body names a version, and decide for each: still true, record the fix, or delete. Route through the catalog titles first; open a record only when its title leaves the answer open.
