@@ -19,13 +19,12 @@ Create these tasks in your todo list:
 
 ## Basic Workflow Structure
 
-**File Organization:**
-- **Recommended**: Create workflow steps in `src/workflows/steps/[step-name].ts`
-- Workflow composition functions go in `src/workflows/[workflow-name].ts`
-- This keeps steps reusable and organized
+**File Organization:** steps and composition functions are grouped by domain, and the paths in the
+examples below follow that layout. The layout and the naming rules behind it are owned by
+`codee-medusa-backend-conventions` - read it there rather than inferring them from these examples.
 
 ```typescript
-// src/workflows/steps/create-my-model.ts
+// src/workflows/my-model/steps/create-my-model.ts
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
 type Input = {
@@ -55,7 +54,7 @@ export const createMyModelStep = createStep(
   }
 )
 
-// src/workflows/create-my-model.ts
+// src/workflows/my-model/workflows/create-my-model.ts
 import { createWorkflow, WorkflowResponse } from "@medusajs/framework/workflows-sdk"
 import { createMyModelStep } from "./steps/create-my-model"
 
@@ -144,8 +143,17 @@ export const processCustomersWorkflow = createWorkflow(
 ### Date/Time Operations
 - ❌ No `new Date()` (will be fixed to load time) → Wrap in `transform()` for execution-time evaluation
 
+### Binary Payloads
+- ❌ No file bytes passed from step to step → Base64 content crosses at most one step boundary: from the step that produced it into `uploadFilesStep`, which stores it through the File Module
+- Every step's input and output is serialized into the workflow's checkpoint, so a file carried through several steps is copied into each of them. Downstream steps and the workflow's result carry the stored file's `id` and `url`, never its content.
+
+### Values That Must Not Change
+- ❌ No generated token or random id in `transform()` when a later step must see the same value → Create it inside a step and pass the step's output on
+- A step's output is checkpointed with the transaction. A `transform()` result is only memoized in memory on the transaction object (`DistributedTransaction#setTemporaryData` in `@medusajs/orchestration`, checked on 2.18.0), so it is computed again whenever the transaction is reloaded from its checkpoint. A timestamp that moves on a reload is usually harmless; a lease token or an idempotency key that changes between the write and its reader is not.
+
 ### Conditional Logic
 - ❌ No `if`/`else` statements → Use `when(input, (input) => input.is_active).then(() => { /* steps */ })` instead
+- ❌ No `when()` inside another `when()` block → The SDK keeps a single condition slot during composition, so the inner block replaces the outer one's condition. Use sequential blocks, each with its own name and condition
 - ❌ No ternary operators (`? :`) → Use `transform()` instead
 - ❌ No nullish coalescing (`??`) → Use `transform()` instead
 - ❌ No logical OR (`||`) → Use `transform()` instead
@@ -456,7 +464,7 @@ Check Medusa documentation or `@medusajs/medusa/core-flows` for available built-
 ### ✅ CORRECT - Validation in Workflow Step
 
 ```typescript
-// src/workflows/steps/delete-review.ts
+// src/workflows/review/steps/delete-review.ts
 export const deleteReviewStep = createStep(
   "delete-review",
   async ({ reviewId, customerId }: Input, { container }) => {

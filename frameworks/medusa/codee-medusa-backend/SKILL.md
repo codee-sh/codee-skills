@@ -18,9 +18,21 @@ Comprehensive backend development guide for Medusa applications. Contains patter
 - Querying data across modules
 - Implementing authentication/authorization
 
-**Also load these skills when:**
-- **building-admin-dashboard-customizations:** Building admin UI (widgets, pages, forms)
-- **building-storefronts:** Calling backend API routes from storefronts (SDK integration)
+## Which Skill Owns What
+
+This skill covers how Medusa works and what the framework dictates. It does not carry the project's
+own conventions, its test rules, or its frontend guidance - load the skill that owns them:
+
+| Subject | Skill |
+|---|---|
+| Architecture, modules, API routes, querying, links, subscribers, jobs | **this skill** |
+| File layout, file and symbol naming, workflow/step JSDoc | `codee-medusa-backend-conventions` |
+| Which test to write, at which layer, and where it lives | `codee-medusa-testing` |
+| One-off and operational scripts | `codee-medusa-scripts` |
+| Admin UI - widgets, pages, tables, forms | `codee-medusa-admin-dashboard` |
+| Calling backend routes from a storefront (SDK, data fetching) | `codee-medusa-storefront-sdk` |
+| Commerce surfaces - cart, checkout, PDP, PLP, SEO | `codee-medusa-storefront-ux` |
+| General TypeScript conventions | `codee-ts-code-conventions` |
 
 ## CRITICAL: Load Reference Files When Needed
 
@@ -28,12 +40,12 @@ Comprehensive backend development guide for Medusa applications. Contains patter
 
 **Load these references based on what you're implementing:**
 
-- **Creating a module?** → MUST load `reference/custom-modules.md` first
-- **Creating workflows?** → MUST load `reference/workflows.md` first
-- **Creating API routes?** → MUST load `reference/api-routes.md` first
-- **Creating module links?** → MUST load `reference/module-links.md` first
-- **Querying data?** → MUST load `reference/querying-data.md` first
-- **Adding authentication?** → MUST load `reference/authentication.md` first
+- **Creating a module?** → MUST load `references/custom-modules.md` first
+- **Creating workflows?** → MUST load `references/workflows.md` first
+- **Creating API routes?** → MUST load `references/api-routes.md` first
+- **Creating module links?** → MUST load `references/module-links.md` first
+- **Querying data?** → MUST load `references/querying-data.md` first
+- **Adding authentication?** → MUST load `references/authentication.md` first
 
 **Minimum requirement:** Load at least 1-2 reference files relevant to your specific task before implementing.
 
@@ -115,10 +127,15 @@ Frontend (admin dashboard/storefront via SDK)
 
 ### 6. File Organization (MEDIUM)
 
-- `file-workflow-steps` - Recommended: Create steps in `src/workflows/steps/[name].ts`
-- `file-workflow-composition` - Composition functions in `src/workflows/[name].ts`
-- `file-middleware-exports` - Export schemas and types from middleware files
-- `file-links-directory` - Define module links in `src/links/[name].ts`
+- `file-links-directory` - Define module links in `src/links/[name].ts` - Medusa scans that directory
+- `file-api-route-path` - The directory path under `src/api/` is the URL, and the handler file is
+  always `route.ts`
+
+Everything else about where a backend file goes and what it is called - the workflow directory
+layout, one `createStep` per file, the file name matching the exported symbol, the workflow id
+matching the file name, how `validators.ts` and `middlewares.ts` sit beside a route - is a project
+convention, not a framework rule. `codee-medusa-backend-conventions` owns it. Do not restate it
+here; the two would drift.
 
 ## Workflow Composition Rules
 
@@ -189,31 +206,16 @@ Before implementing, verify you're NOT doing these:
 
 ## Validating Implementation
 
-**CRITICAL: Always run the build command after completing implementation to catch type errors and runtime issues.**
+Validate after implementing a feature, after changing modules, workflows or API routes, and before
+marking a task complete - proactively, without waiting to be asked.
 
-### When to Validate
-- After implementing any new feature
-- After making changes to modules, workflows, or API routes
-- Before marking tasks as complete
-- Proactively, without waiting for the user to ask
+- Run the checks the project's `AGENTS.md` lists: typecheck, lint, tests. The full build (`medusa
+  build`, `pnpm build`) belongs to the user: do not run it, and say in the report that it was not
+  run.
+- When a check fails, read the error, fix the cause (type errors, imports, syntax) and run the check
+  again. Do not mark the implementation complete while a check you ran still fails.
 
-### How to Run Build
-
-Detect the package manager and run the appropriate command:
-
-```bash
-npm run build      # or pnpm build / yarn build
-```
-
-### Handling Build Errors
-
-If the build fails:
-1. Read the error messages carefully
-2. Fix type errors, import issues, and syntax errors
-3. Run the build again to verify the fix
-4. Do NOT mark implementation as complete until build succeeds
-
-**Common build errors:**
+**Common errors a typecheck catches:**
 - Missing imports or exports
 - Type mismatches (e.g., missing `MedusaRequest<T>` type argument)
 - Incorrect workflow composition (async functions, conditionals)
@@ -223,107 +225,33 @@ If the build fails:
 Since Medusa v2.16.0, projects can install `@medusajs/eslint-plugin`, which catches violations of Medusa conventions (API routes, subscribers, scheduled jobs, admin customizations, module patterns) that a type check won't.
 
 - If the project has an `eslint.config.*` with `@medusajs/eslint-plugin`, **`medusa build` and `medusa develop` run linting by default and fail on lint errors**. Fix lint errors rather than passing `--no-lint`.
-- Run linting explicitly with `npx medusa lint` (supports `--fix` and `--quiet`). Run it after implementing a feature, alongside the build.
+- Run linting explicitly with `npx medusa lint` (supports `--fix` and `--quiet`), or with the lint command the project's `AGENTS.md` lists. Run it after implementing a feature.
 - If the project has no ESLint config, suggest adding it (`@medusajs/eslint-plugin`, `eslint`, and `jiti` as dev dependencies, then an `eslint.config.ts` exporting `defineConfig([...medusa.configs.recommended])`) — but don't add it unprompted.
 
-## Next Steps - Testing Your Implementation
+## Tests
 
-**After successfully implementing a feature, always provide these next steps to the user:**
-
-### 1. Start the Development Server
-
-If the server isn't already running, start it:
-
-```bash
-npm run dev      # or pnpm dev / yarn dev
-```
-
-### 2. Access the Admin Dashboard
-
-Open your browser and navigate to:
-- **Admin Dashboard:** http://localhost:9000/app
-
-Log in with your admin credentials to test any admin-related features.
-
-### 3. Test API Routes
-
-If you implemented custom API routes, list them for the user to test:
-
-**Admin Routes (require authentication):**
-- `POST http://localhost:9000/admin/[your-route]` - Description of what it does
-- `GET http://localhost:9000/admin/[your-route]` - Description of what it does
-
-**Store Routes (public or customer-authenticated):**
-- `POST http://localhost:9000/store/[your-route]` - Description of what it does
-- `GET http://localhost:9000/store/[your-route]` - Description of what it does
-
-**Testing with cURL example:**
-```bash
-# Admin route (requires authentication)
-curl -X POST http://localhost:9000/admin/reviews/123/approve \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  --cookie "connect.sid=YOUR_SESSION_COOKIE"
-
-# Store route
-curl -X POST http://localhost:9000/store/reviews \
-  -H "Content-Type: application/json" \
-  -d '{"product_id": "prod_123", "rating": 5, "comment": "Great product!"}'
-```
-
-### 4. Additional Testing Steps
-
-Depending on what was implemented, mention:
-- **Workflows:** Test mutation operations and verify rollback on errors
-- **Subscribers:** Trigger events and check logs for subscriber execution
-- **Scheduled jobs:** Wait for job execution or check logs for cron output
-
-### Format for Presenting Next Steps
-
-Always present next steps in a clear, actionable format after implementation:
-
-```markdown
-## Implementation Complete
-
-The [feature name] has been successfully implemented. Here's how to test it:
-
-### Start the Development Server
-[server start command based on package manager]
-
-### Access the Admin Dashboard
-Open http://localhost:9000/app in your browser
-
-### Test the API Routes
-I've added the following routes:
-
-**Admin Routes:**
-- POST /admin/[route] - [description]
-- GET /admin/[route] - [description]
-
-**Store Routes:**
-- POST /store/[route] - [description]
-
-### What to Test
-1. [Specific test case 1]
-2. [Specific test case 2]
-3. [Specific test case 3]
-```
+Every step, workflow, module service, API route and exported util carries a test. This skill does
+not decide which one: `codee-medusa-testing` names the layer, the runner, the file location and the
+mock harness for the change at hand. Load it before writing the code, not after.
 
 ## How to Use
 
 **For detailed patterns and examples, load reference files:**
 
 ```
-reference/custom-modules.md    - Creating modules with data models
-reference/workflows.md          - Workflow creation and step patterns
-reference/api-routes.md         - API route structure and validation
-reference/module-links.md       - Linking entities across modules
-reference/querying-data.md      - Query patterns and filtering rules
-reference/authentication.md     - Protecting routes and accessing users
-reference/error-handling.md     - MedusaError types and patterns
-reference/scheduled-jobs.md     - Cron jobs and periodic tasks
-reference/subscribers-and-events.md - Event handling
-reference/troubleshooting.md    - Common errors and solutions
+references/custom-modules.md    - Creating modules with data models
+references/workflows.md          - Workflow creation and step patterns
+references/api-routes.md         - API route structure and validation
+references/module-links.md       - Linking entities across modules
+references/querying-data.md      - Query patterns and filtering rules
+references/authentication.md     - Protecting routes and accessing users
+references/error-handling.md     - MedusaError types and patterns
+references/scheduled-jobs.md     - Cron jobs and periodic tasks
+references/subscribers-and-events.md - Event handling
+references/data-models.md        - Data model definitions and properties
+references/workflow-hooks.md     - Extending core workflows through hooks
+references/frontend-integration.md - Reaching the backend from a frontend
+references/troubleshooting.md    - Common errors and solutions
 ```
 
 Each reference file contains:
@@ -362,7 +290,7 @@ When building features that span backend and frontend:
 
 **For Admin Dashboard:**
 1. **Backend (this skill):** Module → Workflow → API Route
-2. **Frontend:** Load `building-admin-dashboard-customizations` skill
+2. **Frontend:** Load `codee-medusa-admin-dashboard` skill
 3. **Connection:**
    - Built-in endpoints: Use existing SDK methods (`sdk.admin.product.list()`)
    - Custom API routes: Use `sdk.client.fetch("/admin/my-route")`
@@ -370,7 +298,7 @@ When building features that span backend and frontend:
 
 **For Storefronts:**
 1. **Backend (this skill):** Module → Workflow → API Route
-2. **Frontend:** Load `building-storefronts` skill
+2. **Frontend:** Load `codee-medusa-storefront-sdk` skill
 3. **Connection:**
    - Built-in endpoints: Use existing SDK methods (`sdk.store.product.list()`)
    - Custom API routes: Use `sdk.client.fetch("/store/my-route")`

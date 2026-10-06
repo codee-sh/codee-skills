@@ -29,7 +29,8 @@ Create these tasks in your todo list:
 - Optional: Add linked ID in custom data model (if one-to-one or one-to-many)
 - Define the link in src/links/
 - Configure list or delete cascade options if needed
-- **CRITICAL: Run migrations: npx medusa db:migrate** (Never skip this step!)
+- **STOP - migrations belong to the user.** Define the link, then ask the user to run
+  `npx medusa db:migrate`. Never run it yourself.
 - Create links in code using link.create() or createRemoteLinkStep
 - Query linked data using query.graph()
 - **CRITICAL: Run build to validate implementation** (catches type errors and issues)
@@ -100,7 +101,7 @@ For example, if you have a `Review` data model in a `ReviewModule`:
 - ✅ CORRECT: `ReviewModule.linkable.review` (works automatically)
 - ❌ WRONG: Adding `.linkable()` method to the Review model definition (not needed, causes errors)
 
-**⚠️ NEXT STEP**: After defining a link, you MUST immediately proceed to Step 3 to run migrations (`npx medusa db:migrate`). Do not skip this step!
+**⚠️ NEXT STEP**: A link is not live until the database is synced. Stop after defining it and ask the user to run `npx medusa db:migrate` (Step 3).
 
 ## Step 2: Link Configuration Options
 
@@ -132,7 +133,7 @@ export default defineLink(ProductModule.linkable.product, {
 
 ## Step 3: Sync Links (Run Migrations)
 
-**⚠️ CRITICAL - DO NOT SKIP**: After defining links, you MUST run migrations to sync the link to the database. Without this step, the link will not work and you will get runtime errors.
+**⚠️ STOP HERE**: After defining links, the link table still has to be created. That command is the user's to run, not yours - hand it over and wait. Until then the link does not work and every call through it fails.
 
 ```bash
 npx medusa db:migrate
@@ -339,7 +340,7 @@ const { data: products } = await query.index({
 1. Install `@medusajs/index` package
 2. Add to `medusa-config.ts`
 3. Enable `MEDUSA_FF_INDEX_ENGINE=true` in `.env`
-4. Run `npx medusa db:migrate`
+4. Ask the user to run `npx medusa db:migrate`
 5. Mark properties as `filterable` in link definition:
 
 ```typescript

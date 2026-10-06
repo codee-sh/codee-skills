@@ -93,9 +93,9 @@ Data models automatically include:
 
 **Important**: Never add these properties explicitly to your model definitions.
 
-## Generate and Run Migrations After Changes
+## Migrations After Model Changes (the user runs these)
 
-After making changes to a data model, such as adding a property, you MUST generate migrations BEFORE running migrations:
+After changing a data model - adding a property, say - the change still has to reach the database. Both commands below are the user's to run: stop, hand them over in this order, and wait.
 
 ```bash
 npx medusa db:generate blog
