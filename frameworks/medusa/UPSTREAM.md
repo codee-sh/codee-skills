@@ -11,7 +11,7 @@ installed into projects.
 | Codee skill | Upstream path | Copied from | Baseline commit | Upstream checked on 2026-10-06 |
 |---|---|---|---|---|
 | `codee-medusa-admin-dashboard` | `plugins/medusa-dev/skills/building-admin-dashboard-customizations` | `42da91a` (2026-08-14) | `a993594` | up to date |
-| `codee-medusa-backend` | `plugins/medusa-dev/skills/building-with-medusa` | `88adfce` (2026-02-09) | `923efc5` | behind: `a46f3b1` (2026-09-09) |
+| `codee-medusa-backend` | `plugins/medusa-dev/skills/building-with-medusa` | `a46f3b1` (2026-09-09) | `435da63` | up to date |
 | `codee-medusa-storefront-sdk` | `plugins/medusa-dev/skills/building-storefronts` | `88adfce` (2026-02-09) | `923efc5` | up to date |
 | `codee-medusa-storefront-ux` | `plugins/ecommerce-storefront/skills/storefront-best-practices` | `da659ef` (2026-10-02) | `e246358` | up to date |
 
@@ -44,6 +44,19 @@ copied upstream verbatim.
 - **Codee sections:** "Query Keys" in `data-loading.md`; "Error Toasts", "Dates" and
   "Action Columns and Prompts" in `display-patterns.md`.
 - **New file:** `references/components.md` (Components Router).
+
+`codee-medusa-backend` also carries:
+
+- **`reference/` is named `references/`**, the folder name every Codee skill uses. A sync maps
+  upstream's `reference/<file>` to `references/<file>`, in the baseline commit too.
+- **`SKILL.md`, "Validating Implementation":** the agent runs the checks the project's `AGENTS.md`
+  lists and never the full build, which belongs to the user; upstream tells the agent to run the
+  build and not to finish until it passes. The Linting bullet loses "alongside the build" for the
+  same reason.
+- **`SKILL.md`, "Tests" instead of upstream's "Next Steps":** testing is delegated to
+  `codee-medusa-testing`.
+- **Codee rules** across `SKILL.md` and the references, from the org's own way of building on
+  Medusa (the commits after the baseline): error handling, workflows, custom modules, module links.
 
 ## Syncing a skill
 
