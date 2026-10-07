@@ -21,8 +21,8 @@ dashboard's exported modals.
   `Controller`; a project on a different copy gets two contexts that do not meet. With pnpm,
   declare all three - see "pnpm Users ONLY" in `SKILL.md`.
 - **`ManagerFields`** at `src/admin/components/manager-fields/`. It is Codee project code, not part
-  of Medusa; it lives in each project for now and will move to a shared package. If a project does
-  not have it, ask before writing a replacement.
+  of Medusa, and each project keeps its own copy. If a project does not have it, ask before writing a
+  replacement.
 
 ## Choose the container
 
