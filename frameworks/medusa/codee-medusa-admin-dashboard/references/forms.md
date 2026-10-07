@@ -1,7 +1,7 @@
 # Forms and Modal Patterns
 
-Codee's own file: it replaces Medusa's `references/forms.md`, which builds forms from `useState`
-with hand-written validation. Every admin form here uses `react-hook-form`, Zod v4 and the
+This file replaces Medusa's `references/forms.md`, which builds forms from `useState` with
+hand-written validation. Every admin form here uses `react-hook-form`, Zod v4 and the
 dashboard's exported modals.
 
 ## Contents
@@ -20,8 +20,8 @@ dashboard's exported modals.
   dashboard's `Form` and route modal forms render their own `react-hook-form` provider and
   `Controller`; a project on a different copy gets two contexts that do not meet. With pnpm,
   declare all three - see "pnpm Users ONLY" in `SKILL.md`.
-- **`ManagerFields`** at `src/admin/components/manager-fields/`. It is Codee project code, not part
-  of Medusa, and each project keeps its own copy. If a project does not have it, ask before writing a
+- **`ManagerFields`** at `src/admin/components/manager-fields/`. It is project code, not part of
+  Medusa, and each project keeps its own copy. If a project does not have it, ask before writing a
   replacement.
 
 ## Choose the container
