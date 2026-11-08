@@ -29,6 +29,7 @@ Build custom UI extensions for the Medusa Admin dashboard using the Admin SDK an
 **Load these references based on what you're implementing:**
 
 - **Choosing a component, hook or helper?** → MUST load `references/components.md` first
+- **Creating a file in `src/admin`, or deciding where code goes?** → MUST load `references/file-structure.md` first
 - **Creating widgets?** → MUST load `references/data-loading.md` first
 - **Building forms/modals?** → MUST load `references/forms.md` first
 - **Displaying data in tables/lists?** → MUST load `references/display-patterns.md` first
@@ -275,6 +276,7 @@ references/forms.md              - Route modal forms, react-hook-form + Zod v4, 
 references/table-selection.md    - Complete DataTable selection pattern
 references/display-patterns.md   - Lists, tables, cards for entities
 references/typography.md         - Text component patterns
+references/file-structure.md     - Where a file goes in src/admin, app and plugin alike
 references/navigation.md         - Link, useNavigate, useParams patterns
 ```
 
