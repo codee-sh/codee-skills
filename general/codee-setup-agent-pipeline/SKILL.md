@@ -1,11 +1,13 @@
 ---
 name: codee-setup-agent-pipeline
-description: One-time pipeline configurator. Inspects the repo (default branch, validation scripts, labels), asks a few questions, writes .ai/agentic.config.json — the file every other skill reads — installs the tracker descriptor, and generates missing project docs (SDLC.md, CODE_REVIEW.md, BACKWARD_COMPATIBILITY.md, AGENTS.md starter). Re-run when the toolchain or label taxonomy changes. Verifies cross-skill coverage and prints the install command for missing skills.
+description: One-time pipeline configurator. Inspects the repo (default branch, validation scripts, labels), asks a few questions, writes .ai/agentic.config.json — the file every other skill reads — installs the tracker descriptor, and generates missing project docs (SDLC.md, CODE_REVIEW.md, BACKWARD_COMPATIBILITY.md, AGENTS.md starter). Re-run when the toolchain or label taxonomy changes. Verifies cross-skill coverage and prints the install command for missing skills. Not for a Medusa plugin repository, which uses codee-medusa-plugin-delivery.
 ---
 
 # Setup Agent Pipeline
 
 Every skill in this collection reads its repository-specific settings from `.ai/agentic.config.json`. This skill writes that file. It is the first skill to run in a fresh repository; the others stop and point here when the config is missing.
+
+A Medusa plugin repository runs `codee-medusa-plugin-delivery` instead: it writes the plugin's `SDLC.md` and a config holding only `validation` and `lessons`. Run this skill in a plugin only to add the autonomous pipeline; it leaves that `SDLC.md` alone, as it never overwrites an existing document.
 
 ## Arguments
 

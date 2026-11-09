@@ -87,6 +87,7 @@ instruction file. Keep only rows for skills installed in that repository.
 
 - [Default](agents-templates/default.md)
 - [Medusa](agents-templates/medusa.md)
+- [Medusa plugin](agents-templates/medusa-plugin.md) - for a plugin repository, with `codee-medusa-plugin-delivery`
 - [Payload](agents-templates/payload.md)
 
 The Medusa template combines Codee skills with the official
@@ -100,40 +101,56 @@ npx skills add medusajs/medusa-agent-skills
 
 ## Available skills
 
-### General
+Two kinds of skill live here. **Setup skills** run once in a repository, and again when its toolchain
+changes. **Working skills** load on their own while you work, when the task matches their description;
+you rarely call them by name.
 
-- `codee-generate-pr-description`
-- `codee-lessons`
-- `codee-project-organization`
-- `codee-root-cause` *
-- `codee-setup-agent-pipeline` *
-- `codee-skill-creator`
-- `codee-spec-notes`
-- `codee-spec-writing`
-- `codee-ts-code-conventions`
-- `codee-ui-copy`
-- `codee-writing-questions`
+### Setup - run once per repository
 
-### Medusa
+| Skill | What it does | When to run |
+|---|---|---|
+| `codee-setup-agent-pipeline` * | Writes `.ai/agentic.config.json`, which other skills read, installs the tracker descriptor, and generates missing `SDLC.md`, `AGENTS.md`, `CODE_REVIEW.md` for the autonomous ticket-to-PR pipeline. | In a new application repository, and when its validation scripts, tracker or labels change. Not in a Medusa plugin. |
+| `codee-medusa-plugin-delivery` | Sets up or aligns a Medusa plugin: Yarn 4, branches, Changesets, the release, PR and publish scripts, manual npm publication, GitHub CI and release workflows, integration tests on a test app, the plugin's `SDLC.md` and `AGENTS.md` rules. | In a new plugin repository; when an existing plugin is brought to the same way of working; for any question about releasing, publishing or testing a plugin. |
+| `codee-project-organization` | Writes `PROJECT-ORGANIZATION.md`: team, tools, workflow, sprints, ClickUp. | At the start of a client project. |
 
-- `codee-medusa-admin-dashboard`
-- `codee-medusa-backend`
-- `codee-medusa-backend-conventions`
-- `codee-medusa-scripts`
-- `codee-medusa-storefront-sdk`
-- `codee-medusa-storefront-ux`
-- `codee-medusa-testing`
-- `codee-spec-review-medusa`
+### General - working skills
 
-### Payload
+| Skill | What it does | When it loads |
+|---|---|---|
+| `codee-spec-writing` | Writes and reviews specs: a main spec and sub-specs, open questions first, phased plans. | Planning a non-trivial feature, restructuring or reviewing a spec. |
+| `codee-spec-notes` | Keeps working notes in `.ai/notes/{topic}/`, never in the specs. | Exploring before a spec, collecting context or client questions. |
+| `codee-root-cause` * | Read-only root-cause analysis: where a bug is and the smallest change that fixes it. | A bug report, before a fix is proposed or written. |
+| `codee-ts-code-conventions` | Comments, JSDoc, naming and clarity in TypeScript. | Writing or reviewing TypeScript. |
+| `codee-ui-copy` | Polish and English rules for interface text. | Labels, buttons, messages, empty states, tooltips. |
+| `codee-lessons` | Records non-obvious findings, one file each, in a catalog, and looks them up. | After a surprising bug or a fix that needs an explanation; before answering what may be recorded. |
+| `codee-generate-pr-description` | Writes `.ai/pr-description.md` from the branch. | "Prepare the PR description". |
+| `codee-writing-questions` | Formats questions for a client or stakeholder. | Writing questions to a client. |
+| `codee-skill-creator` | Scaffolds a new skill from a template. | Creating a skill. |
 
-- `codee-payload`
-- `codee-payload-build-collections`
-- `codee-payload-build-modules`
-- `codee-payload-frontend-build-components`
-- `codee-payload-review`
-- `codee-payload-security`
-- `codee-spec-review-payload`
+### Medusa - working skills
+
+| Skill | What it does | When it loads |
+|---|---|---|
+| `codee-medusa-backend` | Medusa backend architecture: modules, workflows, API routes, links, data models. | Any backend work, planning included. |
+| `codee-medusa-backend-conventions` | Where a backend file goes, its name, its JSDoc, the shape of a step. | Writing or reviewing any backend file. |
+| `codee-medusa-testing` | Which test a change owes, at which layer, with which runner and harness. | Before writing a step, workflow, module, route or util, or its test. |
+| `codee-medusa-admin-dashboard` | Admin UI: components, data loading, forms, tables, navigation, and where a file goes in `src/admin`. | Any Admin work, planning included. |
+| `codee-medusa-storefront-sdk` | Calling Medusa from a storefront: JS SDK, React Query, custom routes. | Storefront integration work. |
+| `codee-medusa-storefront-ux` | Storefront UI and flows: cart, checkout, product pages, navigation. | Any storefront page or component. |
+| `codee-medusa-scripts` | `src/scripts/` and `src/migration-scripts/`: where a script goes, dry runs, arguments, helpers. | Writing, reviewing or deleting a script or a data backfill. |
+| `codee-spec-review-medusa` | Technical review of a Medusa spec against the code and the framework. | After the `codee-spec-writing` review of a Medusa spec. |
+
+### Payload - working skills
+
+| Skill | What it does | When it loads |
+|---|---|---|
+| `codee-payload` | Payload projects: config, fields, hooks, access control, the Payload API. | Any Payload work and debugging. |
+| `codee-payload-build-collections` | Adding a collection, step by step. | A new collection or data type. |
+| `codee-payload-build-modules` | A custom admin view or field component. | A new admin view, tab or field UI. |
+| `codee-payload-frontend-build-components` | React components and pages in the Next.js and Tailwind front end. | A UI primitive, shared component or page. |
+| `codee-payload-review` | Best-practice review: deployment and architecture hygiene. | Reviewing a project, or changing schema, migrations or deployment. |
+| `codee-payload-security` | Security review and hardening. | Reviewing security, or changing auth, access, uploads, CORS or headers. |
+| `codee-spec-review-payload` | Technical review of a Payload spec. | After the `codee-spec-writing` review of a Payload spec. |
 
 \* Adapted from the [open-mercato/skills](https://github.com/open-mercato/skills)
 collection (MIT, Copyright (c) 2026 Open Mercato). The original skills are the work of
@@ -163,6 +180,7 @@ codee-skills/
 │   │   ├── codee-medusa-admin-dashboard/
 │   │   ├── codee-medusa-backend/
 │   │   ├── codee-medusa-backend-conventions/
+│   │   ├── codee-medusa-plugin-delivery/
 │   │   ├── codee-medusa-scripts/
 │   │   ├── codee-medusa-storefront-sdk/
 │   │   ├── codee-medusa-storefront-ux/
