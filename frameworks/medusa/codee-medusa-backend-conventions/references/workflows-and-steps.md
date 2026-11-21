@@ -1,15 +1,32 @@
 # Workflows and Steps
 
-How a workflow is composed, what a step does and returns, and what their JSDoc says. Names are in
+Where data is read and written, how a workflow is composed, what a step does and returns, and what
+their JSDoc says. Names are in
 `step-and-workflow-names.md`; where a helper goes is in `file-layout.md`.
 
 ## Contents
 
+- [Where data is read and written](#where-data-is-read-and-written)
 - [Workflow composition](#workflow-composition)
 - [One job per step](#one-job-per-step)
 - [Step shape](#step-shape)
 - [Workflow JSDoc](#workflow-jsdoc)
 - [Step JSDoc](#step-jsdoc)
+
+## Where data is read and written
+
+**Query and module services are called in steps only.** A route handler, a middleware, a subscriber
+and a scheduled job reach data by running a workflow, reads included: a list or detail route runs a
+`list-` or `get-` workflow composed of steps - `useQueryGraphStep` for a plain `query.graph` read -
+never a module service or `query.graph` in its handler. A read written once as a step is reused by
+every route and workflow that needs it; a read inside a handler can only be copied.
+
+A middleware that reads no data - a header, a token checked against the owning module's options - runs
+no workflow. A workflow util and every other plain function take what a step read and return what a
+step writes, per `codee-ts-code-conventions` `references/code-layout.md`, "Plain functions are pure".
+
+This narrows `codee-medusa-backend`, whose route examples read with `query.graph` in the handler:
+Medusa allows it, and we do not.
 
 ## Workflow composition
 

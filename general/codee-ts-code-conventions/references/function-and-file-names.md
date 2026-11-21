@@ -44,6 +44,8 @@ file name.
 | `prepare-` | shapes its input into what a known consumer reads next; holds no check of its own, and runs the `validate-` helpers of its domain | the shaped value | `prepareInvoice(order, customer)` |
 | `build-` | builds a new object from a description | the object | `buildQuery(filters)` |
 | `map-` | copies a list or a tree with each item turned by a function the caller gives | the copy | `mapTree(tree, mapNode)` |
+| `pick-` | copies a value keeping only the keys or items it is told to keep | the copy | `pickKeys(row, keys)` |
+| `add-` | puts an item into a collection, or a rule onto a schema, that its caller holds in memory | nothing, or the value it extended | `addRow(calls, key, row)`, `addFieldRules(schema, fields)` |
 | `split-` | divides one value into named parts | the parts | `splitAddress(address)` |
 | `format-` / `parse-` | turns a value into text / text back into the value; a pair is the reverse of each other | the text / the value | `formatPrice(amount)`, `parsePrice(text)` |
 | `normalize-` | brings a value to its canonical form | a value of the same kind | `normalizeEmail(email)` |
@@ -63,6 +65,10 @@ file name.
   query, a message.
 - **`build-` or `map-`:** `map-` keeps the shape of its input and turns each item; `build-` makes a
   shape of its own.
+- **`pick-` or `map-`:** `pick-` keeps items as they are and drops the rest; `map-` turns each one.
+- **`add-` or `build-`:** `add-` extends what its caller already holds - a list of calls being
+  gathered, a schema being refined; `build-` starts from nothing. `add-` touches memory only: a
+  function that writes to a database or a file is no plain function.
 - **`get-` never names a computation:** `formatFullName(user)`, not `getFullName(user)`; `get-` takes,
   it does not work anything out.
 
@@ -78,6 +84,9 @@ under different words.
 | `to-`, `convert-` | `build-`, `format-` or `normalize-`, by what it returns |
 | `place-` | `map-` |
 | `load-`, `retrieve-`, `collect-`, `gather-` | `get-` or `list-` |
+| `select-` | `pick-`, or `add-` when it fills a selection its caller holds |
+| `read-` | `describe-`, or `parse-` when it reads text |
+| `walk-`, `visit-`, `traverse-` | the verb of what the walk does: `validate-`, `list-`, `map-` |
 | `fetch-` | a plain function does no I/O (see `code-layout.md`); the framework's unit that reads names it |
 | `create-`, `update-`, `delete-`, `save-` | a plain function writes nothing; `build-` when it builds a new object |
 

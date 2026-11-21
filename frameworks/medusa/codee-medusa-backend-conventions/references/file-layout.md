@@ -32,8 +32,10 @@ module's rules there, beside its service. Only the module's `clients/` talk to t
 ## When a helper leaves its unit
 
 A unit in Medusa is a step, a workflow's composition function, a route handler, a subscriber or a
-job. The rule of `code-layout.md` holds - a helper leaves its unit for a second consumer - and these
-cases move it with one consumer:
+job. The rule of `code-layout.md` holds - a helper leaves its unit for a second consumer - with one
+narrowing: a step keeps its logic in its own file even when it runs several checks side by side, as
+the `createStep` harness tests them there; the "file of its own beside its caller" case is for plain
+functions only. These cases move a helper with one consumer:
 
 - **A function a `transform()` callback calls** goes to `<domain>/utils/` with the unit test an
   exported util owes - see `workflows-and-steps.md`, "Workflow composition".

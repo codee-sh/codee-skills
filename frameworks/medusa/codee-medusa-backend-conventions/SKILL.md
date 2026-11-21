@@ -23,8 +23,9 @@ Load a reference before the work it covers:
 - **Naming a step, a workflow or their files?** MUST load `references/step-and-workflow-names.md`
   first: where step verbs differ from plain functions, file names and ids, workflow naming, the step
   prefixes and the verbs that are not step prefixes.
-- **Writing a workflow or a step?** MUST load `references/workflows-and-steps.md` first: composition,
-  one job per step, step shape, and the JSDoc of workflows and steps.
+- **Writing a workflow, a step, or a route, middleware, subscriber or job that reaches data?** MUST
+  load `references/workflows-and-steps.md` first: where data is read and written, composition, one job
+  per step, step shape, and the JSDoc of workflows and steps.
 
 ## Rules at a glance
 
@@ -33,6 +34,8 @@ Each is stated in full in its reference; this list only points there.
 - Workflows group by domain: `src/workflows/<domain>/{steps,workflows,utils,types}/`.
 - One `createStep` and one `createWorkflow` per file, the file named after the symbol, a workflow's id
   after its file.
+- Query and module services are called in steps only; a route, a middleware, a subscriber and a job
+  reach data through a workflow, reads included.
 - A step reads, decides or writes - one of the three - and takes only the step prefixes.
 - Every `when()` is named, and a `transform()` callback stays one level deep.
 - Every `createWorkflow` and `createStep` has a JSDoc block.

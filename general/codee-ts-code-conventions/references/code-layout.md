@@ -59,18 +59,28 @@ from there.
 
 ## When a helper leaves its unit
 
-A unit is the function, component, route or framework step whose body holds the code.
+A unit is the function, component, route or framework step whose body holds the code. A helper leaves
+it in one of two ways, each with its own rule.
 
-- **By default the logic stays in its unit,** with private helpers in the same file.
-- **It leaves for a second consumer.** Before extracting, check that something else calls it:
+- **By default the logic stays in its unit,** with private helpers in the same file: a step of the
+  unit's own algorithm - picking keys, writing one line of a message - is no subject of its own.
+- **To a file of its own beside its caller, only when the caller runs several subjects side by side.**
+  When a caller runs a set of parallel rules or parts - the checks of one config, the parts of one
+  structure it assembles - each a contract of its own, kept together they make the caller a file of
+  several subjects. Each then goes to its own file in the caller's folder, even with one consumer, and
+  is found by its name. A single helper of a caller stays private in the caller's file, however long:
+  splitting it off only moves the reading elsewhere. A framework skill may keep its units out of this
+  case.
+- **Up, out of its owner's folder, for a second consumer** (see [The narrowest owner](#the-narrowest-owner)).
+  Before moving, check that something else calls it:
   `grep -rl '\bmyFunction\b' src | grep -v __tests__` lists more than the file it came from.
-- **Exceptions, which move it with one consumer:**
+- **Exceptions, which move it up with one consumer:**
   - code the framework gives no test where it sits - the framework skill names these cases;
   - code another runtime imports, such as a browser bundle reading a rule the server also runs: it goes
     to a file that imports nothing of the server;
   - a rule of another domain than the unit's: it goes to that domain.
-- **Testability alone is never a reason.** A unit is tested where it is, through the test harness its
-  framework provides; production code stays shaped by its real use.
+- **Testability alone is never a reason** for either move. A unit is tested where it is, through the
+  test harness its framework provides; production code stays shaped by its real use.
 
 ## Plain functions are pure
 
