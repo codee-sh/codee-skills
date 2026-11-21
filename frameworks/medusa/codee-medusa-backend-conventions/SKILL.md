@@ -44,6 +44,6 @@ Each is stated in full in its reference; this list only points there.
 
 ## Deviations
 
-A codebase that predates these rules will break them in places. Leave those alone unless you are
-fixing them deliberately, and record them in the project's own notes — not here. A shared skill
-states the rule; the backlog of what does not yet meet it belongs to the project that carries it.
+Code that predates these rules - a handler that reads with `query.graph`, a step named off the
+prefixes - follows `codee-ts-code-conventions` `references/code-layout.md`, "Code that predates these
+rules": left alone on its own, brought to the rules when a task changes it, and reported apart.

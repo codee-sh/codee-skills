@@ -91,6 +91,13 @@ code, the one role that talks to the outside.
 
 ## Code that predates these rules
 
-Code written before these rules will break them in places. Leave it unless it is being fixed
-deliberately, and record the gap in the project's own notes or specs, not here: a shared skill states
-the rule, and the backlog belongs to the project that carries it.
+Code written before these rules breaks them in places. Do not rewrite it on its own. When a task
+changes such code, bring the unit it changes - the function, the route handler, the step - to the
+rules in the same change; the code the task does not touch stays as it is.
+
+Say so in the report of the task, apart from the task's own changes: each unit brought to the rules,
+the rule it now follows, and what changed beyond the task - a rename, a moved file, a new step. A
+reader of the report must be able to tell what the task asked for from what the rules added.
+
+Record what is left in the project's own notes or specs, not here: a shared skill states the rule,
+and the backlog belongs to the project that carries it.
