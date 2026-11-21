@@ -120,7 +120,7 @@ you rarely call them by name.
 | `codee-spec-writing` | Writes and reviews specs: a main spec and sub-specs, open questions first, phased plans. | Planning a non-trivial feature, restructuring or reviewing a spec. |
 | `codee-spec-notes` | Keeps working notes in `.ai/notes/{topic}/`, never in the specs. | Exploring before a spec, collecting context or client questions. |
 | `codee-root-cause` * | Read-only root-cause analysis: where a bug is and the smallest change that fixes it. | A bug report, before a fix is proposed or written. |
-| `codee-ts-code-conventions` | Comments, JSDoc, naming and clarity in TypeScript. | Writing or reviewing TypeScript. |
+| `codee-ts-code-conventions` | Comments, JSDoc and identifier names in TypeScript; function and file names, and where plain code goes. | Writing or reviewing TypeScript, naming a function or a file, placing a helper. |
 | `codee-ui-copy` | Polish and English rules for interface text. | Labels, buttons, messages, empty states, tooltips. |
 | `codee-lessons` | Records non-obvious findings, one file each, in a catalog, and looks them up. | After a surprising bug or a fix that needs an explanation; before answering what may be recorded. |
 | `codee-generate-pr-description` | Writes `.ai/pr-description.md` from the branch. | "Prepare the PR description". |
@@ -132,7 +132,7 @@ you rarely call them by name.
 | Skill | What it does | When it loads |
 |---|---|---|
 | `codee-medusa-backend` | Medusa backend architecture: modules, workflows, API routes, links, data models. | Any backend work, planning included. |
-| `codee-medusa-backend-conventions` | Where a backend file goes, its name, its JSDoc, the shape of a step. | Writing or reviewing any backend file. |
+| `codee-medusa-backend-conventions` | Where a backend file goes, its name, its JSDoc, the shape of a step; narrows the general naming and layout for Medusa. | Writing or reviewing any backend file, placing a helper. |
 | `codee-medusa-testing` | Which test a change owes, at which layer, with which runner and harness. | Before writing a step, workflow, module, route or util, or its test. |
 | `codee-medusa-admin-dashboard` | Admin UI: components, data loading, forms, tables, navigation, and where a file goes in `src/admin`. | Any Admin work, planning included. |
 | `codee-medusa-storefront-sdk` | Calling Medusa from a storefront: JS SDK, React Query, custom routes. | Storefront integration work. |

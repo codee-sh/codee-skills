@@ -17,8 +17,8 @@ unavailable skill.
 | Medusa backend | `codee-medusa-backend` |
 | Medusa Admin UI, including forms, and where a file goes in `src/admin` | `codee-medusa-admin-dashboard` |
 | Bug report, before proposing or writing a fix | `codee-root-cause` |
-| TypeScript implementation or review | `codee-ts-code-conventions` |
-| Any Medusa backend file - where it goes, what it is named, its JSDoc | `codee-medusa-backend-conventions` |
+| TypeScript implementation or review, naming a function or a file, placing a helper | `codee-ts-code-conventions` |
+| Any Medusa backend file - where it goes, what it is named, its JSDoc - and the plain functions beside it | `codee-medusa-backend-conventions` |
 | Test for a Medusa step, workflow, module, API route, or util | `codee-medusa-testing` |
 | Plugin tooling, release, npm publication, CI, integration test app, yalc | `codee-medusa-plugin-delivery` |
 | User-facing UI text | `codee-ui-copy` |

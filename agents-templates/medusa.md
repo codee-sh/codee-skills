@@ -18,8 +18,8 @@ unavailable skill.
 | Ecommerce storefront UI or flow | `codee-medusa-storefront-ux` |
 | Script in `src/scripts/` or `src/migration-scripts/`, or a one-off data backfill | `codee-medusa-scripts` |
 | Bug report, before proposing or writing a fix | `codee-root-cause` |
-| TypeScript implementation or review | `codee-ts-code-conventions` |
-| Any Medusa backend file - where it goes, what it is named, its JSDoc | `codee-medusa-backend-conventions` |
+| TypeScript implementation or review, naming a function or a file, placing a helper | `codee-ts-code-conventions` |
+| Any Medusa backend file - where it goes, what it is named, its JSDoc - and the plain functions beside it | `codee-medusa-backend-conventions` |
 | Test for a Medusa step, workflow, module, API route, or util | `codee-medusa-testing` |
 | User-facing UI text | `codee-ui-copy` |
 | Write or restructure specifications | `codee-spec-writing` |

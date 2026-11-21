@@ -17,7 +17,7 @@ unavailable skill.
 | Payload best-practices audit | `codee-payload-review` |
 | Payload security audit or hardening | `codee-payload-security` |
 | Bug report, before proposing or writing a fix | `codee-root-cause` |
-| TypeScript implementation or review | `codee-ts-code-conventions` |
+| TypeScript implementation or review, naming a function or a file, placing a helper | `codee-ts-code-conventions` |
 | User-facing UI text | `codee-ui-copy` |
 | Write or restructure specifications | `codee-spec-writing` |
 | Review a Payload or Next.js specification | `codee-spec-review-payload` |

@@ -11,7 +11,7 @@ unavailable skill.
 | Task | Skills |
 |------|--------|
 | Bug report, before proposing or writing a fix | `codee-root-cause` |
-| TypeScript implementation or review | `codee-ts-code-conventions` |
+| TypeScript implementation or review, naming a function or a file, placing a helper | `codee-ts-code-conventions` |
 | User-facing UI text | `codee-ui-copy` |
 | Write or restructure specifications | `codee-spec-writing` |
 | Working notes, including exploration for one spec module | `codee-spec-notes` |
