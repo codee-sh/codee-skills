@@ -120,7 +120,10 @@ application or another plugin.
 ## In a plugin
 
 - **Import only types from the backend code.** The Admin is a browser bundle; `import type` from
-  `src/lib` or `src/workflows` is erased, a value import pulls Node code into it.
+  `src/lib` or `src/workflows` is erased, a value import pulls Node code into it. The one exception is
+  a pure function the server and the Admin both run, such as a validation schema the form shares with
+  the save: it sits in a file that imports nothing reaching Node - see `codee-medusa-backend-conventions`
+  `references/file-layout.md`, "When a helper leaves its unit".
 - **Keep the Admin's own `src/admin/tsconfig.json`**, which the plugin's backend typecheck excludes; check
   it with `tsc --noEmit -p src/admin/tsconfig.json`.
 - **Declare no dependency the dashboard already brings** with npm or yarn - `@tanstack/react-query`,
