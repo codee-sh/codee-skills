@@ -1,6 +1,6 @@
 ---
 name: codee-ts-code-conventions
-description: TypeScript code conventions for comments, JSDoc, naming, and code clarity. Use when writing or reviewing TypeScript code. Leave mechanical formatting to the project's formatter and linter.
+description: TypeScript code conventions for comments, JSDoc, the names of functions and files, and where plain code goes. Use when writing or reviewing TypeScript code, naming a function or a file, or deciding where a helper or a folder goes. Leave mechanical formatting to the project's formatter and linter.
 ---
 
 # TypeScript Code Conventions
@@ -8,6 +8,21 @@ description: TypeScript code conventions for comments, JSDoc, naming, and code c
 Apply semantic conventions that formatters and linters cannot reliably enforce.
 Follow the project's Prettier, ESLint, or equivalent configuration for mechanical
 formatting.
+
+## References
+
+This file holds comments, JSDoc and identifier names. Load a reference before
+the work it covers:
+
+- **Naming a function, a symbol or a file?** MUST load
+  `references/function-and-file-names.md` first: the verb table, file names, the
+  verbs not used, and how to propose a new verb.
+- **Creating a file or a folder, or deciding where a helper goes?** MUST load
+  `references/code-layout.md` first: folders by domain, folder roles, the
+  narrowest owner, when a helper leaves its unit, pure functions.
+
+A framework skill may narrow both for its own units; it lists only the
+difference and links here.
 
 ## Comments
 
@@ -65,7 +80,7 @@ from the signature:
 - `@throws` for non-obvious error conditions
 - `@example` for non-trivial usage
 
-## Naming
+## Identifier names
 
 Use descriptive names that state what a value represents. Avoid unexplained
 abbreviations and single-letter identifiers.
