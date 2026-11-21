@@ -45,7 +45,8 @@ file name.
 | `build-` | builds a new object from a description | the object | `buildQuery(filters)` |
 | `map-` | copies a list or a tree with each item turned by a function the caller gives | the copy | `mapTree(tree, mapNode)` |
 | `pick-` | copies a value keeping only the keys or items it is told to keep | the copy | `pickKeys(row, keys)` |
-| `add-` | puts an item into a collection, or a rule onto a schema, that its caller holds in memory | nothing, or the value it extended | `addRow(calls, key, row)`, `addFieldRules(schema, fields)` |
+| `add-` | puts an item into a collection, or a rule onto a schema, that its caller holds in memory - or finds the item already there | the entry it added or found, or the value it extended | `addCall(calls, key, open)`, `addFieldRules(schema, fields)` |
+| `push-` | puts an item into a list, a map or an object its caller holds in memory | nothing | `pushRow(calls, key, row)`, `pushError(errors, path, message)` |
 | `split-` | divides one value into named parts | the parts | `splitAddress(address)` |
 | `format-` / `parse-` | turns a value into text / text back into the value; a pair is the reverse of each other | the text / the value | `formatPrice(amount)`, `parsePrice(text)` |
 | `normalize-` | brings a value to its canonical form | a value of the same kind | `normalizeEmail(email)` |
@@ -66,9 +67,11 @@ file name.
 - **`build-` or `map-`:** `map-` keeps the shape of its input and turns each item; `build-` makes a
   shape of its own.
 - **`pick-` or `map-`:** `pick-` keeps items as they are and drops the rest; `map-` turns each one.
-- **`add-` or `build-`:** `add-` extends what its caller already holds - a list of calls being
-  gathered, a schema being refined; `build-` starts from nothing. `add-` touches memory only: a
-  function that writes to a database or a file is no plain function.
+- **`add-` or `push-`:** both extend what the caller holds; `add-` returns something - the entry, or
+  the extended value - and `push-` returns nothing.
+- **`add-` / `push-` or `build-`:** `add-` and `push-` extend what their caller already holds - a list
+  of calls being gathered, a schema being refined; `build-` starts from nothing. Both touch memory
+  only: a function that writes to a database or a file is no plain function.
 - **`get-` never names a computation:** `formatFullName(user)`, not `getFullName(user)`; `get-` takes,
   it does not work anything out.
 
