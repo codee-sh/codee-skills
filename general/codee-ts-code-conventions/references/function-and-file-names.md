@@ -37,6 +37,8 @@ file name.
 | Verb | Does | Returns | Example |
 |---|---|---|---|
 | `get-` | takes one thing that must exist, by its key | the thing; throws when it is missing | `getSetting(settings, key)` |
+| `retrieve-` | in the code that holds the data - a module service, a provider - reads one record from its store by id or key | the record; throws when it is missing | `retrieveActiveVersion(id)` |
+| `fetch-` | in technical code - a client, an adapter - and in the framework's units that call it, reads from outside the app: a foreign API, a foreign database, a file | what it read; throws an error its caller can act on | `fetchProduct(client, id)` |
 | `list-` | gathers every item of what it was given that fits a rule | a list, empty when none fits | `listActiveUsers(users)` |
 | `find-` | searches for one item, or for the problems of a value | the item or `undefined`; the problems, empty when none | `findUserByEmail(users, email)`, `findFormErrors(values)` |
 | `describe-` | reads a definition as it is, judging nothing | a plain description of it | `describeSchema(schema)` |
@@ -54,8 +56,18 @@ file name.
 | `is-` / `has-` / `matches-` | answers a yes-or-no question about its input | a boolean | `isEmpty(value)`, `hasDiscount(order)`, `matchesPattern(name, pattern)` |
 | `define-` | types a config or a registration where it is written | its input, unchanged | `defineConfig(config)` |
 
+**A name the framework gives keeps the framework's word.** A method that implements a framework's
+interface or mirrors its providers - `upload`, `delete`, `list` on a media provider - and a method the
+framework generates, such as `listAndCountProducts` of a module service, keep the framework's name. The
+table names the project's own functions.
+
 ## Choosing between close verbs
 
+- **`get-`, `retrieve-` or `fetch-`:** by where the record comes from and which layer the code is in.
+  `retrieve-` is the data layer's own read - a module service, a provider - as the framework's
+  generated methods name it; `fetch-` reads from outside the app; `get-` takes one thing everywhere
+  else - a workflow step, a plain function, an accessor. A step that reads one record is `get-`, even
+  when the service it calls says `retrieve`.
 - **`get-` or `find-`:** `get-` when the thing must exist and its absence is an error; `find-` when
   coming back empty is a normal answer.
 - **`list-` or `find-`:** `list-` returns every item that fits; `find-` the first one, or the problems.
@@ -86,11 +98,11 @@ under different words.
 | `resolve-` | `prepare-`, or `validate-` when it checks and returns what it matched |
 | `to-`, `convert-` | `build-`, `format-` or `normalize-`, by what it returns |
 | `place-` | `map-` |
-| `load-`, `retrieve-`, `collect-`, `gather-` | `get-` or `list-` |
+| `load-`, `collect-`, `gather-` | `get-` or `list-`, or `push-` when it fills what its caller holds |
 | `select-` | `pick-`, or `push-` when it fills a selection its caller holds (`add-` when it also returns the entry) |
 | `read-` | `describe-`, or `parse-` when it reads text |
 | `walk-`, `visit-`, `traverse-` | the verb of what the walk does: `validate-`, `list-`, `map-` |
-| `fetch-` | a plain function does no I/O (see `code-layout.md`); the framework's unit that reads names it |
+| `fetch-`, `retrieve-` in a plain function | neither: a plain function does no I/O (see `code-layout.md`); it takes what technical code fetched or a step read |
 | `create-`, `update-`, `delete-`, `save-` | a plain function writes nothing; `build-` when it builds a new object |
 
 ## Extending the table

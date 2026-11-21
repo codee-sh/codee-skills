@@ -11,6 +11,7 @@ cases its framework brings; it does not restate these rules.
 - [The narrowest owner](#the-narrowest-owner)
 - [When a helper leaves its unit](#when-a-helper-leaves-its-unit)
 - [Plain functions are pure](#plain-functions-are-pure)
+- [Calls to the outside](#calls-to-the-outside)
 - [Code that predates these rules](#code-that-predates-these-rules)
 
 ## Folders by domain
@@ -88,6 +89,20 @@ A helper and a shared function do no I/O and hold no state: they reach no contai
 or file, and read no global. They take what their caller read and return what it writes. Reading and
 writing belong to the framework's units - a workflow step, a route handler, a loader - and to technical
 code, the one role that talks to the outside.
+
+## Calls to the outside
+
+Technical code is the one role that reaches another system, and it owns how that call behaves: anything
+crossing a network boundary can fail.
+
+**Every outbound HTTP call has a timeout and retries transient failures** - a network error, a
+timeout, 429, 502/503/504 - a bounded number of times with a growing delay; any other status fails
+at once. The numbers are named constants. Tell a transient error by its `name` (`TypeError`,
+`TimeoutError`, `AbortError`), not by `instanceof`: an error from `fetch` or an abort signal may come
+from another realm. The error a call throws names what it called, without credentials or query string.
+
+A caller of a client that already owns this policy adds nothing on top: a second retry loop multiplies
+the attempts. A framework skill says which of its units call technical code.
 
 ## Code that predates these rules
 

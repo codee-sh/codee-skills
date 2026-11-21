@@ -13,11 +13,12 @@ takes the general table as it is.
 
 ## Where steps differ from plain functions
 
-| Verb | A plain function | A step |
+| Verb | Outside a step | A step |
 |---|---|---|
 | `get-` | takes one thing that must exist, or throws | returns one record from Medusa, or throws |
 | `list-` | gathers the items of what it was given | returns many records from Medusa or a local module |
-| `fetch-` | never: a plain function does no I/O | reads from outside Medusa |
+| `retrieve-` | only in a module service or a provider, as `MedusaService` names its generated methods | never: a step that reads one record is `get-`, even when the service it calls says `retrieve` |
+| `fetch-` | only in technical code - a module's `clients/` | reads from outside Medusa, through that client |
 | `prepare-` | shapes input and runs the `validate-` helpers of its domain | shapes input and judges nothing: a check is a `validate-` step of its own |
 | `build-` | builds a new object | never: use `prepare-` |
 | `create-`, `update-`, `delete-`, `upsert-`, `link-`, `unlink-` | never: a plain function writes nothing | writes, and owns its compensation |
@@ -97,17 +98,14 @@ the failure: a throw rolls the workflow back, and the record of why goes with it
 | `link-` / `unlink-` | writes a module link rather than a row |
 
 `fetch-` is not a longer word for `list-`. The difference is where the data comes from, and it
-decides how the step must behave: anything crossing a network boundary can fail, so the step is
-the place that owns the timeout, the retry and an error the caller can act on.
+decides how the step must behave: anything crossing a network boundary can fail, so the step and the
+client it calls own the timeout, the retry and an error the caller can act on.
 
-**Every outbound HTTP call has a timeout and retries transient failures** - a network error, a
-timeout, 429, 502/503/504 - a bounded number of times with a growing delay; any other status fails
-at once. When a module client already owns that policy, the `fetch-` step calls the client and adds
-nothing on top: a second retry loop multiplies the attempts. A raw `fetch` in a step - a binary from
-a public URL the client cannot serve - applies the same policy, with its numbers kept as named
-constants. Tell a transient error by its `name` (`TypeError`, `TimeoutError`, `AbortError`), not by
-`instanceof`: an error from `fetch` or an abort signal may come from another realm. The error a step
-throws names what it called, without credentials or query string.
+The policy for every outbound call - timeout, retries of transient failures, telling them by `name`,
+an error without credentials - is `codee-ts-code-conventions` `references/code-layout.md`, "Calls to
+the outside". In Medusa: when a module client already owns it, the `fetch-` step calls the client and
+adds nothing on top; a raw `fetch` in a step - a binary from a public URL the client cannot serve -
+applies the same policy itself.
 
 **Verbs that are not step prefixes.** Each is a synonym of one above, and where both are in play
 they drift until they name the same job under different words:
