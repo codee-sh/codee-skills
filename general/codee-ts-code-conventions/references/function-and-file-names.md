@@ -87,7 +87,7 @@ under different words.
 | `to-`, `convert-` | `build-`, `format-` or `normalize-`, by what it returns |
 | `place-` | `map-` |
 | `load-`, `retrieve-`, `collect-`, `gather-` | `get-` or `list-` |
-| `select-` | `pick-`, or `add-` when it fills a selection its caller holds |
+| `select-` | `pick-`, or `push-` when it fills a selection its caller holds (`add-` when it also returns the entry) |
 | `read-` | `describe-`, or `parse-` when it reads text |
 | `walk-`, `visit-`, `traverse-` | the verb of what the walk does: `validate-`, `list-`, `map-` |
 | `fetch-` | a plain function does no I/O (see `code-layout.md`); the framework's unit that reads names it |
