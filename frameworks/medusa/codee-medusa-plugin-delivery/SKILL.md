@@ -30,6 +30,9 @@ when it wants that pipeline, and that skill never overwrites the `SDLC.md` writt
 | `.github`: CI, PR labels, release notes, the release workflow, the PR template | `references/github.md` |
 | The test app, a test module, migrations, `docs/tests.md` | `references/integration-tests.md` |
 
+What the plugin says - its README, `docs/`, its name, description and keywords, the GitHub texts and
+the wording of a changeset - is `codee-medusa-plugin-docs`.
+
 ## Steps
 
 1. **Read the repository first**: `package.json` (name, scripts, `packageManager`, dependencies), its

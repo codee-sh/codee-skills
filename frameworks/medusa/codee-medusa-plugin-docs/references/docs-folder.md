@@ -1,0 +1,44 @@
+# The docs folder
+
+`docs/` holds one page per topic a host developer looks up after the basic setup works. The README
+links to every page; a page links to the README only for installation and setup, never repeats it.
+
+## Pages
+
+Use these names when the topic exists, so every plugin has the same map. Add a page of your own for a
+topic none of them covers, named after the topic in kebab case.
+
+| Page | Holds |
+|---|---|
+| `configuration.md` | Every plugin option: its key, type, default, and what it changes, with one full `medusa-config.ts` example. |
+| `admin.md` | What the Admin screens let an editor do, and how a host extends them (widgets, zones, routes). |
+| `translations.md` | The languages shipped, how a host overrides a text, and the namespace or key it overrides by. |
+| `tests.md` | How the plugin's tests run and where a new one goes. For contributors. |
+| `development.md` | Running the plugin linked into a project with `yarn dev` and yalc. For contributors. |
+| `contributing/<topic>.md` | A contributor's guide to extending the plugin itself, such as adding a template. |
+| `images/` | Screenshots the pages show. |
+
+Contributor pages (`tests.md`, `development.md`, `contributing/`) are linked from `CONTRIBUTING.md` as
+well as from the README's Documentation list.
+
+## A page
+
+- Starts with `# <Topic>` and one sentence saying what the page covers and what it leaves to which page.
+- One topic. When a page explains two things a reader looks up apart, split it.
+- Sections answer the reader's questions in the order they arise: what it is, how to turn it on, the
+  options, an example, the edge cases.
+- Code examples use the package's public entry points and the current config types; an example that no
+  longer compiles is a bug.
+- Links are relative (`./configuration.md#subscribers`); an anchor is the heading's GitHub slug.
+- A rule is explained in one page and linked from the others, never copied.
+
+## Moving text out of the README
+
+When a README carries guides, split it before adding more:
+
+1. Map each README section to a page, in a table, before moving anything.
+2. Move the sections word for word into their pages, in one commit with no edits, so the diff shows
+   text only changing place.
+3. In the same commit, rewrite the links the move broke: README anchors become page links.
+4. Edit the moved text afterwards, in its own commit.
+5. Check that every relative link and anchor in `README.md`, `CONTRIBUTING.md` and `docs/` resolves.

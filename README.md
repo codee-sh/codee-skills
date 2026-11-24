@@ -87,7 +87,7 @@ instruction file. Keep only rows for skills installed in that repository.
 
 - [Default](agents-templates/default.md)
 - [Medusa](agents-templates/medusa.md)
-- [Medusa plugin](agents-templates/medusa-plugin.md) - for a plugin repository, with `codee-medusa-plugin-delivery`
+- [Medusa plugin](agents-templates/medusa-plugin.md) - for a plugin repository, with `codee-medusa-plugin-delivery` and `codee-medusa-plugin-docs`
 - [Payload](agents-templates/payload.md)
 
 The Medusa template combines Codee skills with the official
@@ -138,6 +138,7 @@ you rarely call them by name.
 | `codee-medusa-storefront-sdk` | Calling Medusa from a storefront: JS SDK, React Query, custom routes. | Storefront integration work. |
 | `codee-medusa-storefront-ux` | Storefront UI and flows: cart, checkout, product pages, navigation. | Any storefront page or component. |
 | `codee-medusa-scripts` | `src/scripts/` and `src/migration-scripts/`: where a script goes, dry runs, arguments, helpers. | Writing, reviewing or deleting a script or a data backfill. |
+| `codee-medusa-plugin-docs` | What a plugin says to its users: the README, `docs/`, the package's name, description and keywords for npm and Medusa's directory, the GitHub texts, and changesets. | Writing or reviewing a plugin's README, a docs page or a changeset; naming a plugin; before its first publication. |
 | `codee-spec-review-medusa` | Technical review of a Medusa spec against the code and the framework. | After the `codee-spec-writing` review of a Medusa spec. |
 
 ### Payload - working skills
@@ -181,6 +182,7 @@ codee-skills/
 │   │   ├── codee-medusa-backend/
 │   │   ├── codee-medusa-backend-conventions/
 │   │   ├── codee-medusa-plugin-delivery/
+│   │   ├── codee-medusa-plugin-docs/
 │   │   ├── codee-medusa-scripts/
 │   │   ├── codee-medusa-storefront-sdk/
 │   │   ├── codee-medusa-storefront-ux/
