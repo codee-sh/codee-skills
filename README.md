@@ -123,7 +123,7 @@ you rarely call them by name.
 | `codee-ts-code-conventions` | Comments, JSDoc and identifier names in TypeScript; function and file names, and where plain code goes. | Writing or reviewing TypeScript, naming a function or a file, placing a helper. |
 | `codee-ui-copy` | Polish and English rules for interface text. | Labels, buttons, messages, empty states, tooltips. |
 | `codee-lessons` | Records non-obvious findings, one file each, in a catalog, and looks them up. | After a surprising bug or a fix that needs an explanation; before answering what may be recorded. |
-| `codee-generate-pr-description` | Writes `.ai/pr-description.md` from the branch. | "Prepare the PR description". |
+| `codee-generate-pr-description` | Writes `.ai/pr-description.md` from the branch, in the repository's pull request template when it has one. | "Prepare the PR description". |
 | `codee-writing-questions` | Formats questions for a client or stakeholder. | Writing questions to a client. |
 | `codee-skill-creator` | Scaffolds a new skill from a template. | Creating a skill. |
 

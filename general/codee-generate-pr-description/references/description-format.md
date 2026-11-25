@@ -1,6 +1,7 @@
 # Pull Request Description Format
 
-Use this structure for the generated pull request description:
+A repository's pull request template, when it has one, sets the structure ("With a repository
+template" below). Without one, use this default structure:
 
 ```markdown
 ## Summary
@@ -65,3 +66,20 @@ For example:
   placeholders, speculative claims, or a generated-by-AI note.
 - Do not claim that a test, build, migration, backfill, deployment, or CI check
   ran without direct evidence from the current task context.
+
+## With a repository template
+
+The template's headings, their order and its checklist are the description's structure; the default
+headings above are not added. The writing rules above still apply to every section.
+
+- Fill each heading with what it asks for, from the same evidence: user-facing changes and
+  Changesets where it asks what changed, the reason or the linked issue or spec where it asks why,
+  boundaries, data flow, public API and database impact where it asks how, and observed results only
+  where it asks about testing.
+- Drop the template's HTML comments and placeholder text once the section is filled.
+- A heading with nothing to report keeps a one-line statement, as the empty sections above do.
+- Keep each checklist item as written. Tick a box only when the evidence in the current task shows it
+  is done, such as a Changeset in the diff or a gate run with its result; leave the rest unticked
+  rather than guessing.
+- When the template has no place for a migration or manual deployment step the change needs, state
+  it in the section closest to how the change works.
