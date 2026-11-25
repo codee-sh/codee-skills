@@ -110,7 +110,7 @@ you rarely call them by name.
 | Skill | What it does | When to run |
 |---|---|---|
 | `codee-setup-agent-pipeline` * | Writes `.ai/agentic.config.json`, which other skills read, installs the tracker descriptor, and generates missing `SDLC.md`, `AGENTS.md`, `CODE_REVIEW.md` for the autonomous ticket-to-PR pipeline. | In a new application repository, and when its validation scripts, tracker or labels change. Not in a Medusa plugin. |
-| `codee-medusa-plugin-delivery` | Sets up or aligns a Medusa plugin: Yarn 4, branches, Changesets, the release, PR and publish scripts, manual npm publication, GitHub CI and release workflows, integration tests on a test app, the plugin's `SDLC.md` and `AGENTS.md` rules. | In a new plugin repository; when an existing plugin is brought to the same way of working; for any question about releasing, publishing or testing a plugin. |
+| `codee-medusa-plugin-delivery` | Sets up or aligns a Medusa plugin: Yarn 4, branches, Changesets and the text of a changeset, the release, PR and publish scripts, manual npm publication, GitHub CI and release workflows, integration tests on a test app, the plugin's `SDLC.md` and `AGENTS.md` rules. | In a new plugin repository; when an existing plugin is brought to the same way of working; for any question about releasing, publishing or testing a plugin; when a changeset is written. |
 | `codee-project-organization` | Writes `PROJECT-ORGANIZATION.md`: team, tools, workflow, sprints, ClickUp. | At the start of a client project. |
 
 ### General - working skills
@@ -138,7 +138,7 @@ you rarely call them by name.
 | `codee-medusa-storefront-sdk` | Calling Medusa from a storefront: JS SDK, React Query, custom routes. | Storefront integration work. |
 | `codee-medusa-storefront-ux` | Storefront UI and flows: cart, checkout, product pages, navigation. | Any storefront page or component. |
 | `codee-medusa-scripts` | `src/scripts/` and `src/migration-scripts/`: where a script goes, dry runs, arguments, helpers. | Writing, reviewing or deleting a script or a data backfill. |
-| `codee-medusa-plugin-docs` | What a plugin says to its users: the README, `docs/`, the package's name, description and keywords for npm and Medusa's directory, the GitHub texts, and changesets. | Writing or reviewing a plugin's README, a docs page or a changeset; naming a plugin; before its first publication. |
+| `codee-medusa-plugin-docs` | What a plugin says to its users: the README, `docs/`, the package's name, description and keywords for npm and Medusa's directory, and the GitHub texts. | Writing or reviewing a plugin's README or a docs page; naming a plugin; before its first publication. |
 | `codee-spec-review-medusa` | Technical review of a Medusa spec against the code and the framework. | After the `codee-spec-writing` review of a Medusa spec. |
 
 ### Payload - working skills

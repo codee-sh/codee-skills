@@ -1,6 +1,6 @@
 ---
 name: codee-medusa-plugin-delivery
-description: Set up or align how a Medusa plugin repository is developed, tested, released and published - Yarn 4 through Corepack, develop/main and topic branches, Changesets, the prepare-release, create-pr and publish-package scripts, manual npm publication, GitHub CI and release workflows, integration tests in the plugin itself on a test app with a Docker Postgres, yarn dev with yalc, and the plugin's SDLC.md and AGENTS.md rules (public contract, dependencies, who runs what). Use it once in a new plugin repository, when an existing plugin is brought to the same way of working, and whenever the question is how a plugin is released, published, versioned, tested in CI or against a database, or linked into a project. Trigger on "set up the plugin repo", "release the plugin", "publish to npm", "add changesets", "plugin CI", "integration tests in the plugin", "move the plugin to yarn 4", "align this plugin with the other plugins". Only for a Medusa plugin; an application uses codee-setup-agent-pipeline.
+description: Set up or align how a Medusa plugin repository is developed, tested, released and published - Yarn 4 through Corepack, develop/main and topic branches, Changesets, the prepare-release, create-pr and publish-package scripts, manual npm publication, GitHub CI and release workflows, integration tests in the plugin itself on a test app with a Docker Postgres, yarn dev with yalc, and the plugin's SDLC.md and AGENTS.md rules (public contract, dependencies, who runs what). Use it once in a new plugin repository, when an existing plugin is brought to the same way of working, and whenever the question is how a plugin is released, published, versioned, tested in CI or against a database, or linked into a project. Trigger on "set up the plugin repo", "release the plugin", "publish to npm", "add changesets", "write the changeset", "merge the changesets for a release", "release notes text", "plugin CI", "integration tests in the plugin", "move the plugin to yarn 4", "align this plugin with the other plugins". Only for a Medusa plugin; an application uses codee-setup-agent-pipeline.
 ---
 
 # Medusa Plugin Delivery
@@ -28,10 +28,11 @@ when it wants that pipeline, and that skill never overwrites the `SDLC.md` writt
 | `AGENTS.md` and `CODE_REVIEW.md`: the plugin contract, dependencies, `yarn dev`, who runs what | `references/agents-rules.md` |
 | Yarn 4, Changesets, `.npmrc`, the release, PR and publish scripts, `package.json`, `CONTRIBUTING.md` | `references/release-tooling.md` |
 | `.github`: CI, PR labels, release notes, the release workflow, the PR template | `references/github.md` |
+| A changeset's text, and one changeset for a release | `references/changesets.md` |
 | The test app, a test module, migrations, `docs/tests.md` | `references/integration-tests.md` |
 
-What the plugin says - its README, `docs/`, its name, description and keywords, the GitHub texts and
-the wording of a changeset - is `codee-medusa-plugin-docs`.
+What the plugin says - its README, `docs/`, its name, description and keywords, and the GitHub texts -
+is `codee-medusa-plugin-docs`. A changeset's text belongs here: it is the release note.
 
 ## Steps
 
