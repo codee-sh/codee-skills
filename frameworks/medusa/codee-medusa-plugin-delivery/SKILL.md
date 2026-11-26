@@ -1,6 +1,6 @@
 ---
 name: codee-medusa-plugin-delivery
-description: Set up or align how a Medusa plugin repository is developed, tested, released and published - Yarn 4 through Corepack, develop/main and topic branches, Changesets, the prepare-release, create-pr and publish-package scripts, manual npm publication, GitHub CI and release workflows, integration tests in the plugin itself on a test app with a Docker Postgres, yarn dev with yalc, and the plugin's SDLC.md and AGENTS.md rules (public contract, dependencies, who runs what). Use it once in a new plugin repository, when an existing plugin is brought to the same way of working, and whenever the question is how a plugin is released, published, versioned, tested in CI or against a database, or linked into a project. Trigger on "set up the plugin repo", "release the plugin", "publish to npm", "add changesets", "write the changeset", "merge the changesets for a release", "release notes text", "plugin CI", "integration tests in the plugin", "move the plugin to yarn 4", "align this plugin with the other plugins". Only for a Medusa plugin; an application uses codee-setup-agent-pipeline.
+description: Set up or align how a Medusa plugin repository is developed, tested, released and published - Yarn 4 through Corepack, develop and topic branches, Changesets and the release PR that changesets/action keeps on develop, npm publication through trusted publishing (OIDC) with provenance, the create-pr script, GitHub CI, PR labels and the release workflow, the GitHub and npm settings made by hand, integration tests in the plugin itself on a test app with a Docker Postgres, yarn dev with yalc, and the plugin's SDLC.md and AGENTS.md rules (public contract, dependencies, who runs what). Use it once in a new plugin repository, when an existing plugin is brought to the same way of working, and whenever the question is how a plugin is released, published, versioned, tested in CI or against a database, or linked into a project. Trigger on "set up the plugin repo", "release the plugin", "publish to npm", "add changesets", "write the changeset", "merge the changesets for a release", "release notes text", "release PR", "trusted publisher", "plugin CI", "integration tests in the plugin", "move the plugin to yarn 4", "align this plugin with the other plugins". Only for a Medusa plugin; an application uses codee-setup-agent-pipeline.
 ---
 
 # Medusa Plugin Delivery
@@ -24,10 +24,10 @@ when it wants that pipeline, and that skill never overwrites the `SDLC.md` writt
 
 | Area | Reference |
 |---|---|
-| `SDLC.md`: branches, changesets, the gate, the release, the npm publication | `references/sdlc.md` |
+| `SDLC.md`: branches, changesets, the gate, the release PR, the first version | `references/sdlc.md` |
 | `AGENTS.md` and `CODE_REVIEW.md`: the plugin contract, dependencies, `yarn dev`, who runs what | `references/agents-rules.md` |
-| Yarn 4, Changesets, `.npmrc`, the release, PR and publish scripts, `package.json`, `CONTRIBUTING.md` | `references/release-tooling.md` |
-| `.github`: CI, PR labels, release notes, the release workflow, the PR template | `references/github.md` |
+| Yarn 4, Changesets, the PR script, `package.json` (`files`, `publishConfig`), `CONTRIBUTING.md`, leaving the earlier process | `references/release-tooling.md` |
+| `.github`: CI, PR labels, the PR template, the release workflow; the GitHub and npm settings made by hand | `references/github.md` |
 | A changeset's text, and one changeset for a release | `references/changesets.md` |
 | The test app, a test module, migrations, `docs/tests.md` | `references/integration-tests.md` |
 
@@ -43,11 +43,13 @@ is `codee-medusa-plugin-docs`. A changeset's text belongs here: it is the releas
    matches. An existing document is merged block by block - add what is missing, replace a rule only
    where it says the opposite - never replaced wholesale. Write only after the user approves.
 3. **Work on a topic branch** - `chore/plugin-delivery` from `develop`, or create `develop` from `main`
-   when it does not exist, with the user's approval.
+   when it does not exist, with the user's approval. A plugin on the earlier process drops what
+   `references/release-tooling.md`, "Leaving the earlier process", lists.
 4. **Yarn 4 first.** Write `.yarnrc.yml`, then hand the user the Corepack commands in
    `references/release-tooling.md`. Everything after relies on Yarn 4.
 5. **Release tooling and `.github`**: write the files from `references/release-tooling.md` and
-   `references/github.md`, and add `@changesets/cli` to `devDependencies` for the user's install.
+   `references/github.md`, and add `@changesets/cli` and `@changesets/changelog-github` to
+   `devDependencies` for the user's install.
 6. **Integration tests**: follow `references/integration-tests.md`. A plugin that owns no models gets a
    test module; the user generates its migrations.
 7. **Documents**: `SDLC.md` from `references/sdlc.md`, the blocks of `references/agents-rules.md` merged
@@ -66,8 +68,12 @@ publishes:
 - `corepack enable` and `corepack use yarn@4`, then `yarn install` after any dependency change;
 - `yarn dev` while developing, and stopping it before a publication;
 - `yarn test:db:generate` after a change to a test model;
-- creating the GitHub repository and the `origin` remote, branch protection with CI as a required check;
-- `NPM_TOKEN` in `.env`, and `yarn publish-package`.
+- creating the GitHub repository and the `origin` remote, and its settings in `references/github.md`,
+  "Settings made by hand" - Actions allowed to create pull requests among them;
+- the first version by hand: `npm publish --access public --provenance=false` of the placeholder
+  `0.0.1`, then `npm deprecate` on it, and the npm trusted publisher right before the release PR of
+  `0.1.0` is merged;
+- merging the release PR, which publishes every later version.
 
 The agent may run the gate and the integration test cycle - `yarn test:db:up`, the tests,
 `yarn test:db:down` for a database it started.

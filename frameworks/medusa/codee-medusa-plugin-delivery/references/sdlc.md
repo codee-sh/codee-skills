@@ -8,8 +8,8 @@ sentence of each `<!-- IF ... -->` block that matches the repository, removing t
 
 ## Purpose
 
-This file documents how work reaches `develop` and is released to `main` in this repository, and how the
-plugin is published. Humans read the process here; the agent rules are in [AGENTS.md](AGENTS.md).
+This file documents how work reaches `develop` and how `develop` is released to npm in this repository.
+Humans read the process here; the agent rules are in [AGENTS.md](AGENTS.md).
 
 This repository runs the process **without autonomous agents**. No skill claims work, commits, or merges on
 its own; every outward action is taken by a human or after explicit approval, per `Ask First` in
@@ -50,23 +50,26 @@ For a bug, ready means reproducible.
 The repository has no remote yet. CI in `.github/workflows/ci.yml` runs the gate on pull requests once it
 has one; until then the rules below are the whole safety net.
 <!-- IF remote -->
-CI in `.github/workflows/ci.yml` runs the gate on every pull request into `develop` or `main`.
+CI in `.github/workflows/ci.yml` runs the gate on every pull request into `develop`, and
+`.github/workflows/pr-labeler.yml` labels it by its branch prefix (`.github/labeler.yml`).
 <!-- END -->
 
 Run the validation gate, have the diff looked at while it is still uncommitted, then commit.
 
 Branches:
 
-- `main` - released code; it changes only through a release.
-- `develop` - the work towards the next release; topic branches start from it and merge back into it.
-- Topic branches - `feat/<name>`, `fix/<name>`, `refactor/<name>`, `chore/<name>`, `docs/<name>`.
+- `develop` - the default branch; every release is cut from it. There is no `main`.
+- Topic branches - `feat/<name>`, `fix/<name>`, `refactor/<name>`, `chore/<name>`, `docs/<name>`,
+  `deps/<name>`, `breaking/<name>`; the prefix gives the PR its label.
 
-Once there is a remote, a topic branch reaches `develop` through a PR: `yarn pr:create` opens it, with
-`.ai/pr-description.md` from `codee-generate-pr-description` as its body when it exists.
+Once there is a remote, a topic branch reaches `develop` through a PR: `yarn pr:create` opens it, titled
+with the branch's first commit subject - a conventional commit - and with `.ai/pr-description.md` from
+`codee-generate-pr-description` as its body when it exists. The template in
+`.github/PULL_REQUEST_TEMPLATE.md` asks for What, Why, How and Testing.
 
-A user-facing change carries a changeset (`yarn changeset`): a patch for a fix, a minor for an additive
-change, a major for a change to the public contract in [AGENTS.md](AGENTS.md), "Plugin Contract", which also
-says so in its commit message. A change to tooling or process (`chore/`) needs none.
+A user-facing change carries a changeset (`yarn changeset`), whose text becomes the release note: the
+version bump follows "Plugin Contract" in [AGENTS.md](AGENTS.md), and a breaking change also says so in its
+commit message. A change to tooling or process (`chore/`) needs none.
 
 A change that renames files carries the rename in its own commit, before the content edits.
 
@@ -83,28 +86,33 @@ Every change passes the full gate before it lands, in this order:
 - `yarn test:unit`
 
 Any non-zero exit fails the gate and blocks the commit. A linked project sees a change through the user's
-`yarn dev`; `yarn build` runs only at publication.
+`yarn dev`; `yarn build` runs only in the release workflow.
 
 **Integration tests are manual.** They run in the plugin against its test app and a Docker Postgres - see
 [docs/tests.md](docs/tests.md) - when the risk is real, and the report says so.
 
 ## Release
 
-Publication is the maintainer's decision. Until then a project uses the plugin through yalc.
+`.github/workflows/release.yml` releases from `develop`; nobody versions, tags or publishes by hand.
 
-A release, when asked for - `yarn prepare-release` runs steps 1 and the branch of step 2, pushing only
-when there is an `origin` remote:
+1. While `develop` has changesets, every push opens or rewrites one PR, `chore: release`, from
+   `changeset-release/develop`. It holds the next version in `package.json`, the new `CHANGELOG.md`
+   section - each entry linked to its PR, commit and author by `@changesets/changelog-github` - and the
+   consumed changesets.
+2. The maintainer reads that PR - the version, and the section as the release note it becomes - and
+   merges it when the release is wanted. GitHub runs no CI on a PR the workflow opened; when branch
+   protection requires CI, close and reopen the PR.
+3. The merge leaves `develop` without changesets, so the workflow builds the package, checks that the
+   packed list holds the build, publishes it to npm through trusted publishing (OIDC, with provenance),
+   tags `v<version>` and creates the GitHub release `v<version>`, whose body is the version's
+   `CHANGELOG.md` section.
 
-1. On `develop`, `yarn changeset version` applies the changesets to `package.json` and `CHANGELOG.md`;
-   commit it as `chore: version packages`.
-2. Branch `release/v<version>` from `develop` and merge it into `main`, through a PR titled
-   `release: v<version>` once there is a remote; tag `main` as `v<version>`.
-3. Merge `main` back into `develop` when `main` has commits `develop` lacks.
-4. Publish by hand, on `main` at the tag: `yarn publish-package --dry-run` to see the package, then
-   `yarn publish-package`. It checks the branch, a clean tree and the tag, reads `NPM_TOKEN` from the
-   environment or `.env` (ignored by git; `.npmrc` reads the variable), and runs
-   `npm publish --access public`, whose `prepublishOnly` builds the plugin - so `yarn dev` is stopped
-   first and started again after.
+A failed publish job is re-run: `changeset publish` skips a version npm already has. A broken version is
+deprecated with `npm deprecate` and fixed in a patch.
 
-Before the first publication, the packed package is installed in a project and its routes are run.
+**The first version.** npm publishes a package's first version only with a credential, never through
+OIDC, and its trusted publisher can be set only on a package that exists. So `0.0.1` is published once
+by hand, from the maintainer's machine, and deprecated as a placeholder; the trusted publisher
+(`<owner>`, `<repository>`, `release.yml`) is set on npm right before the release PR of `0.1.0` is
+merged, as npm expects its first publish within 2 days. No npm token is stored anywhere.
 ````

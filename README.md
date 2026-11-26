@@ -110,7 +110,7 @@ you rarely call them by name.
 | Skill | What it does | When to run |
 |---|---|---|
 | `codee-setup-agent-pipeline` * | Writes `.ai/agentic.config.json`, which other skills read, installs the tracker descriptor, and generates missing `SDLC.md`, `AGENTS.md`, `CODE_REVIEW.md` for the autonomous ticket-to-PR pipeline. | In a new application repository, and when its validation scripts, tracker or labels change. Not in a Medusa plugin. |
-| `codee-medusa-plugin-delivery` | Sets up or aligns a Medusa plugin: Yarn 4, branches, Changesets and the text of a changeset, the release, PR and publish scripts, manual npm publication, GitHub CI and release workflows, integration tests on a test app, the plugin's `SDLC.md` and `AGENTS.md` rules. | In a new plugin repository; when an existing plugin is brought to the same way of working; for any question about releasing, publishing or testing a plugin; when a changeset is written. |
+| `codee-medusa-plugin-delivery` | Sets up or aligns a Medusa plugin: Yarn 4, branches, Changesets and the text of a changeset, the release PR on `develop` and npm publication through trusted publishing, the PR script, GitHub CI, labels and the release workflow, integration tests on a test app, the plugin's `SDLC.md` and `AGENTS.md` rules. | In a new plugin repository; when an existing plugin is brought to the same way of working; for any question about releasing, publishing or testing a plugin; when a changeset is written. |
 | `codee-project-organization` | Writes `PROJECT-ORGANIZATION.md`: team, tools, workflow, sprints, ClickUp. | At the start of a client project. |
 
 ### General - working skills

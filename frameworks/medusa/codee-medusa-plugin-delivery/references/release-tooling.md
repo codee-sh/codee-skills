@@ -1,8 +1,9 @@
 # Release tooling
 
-The files that make a plugin a package: Yarn 4, Changesets, the release, PR and publish scripts, npm
-authentication and the contributor pointer. Write each file at the path in its heading. A file that
-already exists is compared and merged, never replaced wholesale.
+The files that make a plugin a package: Yarn 4, Changesets, the PR script, the package's publication
+fields and the contributor pointer. The release itself runs in `.github/workflows/release.yml`
+(`github.md`). Write each file at the path in its heading. A file that already exists is compared and
+merged, never replaced wholesale.
 
 ## Yarn 4
 
@@ -29,24 +30,41 @@ nodeLinker: node-modules
 
 ## Changesets
 
-`@changesets/cli` is a dev dependency (`"changeset": "changeset"` in the scripts). No `version` script:
-Yarn has its own `yarn version`; the release runs `yarn changeset version`.
+`@changesets/cli` v3 and `@changesets/changelog-github` are dev dependencies (`"changeset": "changeset"`
+in the scripts). `changesets/action` v2, which the release workflow runs, needs the CLI v3. No `version`
+script: Yarn has its own `yarn version`, and the workflow runs `changeset version`.
+
+```json
+"devDependencies": {
+  "@changesets/changelog-github": "^1.0.1",
+  "@changesets/cli": "^3.0.3"
+}
+```
 
 ### `.changeset/config.json`
 
+`@changesets/changelog-github` links each changelog entry to its PR, commit and author; `repo` is the
+GitHub repository, `<owner>/<repository>`.
+
 ```json
 {
-  "$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json",
-  "changelog": "@changesets/cli/changelog",
+  "$schema": "https://unpkg.com/@changesets/config@4.0.1/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    { "repo": "<owner>/<repository>" }
+  ],
   "commit": false,
   "fixed": [],
   "linked": [],
   "access": "public",
-  "baseBranch": "main",
+  "baseBranch": "develop",
   "updateInternalDependencies": "patch",
   "ignore": []
 }
 ```
+
+A maintainer who runs `changeset version` locally needs `GITHUB_TOKEN` for the links; the release flow
+never asks for it.
 
 ### `.changeset/README.md`
 
@@ -57,79 +75,9 @@ Each file here describes one user-facing change and its version bump. Add one wi
 `yarn changeset version` applies them at a release. The process is in [SDLC.md](../SDLC.md), "Release".
 ```
 
-## npm authentication
-
-`.npmrc` holds no secret, only the variable npm expands; `NPM_TOKEN` lives in the environment or in a
-`.env` that git ignores.
-
-### `.npmrc`
-
-```
-//registry.npmjs.org/:_authToken=${NPM_TOKEN}
-```
-
 ## Scripts
 
 Executable (`chmod +x`), run through `package.json`. Check each with `bash -n`.
-
-### `scripts/prepare-release.sh`
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-# Versions the pending changesets on develop and opens the release branch.
-# Without an `origin` remote it works locally and prints the merge and tag to run.
-# Usage: yarn prepare-release
-
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$REPO_ROOT"
-
-if [[ "$(git rev-parse --abbrev-ref HEAD)" != "develop" ]]; then
-  echo "Error: run it on develop." >&2
-  exit 1
-fi
-
-if [[ -n "$(git status --porcelain)" ]]; then
-  echo "Error: the working tree is not clean; commit or stash the changes first." >&2
-  exit 1
-fi
-
-HAS_ORIGIN=false
-if git remote get-url origin >/dev/null 2>&1; then
-  HAS_ORIGIN=true
-  git pull --ff-only origin develop
-fi
-
-yarn changeset version
-
-if git diff --quiet -- package.json; then
-  echo "Error: no changeset to release; package.json kept its version." >&2
-  exit 1
-fi
-
-VERSION="$(node -p "require('./package.json').version")"
-RELEASE_BRANCH="release/v${VERSION}"
-
-# Only what `changeset version` writes: the version, the changelog and the consumed changesets.
-git add package.json CHANGELOG.md .changeset
-git commit -m "chore: version packages"
-git checkout -b "$RELEASE_BRANCH"
-
-if [[ "$HAS_ORIGIN" == true ]]; then
-  git push origin develop
-  git push -u origin "$RELEASE_BRANCH"
-
-  echo
-  echo "Next: open a PR ${RELEASE_BRANCH} -> main titled \"release: v${VERSION}\", then tag main v${VERSION}."
-else
-  echo
-  echo "No origin remote. Next, locally:"
-  echo "  git checkout main && git merge --no-ff ${RELEASE_BRANCH}"
-  echo "  git tag -a v${VERSION} -m \"Release v${VERSION}\""
-  echo "  git checkout develop && git merge main"
-fi
-```
 
 ### `scripts/create-pr.sh`
 
@@ -141,6 +89,7 @@ set -euo pipefail
 # The body is .ai/pr-description.md when it exists (codee-generate-pr-description writes it),
 # otherwise the summaries of the branch's changesets.
 # Requires: an origin remote and an authenticated gh CLI.
+# The title is the branch's first commit subject, a conventional commit, unless PR_TITLE is set.
 # Usage: yarn pr:create   (BASE_BRANCH and PR_TITLE override the defaults)
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -168,7 +117,12 @@ if [[ -z "$CURRENT_BRANCH" || "$CURRENT_BRANCH" == "HEAD" ]]; then
 fi
 
 BASE_BRANCH="${BASE_BRANCH:-develop}"
-PR_TITLE="${PR_TITLE:-${CURRENT_BRANCH}}"
+FIRST_SUBJECT="$(git log --reverse --format=%s "${BASE_BRANCH}..HEAD" | sed -n 1p)"
+PR_TITLE="${PR_TITLE:-${FIRST_SUBJECT}}"
+if [[ -z "$PR_TITLE" ]]; then
+  echo "Error: the branch has no commit over ${BASE_BRANCH}; set PR_TITLE or commit first." >&2
+  exit 1
+fi
 BODY_FILE="$(mktemp)"
 trap 'rm -f "$BODY_FILE"' EXIT
 
@@ -210,63 +164,32 @@ gh pr create \
   --body-file "$BODY_FILE"
 ```
 
-### `scripts/publish-package.sh`
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-# Publishes the version on main to npm, after the release is tagged.
-# NPM_TOKEN comes from the environment or from .env, which .npmrc reads; the token is never printed.
-# Usage: yarn publish-package            (pass --dry-run to see the package without publishing)
-
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$REPO_ROOT"
-
-if [[ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]]; then
-  echo "Error: publish from main." >&2
-  exit 1
-fi
-
-if [[ -n "$(git status --porcelain)" ]]; then
-  echo "Error: the working tree is not clean." >&2
-  exit 1
-fi
-
-VERSION="$(node -p "require('./package.json').version")"
-if [[ "$(git tag --points-at HEAD)" != *"v${VERSION}"* ]]; then
-  echo "Error: main is not tagged v${VERSION}; finish the release first." >&2
-  exit 1
-fi
-
-if [[ -f .env ]]; then
-  set -a
-  # shellcheck disable=SC1091
-  . ./.env
-  set +a
-fi
-
-if [[ -z "${NPM_TOKEN:-}" ]]; then
-  echo "Error: NPM_TOKEN is not set; add it to .env or the environment." >&2
-  exit 1
-fi
-
-# prepublishOnly runs `medusa plugin:build`, which removes .medusa/server: stop `yarn dev` first.
-npm publish --access public "$@"
-```
-
 ## package.json
 
 ```json
-"publishConfig": { "access": "public" },
+"files": [
+  ".medusa/server/**",
+  "index.d.ts"
+],
+"publishConfig": {
+  "access": "public",
+  "provenance": true
+},
 "scripts": {
   "typecheck:admin": "tsc --noEmit -p src/admin/tsconfig.json",
+  "prepublishOnly": "medusa plugin:build",
   "changeset": "changeset",
-  "prepare-release": "bash scripts/prepare-release.sh",
-  "pr:create": "bash scripts/create-pr.sh",
-  "publish-package": "bash scripts/publish-package.sh"
+  "pr:create": "bash scripts/create-pr.sh"
 }
 ```
+
+- **`files`** - `.medusa/server/**`, never `.medusa/server`. Yarn, which packs the release, reads the
+  bare folder as the few declaration files the `exports` name, where npm takes the whole folder; a
+  package published that way holds no build and Medusa cannot load it. The release workflow checks the
+  packed list before publishing.
+- **`publishConfig.provenance`** - the release workflow's `yarn npm publish` signs the package's
+  provenance from it, through the job's OIDC token.
+- **`prepublishOnly`** - kept, so the one publication by hand, the first version, still builds.
 
 `packageManager` comes from `corepack use`; the test scripts are in `integration-tests.md`.
 
@@ -276,7 +199,18 @@ npm publish --access public "$@"
 # Contributing
 
 - [SDLC.md](SDLC.md) - how a change goes from an idea to a release: specs, branches, changesets, the
-  validation gate and the release steps.
+  validation gate and the release.
 - [CODE_REVIEW.md](CODE_REVIEW.md) - what a review checks and how severe a finding is.
 - [AGENTS.md](AGENTS.md) - the rules AI agents follow here, the plugin's public contract among them.
+- [docs/development.md](docs/development.md) - running the plugin linked into a Medusa project with
+  `yarn dev` and yalc.
+- [docs/tests.md](docs/tests.md) - how the tests run and where a new one goes.
 ```
+
+## Leaving the earlier process
+
+A plugin that released from `main` with its own scripts and published with a token removes, when it is
+aligned: `scripts/prepare-release.sh`, `scripts/publish-package.sh`, the `prepare-release` and
+`publish-package` scripts in `package.json`, `.npmrc`, `NPM_TOKEN` from `.env`,
+`.github/workflows/release-on-merge.yml` and `.github/release.yml`. Its `main` branch is deleted once
+`develop` holds everything `main` has, and `develop` becomes the default branch.
