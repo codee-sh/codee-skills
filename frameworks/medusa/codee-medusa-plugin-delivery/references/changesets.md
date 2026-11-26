@@ -78,3 +78,24 @@ first GitHub release:
 - **Documentation** - a link to each `docs/` page, by its title.
 
 It is a `minor` from `0.0.x`, so the first version is `0.1.0`; no **Behaviour changes** or **Fixes**.
+
+## A package under a new name
+
+A published name cannot change, so a renamed plugin is a new package (`codee-medusa-plugin-docs`,
+`references/listing.md`, "Name"), released from the same repository:
+
+- **Its first version** comes the way any first version does: `package.json` goes back to `0.0.1`, the
+  placeholder published by hand, and one `minor` changeset releases `0.1.0`. The changeset opens with
+  **Moving from `<old name>`**: the package to uninstall and install, the imports and the `resolve` to
+  rename, and what does not change (data, tables, routes, config keys). The README carries the same
+  under `## Moving from <old name>` until the next release that asks something of the host.
+- **The old entries in `CHANGELOG.md`** go under `## Published as <old name>`, below every release of
+  the new name, and their version headings name the old package: `` ### `<old name>@0.1.0` ``.
+  Changesets inserts a release before the first heading that starts with a version, and the release
+  action takes a version's notes from the heading that is exactly that version. An old `### 0.1.0`
+  puts the new release inside the old section, and the old notes into the new GitHub release.
+- **The old tags** `v<version>` would collide with the new name's: rename them with the old name's
+  prefix (`<old-domain>-v0.1.0`) before the first release, and point their GitHub releases at the
+  renamed tags or delete those releases. Keep the tags: the old changelog links to them.
+- **The old package** is deprecated with `npm deprecate <old name> "Moved to <new name>"` once the new
+  version is on npm.

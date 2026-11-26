@@ -6,12 +6,21 @@ shows the same words.
 ## Name
 
 `@codee-sh/medusa-plugin-<domain>`: the domain in one or two plain words, the way a developer would
-search for it - `cms`, `inpost`, `automations`, `notification-emails`. No brand names, no word repeated
-(`content-cms` says "content" twice). The repository and its folder take the same
+search for it - `cms`, `inpost`, `automations`, `notification-emails`. No brand names in the domain,
+no word repeated (`content-cms` says "content" twice). The repository and its folder take the same
 `medusa-plugin-<domain>`.
 
+**A product with a brand of its own.** A plugin that grows into a product under its own name - its own
+domain, documentation and family of packages - publishes under the product's scope:
+`@<brand>/<product>`, from the repository `<brand>/<product>`. Mostra, for example, is `@mostrajs/cms`
+from `mostrajs/cms`. The name is the product first, then the layer (`cms`, `cms-react`, `cms-mcp`),
+without "medusa": the scope names the product, the keywords name Medusa. Its `keywords` stay as below,
+`medusa-plugin-<type>` included. The user decides that a plugin becomes such a product; every other
+plugin stays `@codee-sh/medusa-plugin-<domain>`.
+
 Choose it before the first publication. A published name cannot change: a new name is a new package,
-and the old one is deprecated with `npm deprecate`. Check that it is free first:
+and the old one is deprecated with `npm deprecate` - the steps are in `codee-medusa-plugin-delivery`,
+`references/changesets.md`, "A package under a new name". Check that it is free first:
 
 ```bash
 npm view @codee-sh/medusa-plugin-<domain> name   # a 404 means it is free
@@ -79,7 +88,8 @@ Read them again before relying on a detail; the keyword list has changed between
 
 Set by hand when the repository is created, and kept in step with `package.json`:
 
-- **Name:** `medusa-plugin-<domain>`, as the package and the folder.
+- **Name:** `medusa-plugin-<domain>`, as the package and the folder. A branded product's repository is
+  `<product>` in the product's organisation.
 - **Description:** `package.json` `description`, word for word.
 - **Website:** the npm package page, once published.
 - **Topics:** `medusa`, `medusajs`, `medusa-v2`, `medusa-plugin`, `typescript`, and the domain's

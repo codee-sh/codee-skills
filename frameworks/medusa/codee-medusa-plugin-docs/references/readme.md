@@ -13,6 +13,8 @@ Leave out a section that has nothing to say; never reorder.
 1. **Title** - `# Medusa <what it is>`, the name a person would say: `# Medusa CMS`,
    `# Medusa notifications`. Under it, the package name in code, then two or three sentences: what the
    plugin does, for Medusa v2, and what a host gets from it. A pre-1.0 plugin says so here in one line.
+   A branded product (`listing.md`, "Name") is titled with its brand, `# <Brand>`, the package name
+   under it as usual.
 2. **Features** - bullets of what is built and released. Nothing planned, nothing behind an unreleased
    flag. One line each, the user's words, not the module's.
 3. **Compatibility** - Medusa from `peerDependencies` (`@medusajs/framework`), Node.js from `engines`.
