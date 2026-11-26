@@ -37,6 +37,34 @@ when it has one, introduces the folder. A page and a folder of the same name (`g
 - Links are relative (`./configuration.md#subscribers`); an anchor is the heading's GitHub slug.
 - A rule is explained in one page and linked from the others, never copied.
 
+## How a section is laid out
+
+A reader scans for the option, the shape or the error they need. Prose explains; a table, a list or a
+code block holds what they look up.
+
+- **Opening.** One to three sentences on what the feature is and what it is for, then the smallest
+  example that works, before any option.
+- **Options.** A table, one row per key: `| Option | Type | Default | Description |`, the description one
+  sentence. An option that needs an example, or more than two sentences, gets a `###` of its own below
+  the table.
+- **The values of an option** are a list, each value in bold code: ``- **`"create"`** - adds a document``.
+- **A data shape** - a config object, a request body, a response, a stored value - is a code block,
+  never a sentence: a `ts` block for its type, a `json` block for an example value. Name the exported
+  type when there is one; the prose after the block says what its parts mean.
+- **A function** gets a `###` with its call, such as ``### `parseRichText(value)` ``, one sentence on what
+  it returns, an example, and its edge cases. Several small helpers can share a table:
+  `| Function | Returns | Description |`.
+- **What fails** is a list under its own heading, such as `### When the start fails`: one case per item,
+  the condition first, then the message in a code span and the HTTP status when there is one.
+- **An aside** is a GitHub alert: `[!NOTE]` for what matters but is not critical, `[!WARNING]` for lost
+  data or a trap. A section has one or two at most.
+- **Sentences** stay under 30 words; a sentence with more than two commas becomes a list. A paragraph
+  holds one idea, about 60 words at most, and a list item one or two sentences.
+- **Headings** come every 200 to 300 words and name the thing or the task, in sentence case. Another
+  page links to a heading by its slug: a renamed heading takes every link to it along.
+- **Code blocks** always name their language. Code from a file starts with a comment naming it,
+  `// src/cms/config.ts`, and `// ...` marks what is left out.
+
 ## What a page may hold
 
 A page, and the README, is GitHub Markdown, with no front matter and no MDX: a docs site can be built
