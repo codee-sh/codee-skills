@@ -23,8 +23,21 @@ become its release notes, are `codee-medusa-plugin-delivery`.
 |---|---|
 | `README.md`: its sections, their order, what stays out | `references/readme.md` |
 | `docs/`: one topic per file, names, links, moving text out of the README | `references/docs-folder.md` |
-| How the sentences read: voice, sentences, punctuation, words, quoting what the product shows | `references/writing-style.md` |
 | `package.json` name, description, keywords and links; npm, Medusa's directory, GitHub | `references/listing.md` |
+
+## Voice and terms
+
+The prose follows `codee-technical-writing`. What a plugin's docs add to it:
+
+- **The reader** is a developer adding the plugin to a Medusa project. Write as a colleague who knows
+  the plugin well.
+- **The plugin is "the plugin"**, and the app it runs in is "your project". No client or project name
+  appears.
+- **The product's terms**, one name each: the Admin, the Store API, a collection, a document, a field,
+  a block type, a block, an area, a route, a singleton, a draft, a version. An editor is a person who
+  edits content in the Admin, and the tool is "the rich text editor".
+- **Medusa's terms as Medusa writes them**: module, data model, service, workflow, step, subscriber,
+  scheduled job, Query, the File Module.
 
 ## Steps
 
@@ -32,7 +45,7 @@ become its release notes, are `codee-medusa-plugin-delivery`.
    `exports`, `peerDependencies`, `engines`), and the README of the most recently updated
    Codee plugin as the working example. Run `git status` and keep what the user changed.
 2. **Load only the reference the task needs.** A new option touches `docs-folder.md`, and `readme.md`
-   only when it changes the Features list. Load `references/writing-style.md` for any prose you write or edit.
+   only when it changes the Features list. For any prose you write or edit, load `codee-technical-writing`, with the voice and terms below.
 3. **Write for the plugin's user**, a developer installing it into a Medusa project: the config keys,
    exports, routes, events and Admin screens they meet. Internal file names, spec numbers and the
    name of any client project stay out.

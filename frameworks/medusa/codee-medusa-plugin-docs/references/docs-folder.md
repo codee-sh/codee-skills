@@ -58,8 +58,7 @@ code block holds what they look up.
   the condition first, then the message in a code span and the HTTP status when there is one.
 - **An aside** is a GitHub alert: `[!NOTE]` for what matters but is not critical, `[!WARNING]` for lost
   data or a trap. A section has one or two at most.
-- **Sentences** stay under 30 words; a sentence with more than two commas becomes a list. A paragraph
-  holds one idea, about 60 words at most, and a list item one or two sentences.
+- **Sentences and paragraphs** follow `codee-technical-writing`, and a list item is one or two sentences.
 - **Headings** come every 200 to 300 words and name the thing or the task, in sentence case. Another
   page links to a heading by its slug: a renamed heading takes every link to it along.
 - **Code blocks** always name their language. Code from a file starts with a comment naming it,
