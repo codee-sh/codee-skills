@@ -1,6 +1,6 @@
 ---
 name: codee-medusa-plugin-docs
-description: What a Medusa plugin says to the people who install it - the README, the `docs/` folder, the package's name, description and keywords in `package.json`, the listing on npm and in Medusa's integrations directory, and the GitHub repository's description and topics. Use it whenever a plugin's README or a `docs/` page is written, restructured or reviewed, when a feature or a config option needs documenting, when a plugin is named or renamed, when its `description`, `keywords`, `repository`, `homepage` or `bugs` change, and before a plugin's first publication. Trigger on "write the README", "document this option", "add a docs page", "split the README", "npm keywords", "how will Medusa find the plugin", "GitHub description", "topics", "rename the package". Only for a Medusa plugin; the release tooling and the text of a changeset are codee-medusa-plugin-delivery.
+description: What a Medusa plugin says to the people who install it - the README, the `docs/` folder, the package's name, description and keywords in `package.json`, the listing on npm and in Medusa's integrations directory, and the GitHub repository's description and topics. Use it whenever a plugin's README or a `docs/` page is written, restructured or reviewed, when a feature or a config option needs documenting, when a plugin is named or renamed, when its `description`, `keywords`, `repository`, `homepage` or `bugs` change, and before a plugin's first publication. Trigger on "write the README", "document this option", "add a docs page", "split the README", "npm keywords", "how will Medusa find the plugin", "GitHub description", "topics", "rename the package". Only for a Medusa plugin; the release tooling and the text of a changeset are codee-medusa-plugin-delivery, and the text the product itself shows - its labels and messages - is codee-ui-copy.
 ---
 
 # Medusa Plugin Docs
@@ -23,6 +23,7 @@ become its release notes, are `codee-medusa-plugin-delivery`.
 |---|---|
 | `README.md`: its sections, their order, what stays out | `references/readme.md` |
 | `docs/`: one topic per file, names, links, moving text out of the README | `references/docs-folder.md` |
+| How the sentences read: voice, sentences, punctuation, words, quoting what the product shows | `references/writing-style.md` |
 | `package.json` name, description, keywords and links; npm, Medusa's directory, GitHub | `references/listing.md` |
 
 ## Steps
@@ -31,7 +32,7 @@ become its release notes, are `codee-medusa-plugin-delivery`.
    `exports`, `peerDependencies`, `engines`), and the README of the most recently updated
    Codee plugin as the working example. Run `git status` and keep what the user changed.
 2. **Load only the reference the task needs.** A new option touches `docs-folder.md`, and `readme.md`
-   only when it changes the Features list.
+   only when it changes the Features list. Load `references/writing-style.md` for any prose you write or edit.
 3. **Write for the plugin's user**, a developer installing it into a Medusa project: the config keys,
    exports, routes, events and Admin screens they meet. Internal file names, spec numbers and the
    name of any client project stay out.
