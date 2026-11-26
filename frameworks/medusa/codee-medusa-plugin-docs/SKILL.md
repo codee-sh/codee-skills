@@ -38,7 +38,8 @@ become its release notes, are `codee-medusa-plugin-delivery`.
 4. **Move before you rewrite.** Text that changes place moves word for word in its own commit, and
    is edited after, so the diff of the move is reviewable.
 5. **Check**: every relative link and anchor resolves, each code example matches the current exports
-   and config types, and the README still follows `references/readme.md`.
+   and config types, every image, video, aside and HTML tag is one `references/docs-folder.md`, "What a
+   page may hold", allows, and the README still follows `references/readme.md`.
 
 ## Output format
 

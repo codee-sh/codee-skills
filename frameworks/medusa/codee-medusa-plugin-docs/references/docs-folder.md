@@ -16,10 +16,15 @@ topic none of them covers, named after the topic in kebab case.
 | `tests.md` | How the plugin's tests run and where a new one goes. For contributors. |
 | `development.md` | Running the plugin linked into a project with `yarn dev` and yalc. For contributors. |
 | `contributing/<topic>.md` | A contributor's guide to extending the plugin itself, such as adding a template. |
-| `images/` | Screenshots the pages show. |
+| `images/` | Screenshots and other images the pages show. |
+| `media/` | Videos the pages show. |
 
 Contributor pages (`tests.md`, `development.md`, `contributing/`) are linked from `CONTRIBUTING.md` as
 well as from the README's Documentation list.
+
+A folder of pages, such as `contributing/` or `guides/`, groups the pages of one theme; its `index.md`,
+when it has one, introduces the folder. A page and a folder of the same name (`guides.md` beside
+`guides/`) never both exist.
 
 ## A page
 
@@ -31,6 +36,34 @@ well as from the README's Documentation list.
   longer compiles is a bug.
 - Links are relative (`./configuration.md#subscribers`); an anchor is the heading's GitHub slug.
 - A rule is explained in one page and linked from the others, never copied.
+
+## What a page may hold
+
+A page, and the README, is GitHub Markdown, with no front matter and no MDX: a docs site can be built
+from it, as mostrajs.com builds the CMS docs, and it then renders the same on GitHub, on npm and on the
+site.
+
+- **An image** is a relative link to a file under `docs/images/`: `![The collection form](./images/collection-form.png)`.
+  PNG, JPEG, GIF, WebP, AVIF or SVG.
+- **A video** is an HTML tag, as Markdown has no syntax for one: `<video src="./media/demo.mp4" controls></video>`,
+  with the file under `docs/media/`, as MP4 (H.264) or WebM. Keep it short: every clone of the
+  repository carries it. A video uploaded to GitHub, by dropping it into the file's editor there, goes
+  in with its `https://github.com/user-attachments/...` address as the `src`.
+- **An aside** is a GitHub alert, one of `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` and
+  `[!CAUTION]`, never nested in a list or another quote:
+
+  ```markdown
+  > [!WARNING]
+  > Deleting a model deletes its entries.
+  ```
+
+- **HTML** is limited to `a`, `br`, `details`, `div`, `img`, `kbd`, `p`, `picture`, `source`, `sub`,
+  `summary`, `sup` and `video`, with quoted attribute values and no `class`, `id` or `style`, which
+  GitHub strips.
+- **A component, a type or a tag named in prose** goes in a code span: `` `<Container>` ``,
+  `` `Map<string, Field>` ``. Bare, GitHub drops it as unknown HTML.
+- **An HTML comment** (`<!-- -->`) holds a note for maintainers only; neither GitHub nor the site shows
+  it.
 
 ## Moving text out of the README
 
