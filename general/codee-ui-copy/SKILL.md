@@ -1,6 +1,6 @@
 ---
 name: codee-ui-copy
-description: Create or review user-facing UI text in Polish or English using Codee language-specific copy rules. Use for labels, buttons, headings, descriptions, placeholders, validation messages, notifications, empty states, and tooltips.
+description: Create or review the text a product's interface shows, in Polish or English, using Codee language-specific copy rules. Use for labels, buttons, headings, descriptions, placeholders, validation messages, notifications, empty states, and tooltips in an Admin, a storefront or an app. Not for documentation pages (README, docs/), which codee-medusa-plugin-docs covers, nor for marketing copy, whose voice lives in the brand's repository.
 ---
 
 # UI Copy
