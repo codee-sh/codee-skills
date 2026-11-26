@@ -22,6 +22,7 @@ unavailable skill.
 | Any Medusa backend file - where it goes, what it is named, its JSDoc - and the plain functions beside it | `codee-medusa-backend-conventions` |
 | Test for a Medusa step, workflow, module, API route, or util | `codee-medusa-testing` |
 | User-facing UI text | `codee-ui-copy` |
+| Prose that explains: a docs page, a README, an Admin guide | `codee-technical-writing` |
 | Write or restructure specifications | `codee-spec-writing` |
 | Review a Medusa specification | `codee-spec-review-medusa` |
 | Working notes, including exploration for one spec module | `codee-spec-notes` |

@@ -19,6 +19,7 @@ unavailable skill.
 | Bug report, before proposing or writing a fix | `codee-root-cause` |
 | TypeScript implementation or review, naming a function or a file, placing a helper | `codee-ts-code-conventions` |
 | User-facing UI text | `codee-ui-copy` |
+| Prose that explains: a docs page, a README, an Admin guide | `codee-technical-writing` |
 | Write or restructure specifications | `codee-spec-writing` |
 | Review a Payload or Next.js specification | `codee-spec-review-payload` |
 | Working notes, including exploration for one spec module | `codee-spec-notes` |
